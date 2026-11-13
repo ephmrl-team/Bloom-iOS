@@ -16,6 +16,10 @@ DerivedData/
 *.mode2v3
 *.perspectivev3
 
+# Local tooling (opencode)
+opencode.json
+.opencode/
+
 # Log files
 *.log
 
