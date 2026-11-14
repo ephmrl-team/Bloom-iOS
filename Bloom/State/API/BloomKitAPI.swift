@@ -206,3 +206,9 @@ final class BloomKitAPI: BloomAPI {
         return mnemonic.entropy.map { String(format: "%02x", $0) }.joined()
     }
 }
+
+/// Carries the client's result across the background task boundary.
+private struct RegisterBackgroundResult: Sendable {
+    let rawRecoveryKey: String?
+    let userJSON: Data?
+}
