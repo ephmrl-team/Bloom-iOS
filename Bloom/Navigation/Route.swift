@@ -24,5 +24,7 @@ enum ModalRoute: Identifiable {
 
 enum AuthRoute: Hashable {
     case mnemonic
+    case mnemonicReveal(String)
+    case mnemonicReview(String)
     case success
 }
