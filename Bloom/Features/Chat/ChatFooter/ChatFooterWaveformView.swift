@@ -9,6 +9,28 @@ import SwiftUI
 import BlurSwiftUI
 import BlurUIKit
 
+private struct WaveBarItem: View {
+    let targetHeight: CGFloat
+    let minHeight: CGFloat
+    let barWidth: CGFloat
+    let color: Color
+
+    @State private var isAppeared = false
+
+    var body: some View {
+        Capsule()
+            .fill(color)
+            .frame(width: barWidth, height: isAppeared ? targetHeight : minHeight)
+            .frame(maxHeight: .infinity, alignment: .center)
+            .opacity(isAppeared ? 1.0 : 0.0)
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.25)) {
+                    isAppeared = true
+                }
+            }
+    }
+}
+
 struct ChatFooterWaveformView: View {
     var samples: [AudioSample]
 
@@ -19,61 +41,62 @@ struct ChatFooterWaveformView: View {
     var maxBarHeight: CGFloat = 36.0
 
     var body: some View {
-        Canvas { context, size in
-            let maxBars = max(1, Int(size.width / (barWidth + barSpacing)))
+        GeometryReader { geometry in
+            let totalBarSpace = barWidth + barSpacing
+            let maxBars = max(1, Int(geometry.size.width / totalBarSpace))
             let visibleSamples = samples.suffix(maxBars)
             let placeholderCount = max(0, maxBars - visibleSamples.count)
 
-            let placeholders = Array(repeating: minBarHeight, count: placeholderCount)
-            let sampleHeights = visibleSamples.map { max(minBarHeight, $0.value * maxBarHeight) }
+            ZStack(alignment: .center) {
+                waveformContent(visibleSamples: visibleSamples, placeholderCount: placeholderCount, blurred: true)
+                    .blur(radius: 8)
+                    .opacity(0.45)
 
-            var glow = context
-            glow.addFilter(.blur(radius: 8))
-            glow.opacity = 0.45
-            drawBars(placeholders + sampleHeights, in: &glow, height: size.height, color: Color(red: 1.0, green: 0.0, blue: 0.0))
-
-            var sharp = context
-            var placeholdersOnly = sharp
-            placeholdersOnly.opacity = 0.5
-            drawBars(placeholders, in: &placeholdersOnly, height: size.height, color: waveColor)
-            drawBars(sampleHeights, in: &sharp, height: size.height, color: waveColor, offset: placeholderCount)
-        }
-        .mask(
-            LinearGradient(
-                stops: [
-                    .init(color: .clear, location: 0.0),
-                    .init(color: .black, location: 0.235),
-                    .init(color: .black, location: 1.0)
-                ],
-                startPoint: .leading,
-                endPoint: .trailing
+                waveformContent(visibleSamples: visibleSamples, placeholderCount: placeholderCount, blurred: false)
+            }
+            .mask(
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: 0.0),
+                        .init(color: .black, location: 0.235),
+                        .init(color: .black, location: 1.0)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
             )
-        )
-        .overlay(alignment: .leading) {
-            VariableBlur(direction: .left)
-                .maximumBlurRadius(1)
-                .passesTouchesThrough(true)
-                .dimmingTintColor(.clear)
-                .frame(width: 54)
-                .frame(maxHeight: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            .overlay(alignment: .leading) {
+                VariableBlur(direction: .left)
+                    .maximumBlurRadius(1)
+                    .passesTouchesThrough(true)
+                    .dimmingTintColor(.clear)
+                    .frame(width: 54)
+                    .frame(maxHeight: .infinity)
+            }
         }
     }
 
-    private func drawBars(
-        _ heights: [CGFloat],
-        in context: inout GraphicsContext,
-        height: CGFloat,
-        color: Color,
-        offset: Int = 0
-    ) {
-        for (index, barHeight) in heights.enumerated() {
-            let rect = CGRect(
-                x: CGFloat(index + offset) * (barWidth + barSpacing),
-                y: (height - barHeight) / 2,
-                width: barWidth,
-                height: barHeight
-            )
-            context.fill(Path(roundedRect: rect, cornerRadius: barWidth / 2), with: .color(color))
+    @ViewBuilder
+    private func waveformContent(visibleSamples: ArraySlice<AudioSample>, placeholderCount: Int, blurred: Bool) -> some View {
+        HStack(alignment: .center, spacing: barSpacing) {
+            ForEach(0..<placeholderCount, id: \.self) { _ in
+                Capsule()
+                    .fill(waveColor)
+                    .frame(width: barWidth, height: minBarHeight)
+                    .frame(maxHeight: .infinity, alignment: .center)
+                    .opacity(blurred ? 0.0 : 0.5)
+            }
+
+            ForEach(visibleSamples) { sample in
+                WaveBarItem(
+                    targetHeight: max(minBarHeight, sample.value * maxBarHeight),
+                    minHeight: minBarHeight,
+                    barWidth: barWidth,
+                    color: blurred ? Color(red: 1.0, green: 0.0, blue: 0.0) : waveColor
+                )
+            }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
     }
 }
