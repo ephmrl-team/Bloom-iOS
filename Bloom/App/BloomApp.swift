@@ -4,21 +4,33 @@
 //
 
 import SwiftUI
+import OSLog
 
 @main
 struct BloomApp: App {
     @State private var appState = AppState()
-    @State private var bloomManager: BloomManager
-
-    init() {
-        _bloomManager = State(initialValue: AppEnvironment.make().bloomManager)
-    }
+    @State private var environment: AppEnvironment? = BloomApp.start()
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environment(appState)
-                .environment(bloomManager)
+            if let environment {
+                RootView()
+                    .environment(appState)
+                    .environment(environment.bloomManager)
+            } else {
+                StartupFailureView {
+                    environment = BloomApp.start()
+                }
+            }
+        }
+    }
+
+    private static func start() -> AppEnvironment? {
+        do {
+            return try AppEnvironment.make()
+        } catch {
+            Logger.bloom.error("app failed to start: \(error, privacy: .public)")
+            return nil
         }
     }
 }

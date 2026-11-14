@@ -54,7 +54,7 @@ struct ChatView: View {
             isAtBottom = newValue
         }
         .onChange(of: store.data.count) { oldCount, newCount in
-            if (store.data.first!.me) {
+            if store.data.first?.me == true {
                 guard newCount > oldCount else { return }
                 withAnimation(.smooth(duration: 0.235)) {
                     scrolledID = bottomSpacerId

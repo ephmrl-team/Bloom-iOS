@@ -6,16 +6,15 @@
 //
 
 import SwiftUI
-import CryptoKit
 
 func avatarGradient(for id: String) -> [Color] {
-    var hash: Int = 5381
-    
+    var hash: UInt = 5381
+
     for byte in id.utf8 {
-        hash = 33 &* hash &+ Int(byte)
+        hash = 33 &* hash &+ UInt(byte)
     }
-    
-    let index = abs(hash) % AvatarConstants.avatarColors.count
-    
+
+    let index = Int(hash % UInt(AvatarConstants.avatarColors.count))
+
     return AvatarConstants.avatarColors[index]
 }

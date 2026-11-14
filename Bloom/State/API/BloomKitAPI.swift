@@ -23,23 +23,24 @@ final class BloomKitAPI: BloomAPI {
     private static let recoveryAccount = "recoveryKey"
     private static let databaseKeyAccount = "db_encryption_key"
 
-    init() {
+    init() throws {
         precondition(
             AppMode.current.allowsRealAPI,
             "BloomKitAPI must not be created in \(AppMode.current.rawValue) mode"
         )
 
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        guard let storagePath = paths.first?.path,
-              let client = ClientNewClient(
-                  "https://api.bloomapp.pw",
-                  "wss://api.bloomapp.pw/ws",
-                  storagePath,
-                  Self.databaseKey()
-              )
-        else {
-            // Expects the startup error screen from PLAN 3.1.
-            fatalError("Failed to initialize BloomKit client")
+        guard let storagePath = paths.first?.path else {
+            throw BloomAPIError.missingStorage
+        }
+
+        guard let client = ClientNewClient(
+            "https://api.bloomapp.pw",
+            "wss://api.bloomapp.pw/ws",
+            storagePath,
+            Self.databaseKey()
+        ) else {
+            throw BloomAPIError.clientUnavailable
         }
 
         self.client = client
