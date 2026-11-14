@@ -13,6 +13,10 @@ struct ChatView: View {
     @Environment(BloomManager.self) private var bloomManager
     @State private var store: MessagesStore?
 
+    private var chat: ChatResponse? {
+        bloomManager.conversations.first { $0.id == chatId }
+    }
+
     var body: some View {
         Group {
             if let store {
@@ -25,7 +29,7 @@ struct ChatView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ChatViewToolbar(chatId: chatId)
+            ChatViewToolbar(chat: chat)
         }
         .toolbarBackground(.hidden, for: .navigationBar)
         .topVariableBlur()

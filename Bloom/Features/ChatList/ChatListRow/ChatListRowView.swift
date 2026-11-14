@@ -84,7 +84,7 @@ struct ChatsListRowView: View {
                 Label("Delete chat", systemImage: "trash.fill")
             }
         } preview: {
-            ChatPreviewView(userId: Int(chat.recipient?.id ?? "0") ?? chat.id, store: MessagesStore())
+            ChatPreviewView(chat: chat)
         }
     }
 }

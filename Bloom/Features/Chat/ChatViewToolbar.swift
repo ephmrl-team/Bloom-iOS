@@ -8,14 +8,12 @@
 import SwiftUI
 
 struct ChatViewToolbar: ToolbarContent {
-    let chatId: Int
-
-    @Environment(Router.self) private var router
+    let chat: ChatResponse?
 
     @ToolbarContentBuilder
     var body: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
-            ChatViewToolbarUser(chatId: chatId, isPreview: false)
+            ChatViewToolbarUser(chat: chat)
             .fixedSize(horizontal: true, vertical: false)
 
         }
@@ -30,34 +28,23 @@ struct ChatViewToolbar: ToolbarContent {
 }
 
 struct ChatViewToolbarUser: View {
-    let chatId: Int
-    let isPreview: Bool
-
-    @Environment(BloomManager.self) private var bloomManager
-
-    private var chat: ChatResponse? {
-        bloomManager.conversations.first { $0.id == chatId }
-    }
+    let chat: ChatResponse?
 
     private var name: String {
         chat?.title ?? chat?.recipient?.displayName ?? chat?.recipient?.username ?? "Chat"
     }
 
     private var avatarID: String {
-        chat?.recipient?.id ?? String(chatId)
+        chat?.recipient?.id ?? String(chat?.id ?? 0)
     }
 
     var body: some View {
-        if isPreview {
+        NavigationLink(value: Route.profile(id: avatarID)) {
             content
-        } else {
-            NavigationLink(value: Route.profile(id: avatarID)) {
-                content
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Chat profile: \(name)")
-            .accessibilityIdentifier("chatProfileButton")
         }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Chat profile: \(name)")
+        .accessibilityIdentifier("chatProfileButton")
     }
 
     private var content: some View {
@@ -88,7 +75,6 @@ struct ChatViewToolbarUser: View {
                     Spacer(minLength: Theme.spacing.xs)
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: isPreview ? nil : .infinity, alignment: .center)
         }
     }
 }
