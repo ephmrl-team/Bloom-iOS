@@ -1,0 +1,73 @@
+//
+//  MockAPI.swift
+//  Bloom
+//
+
+#if DEBUG
+import Foundation
+
+/// In-memory backend for `AppMode.mock`: no BloomKit client, no network,
+/// no Keychain. State lives only for the lifetime of the process.
+@MainActor
+final class MockAPI: BloomAPI {
+    var onChatsUpdate: (@MainActor (Data) -> Void)?
+    var onUserUpdate: (@MainActor (User) -> Void)?
+
+    private let scenario = MockScenario.current
+    private let latency = Duration.milliseconds(150)
+    private var recoveryKey: String?
+    private var syncTask: Task<Void, Never>?
+
+    func initialize() throws {}
+
+    func restoreSession() throws -> Data? {
+        nil
+    }
+
+    func register() async throws -> (recoveryPhrase: String?, userJSON: Data) {
+        try await Task.sleep(for: latency)
+        try failIfNeeded()
+        recoveryKey = MockData.mnemonic
+        return (MockData.mnemonic, try MockData.encoded(MockData.me))
+    }
+
+    func login(recoveryKey: String) async throws -> Data {
+        try await Task.sleep(for: latency)
+        try failIfNeeded()
+        self.recoveryKey = recoveryKey
+        return try MockData.encoded(MockData.me)
+    }
+
+    func savedRecoveryKey() -> String? {
+        recoveryKey
+    }
+
+    func clearCredentials() {
+        recoveryKey = nil
+    }
+
+    func startSync() {
+        syncTask?.cancel()
+        syncTask = Task { @MainActor in
+            try? await Task.sleep(for: latency)
+            guard !Task.isCancelled, let data = try? MockData.encodedChats() else { return }
+            onChatsUpdate?(data)
+        }
+    }
+
+    func stopSync() {
+        syncTask?.cancel()
+        syncTask = nil
+    }
+
+    func startUserUpdates() {}
+
+    func stopUserUpdates() {}
+
+    private func failIfNeeded() throws {
+        if scenario == .error {
+            throw BloomAPIError.unavailable
+        }
+    }
+}
+#endif

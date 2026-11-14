@@ -21,18 +21,13 @@ struct AuthWelcomeFooterView: View {
                 isLoading = true
                 Task {
                     var user: User? = nil
-                    var mnemonic: String? = nil
 
                     if bloomManager.checkSession() {
                         user = await bloomManager.loginUser()
                     } else {
-                        let registerResult = await bloomManager.registerUser()
-                        user = registerResult.user
-                        mnemonic = registerResult.mnemonic
+                        user = await bloomManager.registerUser().user
                     }
-                    
-                    print(mnemonic)
-                    
+
                     isLoading = false
                     if user != nil {
                         path.append(AuthRoute.success)
