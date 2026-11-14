@@ -12,6 +12,7 @@ struct ChatListToolbar: ToolbarContent {
     let logoRotation: Double
     
     @Environment(Router.self) private var router
+    @Environment(BloomManager.self) private var bloomManager
     
     @ToolbarContentBuilder
     var body: some ToolbarContent {
@@ -45,7 +46,12 @@ struct ChatListToolbar: ToolbarContent {
             Button {
                 router.presentModal(.settings)
             } label: {
-                AvatarView(size: .md, square: false, image: "", id: "2!#SEe3", name: "Nicolas Cage")
+                AvatarView(
+                    size: .md,
+                    square: false,
+                    id: bloomManager.currentUser?.id ?? "",
+                    name: bloomManager.currentUser?.displayName ?? bloomManager.currentUser?.username ?? "You"
+                )
             }
             .buttonStyle(.plain)
             .controlSize(.regular)

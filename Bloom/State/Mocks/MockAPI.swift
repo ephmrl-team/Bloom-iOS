@@ -64,6 +64,37 @@ final class MockAPI: BloomAPI {
         return try MockData.encoded(message)
     }
 
+    func searchUsers(query: String) async throws -> Data {
+        try await Task.sleep(for: latency)
+        try failIfNeeded()
+
+        let text = query.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        let people = text.isEmpty ? MockData.people : MockData.people.filter { user in
+            user.username.lowercased().contains(text)
+                || (user.displayName ?? "").lowercased().contains(text)
+        }
+        return try MockData.encoded(people)
+    }
+
+    func user(id: String) async throws -> Data {
+        try await Task.sleep(for: latency)
+        try failIfNeeded()
+
+        guard let user = MockData.people.first(where: { $0.id == id }) ?? (id == MockData.me.id ? MockData.me : nil) else {
+            throw BloomAPIError.missingPayload
+        }
+        return try MockData.encoded(user)
+    }
+
+    func createChat(with user: User) async throws -> Data {
+        try await Task.sleep(for: latency)
+        try failIfNeeded()
+
+        let chat = MockData.chat(with: user)
+        messagesByChat[chat.id] = MockData.messages(forChatID: chat.id)
+        return try MockData.encoded(chat)
+    }
+
     func savedRecoveryKey() -> String? {
         recoveryKey
     }

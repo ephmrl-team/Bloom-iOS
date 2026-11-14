@@ -58,6 +58,25 @@ enum MockData {
         try encoder().encode(user)
     }
 
+    static func encoded(_ users: [User]) throws -> Data {
+        try encoder().encode(users)
+    }
+
+    static func encoded(_ chat: MockChat) throws -> Data {
+        try encoder().encode(chat)
+    }
+
+    static func chat(with user: User) -> MockChat {
+        MockChat(
+            id: 1000 + (people.firstIndex { $0.id == user.id } ?? 0),
+            title: nil,
+            type: "direct",
+            me: me,
+            recipient: user,
+            lastMessage: nil
+        )
+    }
+
     static func encoded(_ messages: [DecryptedMessageWithReply]) throws -> Data {
         try encoder().encode(messages)
     }

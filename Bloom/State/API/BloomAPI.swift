@@ -18,6 +18,9 @@ protocol BloomAPI: AnyObject {
     func login(recoveryKey: String) async throws -> Data
     func messages(chatID: Int) async throws -> Data
     func sendMessage(chatID: Int, content: String) async throws -> Data
+    func searchUsers(query: String) async throws -> Data
+    func user(id: String) async throws -> Data
+    func createChat(with user: User) async throws -> Data
     func savedRecoveryKey() -> String?
     func clearCredentials()
 

@@ -83,6 +83,40 @@ final class BloomManager {
         backend.savedRecoveryKey() != nil
     }
 
+    func searchUsers(_ query: String) async -> [User] {
+        do {
+            let payload = try await backend.searchUsers(query: query)
+            return try JSONDecoder.bloomDecoder.decode([User].self, from: payload)
+        } catch {
+            Logger.bloom.error("user search failed: \(error, privacy: .public)")
+            return []
+        }
+    }
+
+    func user(id: String) async -> User? {
+        do {
+            let payload = try await backend.user(id: id)
+            return try JSONDecoder.bloomDecoder.decode(User.self, from: payload)
+        } catch {
+            Logger.bloom.error("user load failed: \(error, privacy: .public)")
+            return nil
+        }
+    }
+
+    func openChat(with user: User) async -> Int? {
+        do {
+            let payload = try await backend.createChat(with: user)
+            let chat = try JSONDecoder.bloomDecoder.decode(ChatResponse.self, from: payload)
+            if !conversations.contains(where: { $0.id == chat.id }) {
+                conversations.insert(chat, at: 0)
+            }
+            return chat.id
+        } catch {
+            Logger.bloom.error("chat creation failed: \(error, privacy: .public)")
+            return nil
+        }
+    }
+
     func makeMessagesStore(chatID: Int) -> MessagesStore {
         MessagesStore(chatID: chatID, backend: backend, currentUserID: currentUser?.id ?? "")
     }

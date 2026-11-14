@@ -21,7 +21,7 @@ struct ContentView: View {
                     case .chat(let id):
                         ChatView(chatId: id)
                     case .profile(let id):
-                        ProfileView(id: id)
+                        ProfileView(userID: id)
                     }
                 }
         }
@@ -41,5 +41,8 @@ struct ContentView: View {
         }
         .environment(router)
         .environment(\.heroNamespace, heroNamespace)
+        .onAppear {
+            router.pushPendingRouteIfNeeded()
+        }
     }
 }

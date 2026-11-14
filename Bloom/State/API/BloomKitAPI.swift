@@ -109,6 +109,32 @@ final class BloomKitAPI: BloomAPI {
         }.value
     }
 
+    func searchUsers(query: String) async throws -> Data {
+        let client = self.client
+        return try await Task.detached(priority: .userInitiated) {
+            try client.searchUsers(query)
+        }.value
+    }
+
+    func user(id: String) async throws -> Data {
+        let client = self.client
+        return try await Task.detached(priority: .userInitiated) {
+            try client.getUser(id)
+        }.value
+    }
+
+    func createChat(with user: User) async throws -> Data {
+        let client = self.client
+        return try await Task.detached(priority: .userInitiated) {
+            let request = ClientCreateChatRequest()
+            request.userID = user.id
+            request.mlKem768PublicKey = user.mlKemPublicKey
+            request.x448PublicKey = user.ecdhPublicKey
+            request.ed448PublicKey = user.edPublicKey
+            return try client.createChat(request)
+        }.value
+    }
+
     func savedRecoveryKey() -> String? {
         KeychainHelper.shared.read(service: Self.service, account: Self.recoveryAccount)
     }
