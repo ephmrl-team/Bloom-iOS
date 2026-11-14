@@ -20,6 +20,7 @@ final class BloomManager {
     var conversations: [ChatResponse] = []
     private(set) var startup: Startup = .starting
     private(set) var hasRestoredSession = false
+    private(set) var hasLoadedChats = false
 
     @ObservationIgnored private let backend: any BloomAPI
 
@@ -148,6 +149,8 @@ final class BloomManager {
     }
 
     private func parseAndSetChats(_ data: Data) {
+        defer { hasLoadedChats = true }
+
         do {
             conversations = try JSONDecoder.bloomDecoder.decode([ChatResponse].self, from: data)
         } catch {

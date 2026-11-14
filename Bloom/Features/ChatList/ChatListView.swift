@@ -18,6 +18,32 @@ struct ChatListView: View {
     @State private var logoRotation: Double = 0
 
     var body: some View {
+        Group {
+            if !bloomManager.conversations.isEmpty {
+                chats
+            } else if bloomManager.hasLoadedChats {
+                ContentUnavailableView(
+                    "No chats yet",
+                    systemImage: "bubble.left.and.bubble.right",
+                    description: Text("Tap the compose button to start one.")
+                )
+            } else {
+                ProgressView()
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .searchable(text: $searchText)
+        .toolbarBackground(.hidden, for: .bottomBar)
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbar {
+            ChatListToolbar(logoRotation: logoRotation)
+        }
+        .topVariableBlur()
+        .bottomSafeAreaGradient()
+    }
+
+    private var chats: some View {
         List {
             ForEach(bloomManager.conversations, id: \.id) { chat in
                 ChatsListRowView(chat: chat)
@@ -34,15 +60,5 @@ struct ChatListView: View {
         }
         .scrollDismissesKeyboard(.immediately)
         .scrollEdgeEffectHidden(true, for: .all)
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .searchable(text: $searchText)
-        .toolbarBackground(.hidden, for: .bottomBar)
-        .toolbarBackground(.hidden, for: .navigationBar)
-        .toolbar {
-            ChatListToolbar(logoRotation: logoRotation)
-        }
-        .topVariableBlur()
-        .bottomSafeAreaGradient()
     }
 }

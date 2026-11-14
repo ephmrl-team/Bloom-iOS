@@ -14,16 +14,22 @@ struct NewMessageView: View {
 
     var body: some View {
         NavigationStack {
-            List(users, id: \.id) { user in
-                NewMessageRowView(user: user) {
-                    openChat(with: user)
+            Group {
+                if users.isEmpty && !searchText.isEmpty {
+                    ContentUnavailableView.search(text: searchText)
+                } else {
+                    List(users, id: \.id) { user in
+                        NewMessageRowView(user: user) {
+                            openChat(with: user)
+                        }
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                    }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .scrollEdgeEffectHidden(true, for: .all)
                 }
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .scrollEdgeEffectHidden(true, for: .all)
             .searchable(text: $searchText, placement: .navigationBarDrawer)
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(true)

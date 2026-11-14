@@ -19,6 +19,8 @@ struct MessageItem: Identifiable, Hashable, Sendable {
 @MainActor
 final class MessagesStore {
     private(set) var data: Deque<MessageItem> = []
+    private(set) var isLoading = false
+    private(set) var loadFailed = false
     var lastSeenId: Int = 0
 
     private let chatID: Int
@@ -41,6 +43,10 @@ final class MessagesStore {
     func load() async {
         guard let backend else { return }
 
+        isLoading = true
+        loadFailed = false
+        defer { isLoading = false }
+
         do {
             let payload = try await backend.messages(chatID: chatID)
             let messages = try JSONDecoder.bloomDecoder.decode([DecryptedMessageWithReply].self, from: payload)
@@ -50,6 +56,7 @@ final class MessagesStore {
                     .map { MessageItem($0, currentUserID: currentUserID) }
             )
         } catch {
+            loadFailed = true
             Logger.bloom.error("messages load failed: \(error, privacy: .public)")
         }
     }
