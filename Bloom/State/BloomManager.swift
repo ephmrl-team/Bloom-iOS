@@ -10,8 +10,16 @@ import OSLog
 @Observable
 @MainActor
 final class BloomManager {
+    enum Startup {
+        case starting
+        case ready
+        case failed
+    }
+
     var currentUser: User?
     var conversations: [ChatResponse] = []
+    private(set) var startup: Startup = .starting
+    private(set) var hasRestoredSession = false
 
     @ObservationIgnored private let backend: any BloomAPI
 
@@ -22,14 +30,26 @@ final class BloomManager {
             self?.currentUser = user
         }
 
+        Task { await start() }
+    }
+
+    func start() async {
+        startup = .starting
         do {
             try backend.initialize()
-            if let data = try backend.restoreSession(),
-               let user = try? JSONDecoder.bloomDecoder.decode(User.self, from: data) {
-                setupSession(user: user)
+            if let data = try backend.restoreSession() {
+                do {
+                    let user = try JSONDecoder.bloomDecoder.decode(User.self, from: data)
+                    hasRestoredSession = true
+                    setupSession(user: user)
+                } catch {
+                    Logger.bloom.error("restored session decode failed: \(error, privacy: .public)")
+                }
             }
+            startup = .ready
         } catch {
             Logger.bloom.error("backend failed to start: \(error, privacy: .public)")
+            startup = .failed
         }
     }
 

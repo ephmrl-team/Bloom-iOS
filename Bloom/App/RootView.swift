@@ -13,26 +13,40 @@ struct RootView: View {
 
     var body: some View {
         ZStack {
-            switch appState.root {
-            case .auth:
-                AuthFlow()
-                    .transition(
-                        .opacity
-                            .combined(with: .blur(radius: 10))
-                    )
-
-            case .main:
-                ContentView()
-                    .transition(
-                        .opacity
-                            .combined(with: .blur(radius: 10))
-                    )
+            switch bloomManager.startup {
+            case .starting:
+                ProgressView()
+            case .failed:
+                StartupFailureView {
+                    Task { await bloomManager.start() }
+                }
+            case .ready:
+                root
             }
         }
-        .onAppear {
-            if bloomManager.currentUser != nil {
+        .onChange(of: bloomManager.hasRestoredSession, initial: true) { _, restored in
+            if restored {
                 appState.authenticate()
             }
+        }
+    }
+
+    @ViewBuilder
+    private var root: some View {
+        switch appState.root {
+        case .auth:
+            AuthFlow()
+                .transition(
+                    .opacity
+                        .combined(with: .blur(radius: 10))
+                )
+
+        case .main:
+            ContentView()
+                .transition(
+                    .opacity
+                        .combined(with: .blur(radius: 10))
+                )
         }
     }
 }
