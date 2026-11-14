@@ -17,6 +17,7 @@ final class MockAPI: BloomAPI {
     private let latency = Duration.milliseconds(150)
     private var recoveryKey: String?
     private var syncTask: Task<Void, Never>?
+    private var messagesByChat: [Int: [DecryptedMessageWithReply]] = [:]
 
     func initialize() throws {}
 
@@ -36,6 +37,31 @@ final class MockAPI: BloomAPI {
         try failIfNeeded()
         self.recoveryKey = recoveryKey
         return try MockData.encoded(MockData.me)
+    }
+
+    func messages(chatID: Int) async throws -> Data {
+        try await Task.sleep(for: latency)
+        try failIfNeeded()
+        return try MockData.encoded(messages(for: chatID))
+    }
+
+    func sendMessage(chatID: Int, content: String) async throws -> Data {
+        try await Task.sleep(for: latency)
+        try failIfNeeded()
+
+        var stored = messages(for: chatID)
+        let message = DecryptedMessageWithReply(
+            id: (stored.last?.id ?? 0) + 1,
+            content: content,
+            authorId: MockData.me.id,
+            timestamp: Int64(Date().timeIntervalSince1970),
+            seen: nil,
+            createdAt: .now,
+            replyTo: nil
+        )
+        stored.append(message)
+        messagesByChat[chatID] = stored
+        return try MockData.encoded(message)
     }
 
     func savedRecoveryKey() -> String? {
@@ -63,6 +89,16 @@ final class MockAPI: BloomAPI {
     func startUserUpdates() {}
 
     func stopUserUpdates() {}
+
+    private func messages(for chatID: Int) -> [DecryptedMessageWithReply] {
+        if let stored = messagesByChat[chatID] {
+            return stored
+        }
+
+        let seeded = MockData.messages(forChatID: chatID)
+        messagesByChat[chatID] = seeded
+        return seeded
+    }
 
     private func failIfNeeded() throws {
         if scenario == .error {

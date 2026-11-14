@@ -83,6 +83,10 @@ final class BloomManager {
         backend.savedRecoveryKey() != nil
     }
 
+    func makeMessagesStore(chatID: Int) -> MessagesStore {
+        MessagesStore(chatID: chatID, backend: backend, currentUserID: currentUser?.id ?? "")
+    }
+
     func logout() {
         stopSyncingChats()
         backend.stopUserUpdates()

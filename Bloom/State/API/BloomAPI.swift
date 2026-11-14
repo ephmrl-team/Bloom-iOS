@@ -16,6 +16,8 @@ protocol BloomAPI: AnyObject {
     func restoreSession() throws -> Data?
     func register() async throws -> (recoveryPhrase: String?, userJSON: Data)
     func login(recoveryKey: String) async throws -> Data
+    func messages(chatID: Int) async throws -> Data
+    func sendMessage(chatID: Int, content: String) async throws -> Data
     func savedRecoveryKey() -> String?
     func clearCredentials()
 

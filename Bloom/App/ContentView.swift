@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var router = Router()
-    @State private var store = MessagesStore()
     @Namespace private var heroNamespace
     
     var body: some View {
@@ -40,7 +39,6 @@ struct ContentView: View {
                     .presentationDragIndicator(.hidden)
             }
         }
-        .environment(store)
         .environment(router)
         .environment(\.heroNamespace, heroNamespace)
     }

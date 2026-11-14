@@ -95,6 +95,20 @@ final class BloomKitAPI: BloomAPI {
         return payload
     }
 
+    func messages(chatID: Int) async throws -> Data {
+        let client = self.client
+        return try await Task.detached(priority: .userInitiated) {
+            try client.loadMessages(chatID, beforeID: 0)
+        }.value
+    }
+
+    func sendMessage(chatID: Int, content: String) async throws -> Data {
+        let client = self.client
+        return try await Task.detached(priority: .userInitiated) {
+            try client.sendMessage(chatID, replyToID: 0, content: content)
+        }.value
+    }
+
     func savedRecoveryKey() -> String? {
         KeychainHelper.shared.read(service: Self.service, account: Self.recoveryAccount)
     }

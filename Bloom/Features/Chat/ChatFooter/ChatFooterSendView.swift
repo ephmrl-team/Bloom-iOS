@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import DequeModule
 
 struct ChatFooterSendView: View {
     @Binding var text: String
@@ -105,25 +104,8 @@ struct ChatFooterSendView: View {
     }
     
     private func sendTextMessage() {
-        let newMessage = MessageItem(
-            id: (store.data.first?.id ?? 0) + 1,
-            content: self.text,
-            date: "12:00",
-            me: Bool.random(),
-            nonce: UUID().uuidString,
-            chatId: 1,
-            authorId: "user_1",
-            groupEnd: true,
-            groupStart: true
-        )
         withAnimation(.smooth(duration: 0.235)) {
-            store.data.prepend(newMessage)
-        }
-        Task { @MainActor in
-            try? await Task.sleep(for: .seconds(3.0))
-            withAnimation(.smooth(duration: 0.235)) {
-                store.lastSeenId = store.data.first?.id ?? 0
-            }
+            store.send(text)
         }
         self.text = ""
     }

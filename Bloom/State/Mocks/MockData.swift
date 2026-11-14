@@ -58,6 +58,36 @@ enum MockData {
         try encoder().encode(user)
     }
 
+    static func encoded(_ messages: [DecryptedMessageWithReply]) throws -> Data {
+        try encoder().encode(messages)
+    }
+
+    static func encoded(_ message: DecryptedMessageWithReply) throws -> Data {
+        try encoder().encode(message)
+    }
+
+    static func messages(forChatID chatID: Int) -> [DecryptedMessageWithReply] {
+        guard MockScenario.current != .empty else { return [] }
+
+        let recipient = people[max(chatID - 1, 0) % people.count]
+        let count = 40
+        let now = Date()
+
+        return (0..<count).map { index in
+            let date = now.addingTimeInterval(-TimeInterval(count - index) * 60)
+            let isMine = index.isMultiple(of: 3)
+            return DecryptedMessageWithReply(
+                id: chatID * 1000 + index + 1,
+                content: isMine ? "Reply #\(index + 1)" : "Message #\(index + 1) from \(recipient.displayName ?? recipient.username)",
+                authorId: isMine ? me.id : recipient.id,
+                timestamp: Int64(date.timeIntervalSince1970),
+                seen: isMine ? date : nil,
+                createdAt: date,
+                replyTo: nil
+            )
+        }
+    }
+
     private static func encoder() -> JSONEncoder {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
