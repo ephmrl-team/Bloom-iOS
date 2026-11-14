@@ -67,6 +67,7 @@ final class BloomManager {
         stopSyncingChats()
         backend.stopUserUpdates()
         backend.clearCredentials()
+        conversations = []
         currentUser = nil
     }
 

@@ -38,7 +38,7 @@ final class BloomKitAPI: BloomAPI {
             "https://api.bloomapp.pw",
             "wss://api.bloomapp.pw/ws",
             storagePath,
-            Self.databaseKey()
+            try Self.databaseKey()
         ) else {
             throw BloomAPIError.clientUnavailable
         }
@@ -72,7 +72,7 @@ final class BloomKitAPI: BloomAPI {
         if let rawRecoveryKey = result.rawRecoveryKey {
             let mnemonic = try Mnemonic(entropy: rawRecoveryKey.hexToBytes())
             recoveryPhrase = mnemonic.mnemonic().joined(separator: " ")
-            KeychainHelper.shared.save(rawRecoveryKey, service: Self.service, account: Self.recoveryAccount)
+            try KeychainHelper.shared.save(rawRecoveryKey, service: Self.service, account: Self.recoveryAccount)
         }
 
         return (recoveryPhrase, userJSON)
@@ -91,7 +91,7 @@ final class BloomKitAPI: BloomAPI {
             throw BloomAPIError.missingPayload
         }
 
-        KeychainHelper.shared.save(recoveryKey, service: Self.service, account: Self.recoveryAccount)
+        try KeychainHelper.shared.save(recoveryKey, service: Self.service, account: Self.recoveryAccount)
         return payload
     }
 
@@ -101,6 +101,8 @@ final class BloomKitAPI: BloomAPI {
 
     func clearCredentials() {
         client.clearCredentials()
+        KeychainHelper.shared.delete(service: Self.service, account: Self.recoveryAccount)
+        KeychainHelper.shared.delete(service: Self.service, account: Self.databaseKeyAccount)
     }
 
     func startSync() {
@@ -135,16 +137,24 @@ final class BloomKitAPI: BloomAPI {
         isObservingUser = false
     }
 
-    private static func databaseKey() -> Data {
+    private static func databaseKey() throws -> Data {
         if let base64String = KeychainHelper.shared.read(service: service, account: databaseKeyAccount),
            let existingKey = Data(base64Encoded: base64String) {
             return existingKey
         }
 
         var bytes = [UInt8](repeating: 0, count: 32)
-        _ = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+        let status = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+        guard status == errSecSuccess else {
+            throw KeychainError.status(status)
+        }
+
         let newKey = Data(bytes)
-        KeychainHelper.shared.save(newKey.base64EncodedString(), service: service, account: databaseKeyAccount)
+        try KeychainHelper.shared.save(
+            newKey.base64EncodedString(),
+            service: service,
+            account: databaseKeyAccount
+        )
         return newKey
     }
 
