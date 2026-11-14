@@ -15,7 +15,7 @@ struct ChatListView: View {
     @Environment(Router.self) private var router
     @Environment(BloomManager.self) private var bloomManager
     @State private var searchText = ""
-    @State private var scrollY: CGFloat = 0
+    @State private var logoRotation: Double = 0
 
     var body: some View {
         List {
@@ -27,10 +27,10 @@ struct ChatListView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .onScrollGeometryChange(for: CGFloat.self) { geometry in
-            geometry.contentOffset.y + geometry.contentInsets.top
-        } action: { oldValue, newValue in
-            self.scrollY = newValue
+        .onScrollGeometryChange(for: Double.self) { geometry in
+            max(0, -(geometry.contentOffset.y + geometry.contentInsets.top) / 3)
+        } action: { _, newValue in
+            logoRotation = newValue
         }
         .scrollDismissesKeyboard(.immediately)
         .scrollEdgeEffectHidden(true, for: .all)
@@ -40,7 +40,7 @@ struct ChatListView: View {
         .toolbarBackground(.hidden, for: .bottomBar)
         .toolbarBackground(.hidden, for: .navigationBar)
         .toolbar {
-            ChatListToolbar(scrollY: scrollY)
+            ChatListToolbar(logoRotation: logoRotation)
         }
         .topVariableBlur()
         .bottomSafeAreaGradient()

@@ -12,10 +12,8 @@ struct ChatsListRowView: View {
 
     private func formatTime(from timestamp: Int64?) -> String {
         guard let ts = timestamp else { return "" }
-        let date = Date(timeIntervalSince1970: TimeInterval(ts))
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        return formatter.string(from: date)
+        return Date(timeIntervalSince1970: TimeInterval(ts))
+            .formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
     }
 
     var body: some View {

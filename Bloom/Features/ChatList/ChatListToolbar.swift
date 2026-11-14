@@ -9,8 +9,8 @@ import SwiftUI
 
 
 struct ChatListToolbar: ToolbarContent {
-    let scrollY: CGFloat
-
+    let logoRotation: Double
+    
     @Environment(Router.self) private var router
     
     @ToolbarContentBuilder
@@ -32,7 +32,7 @@ struct ChatListToolbar: ToolbarContent {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 19, height: 19)
-                            .rotationEffect(.degrees(max(0, -scrollY / 3)))
+                            .rotationEffect(.degrees(logoRotation))
 
                         Text("Bloom")
                             .foregroundColor(.primary)

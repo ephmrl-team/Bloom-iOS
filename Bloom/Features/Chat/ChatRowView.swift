@@ -17,10 +17,7 @@ struct ChatRowView: View, Equatable {
     var onDelete: (Int) -> Void = { _ in }
 
     static func == (lhs: ChatRowView, rhs: ChatRowView) -> Bool {
-        lhs.item.id == rhs.item.id &&
-        lhs.item.content == rhs.item.content &&
-        lhs.isSeen == rhs.isSeen &&
-        lhs.item.me == rhs.item.me
+        lhs.item == rhs.item && lhs.isSeen == rhs.isSeen
     }
 
     private enum Layout {

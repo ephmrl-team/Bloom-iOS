@@ -1,33 +1,33 @@
 import Foundation
 
+private extension Date.ISO8601FormatStyle {
+    nonisolated static let withFractionalSeconds = Date.ISO8601FormatStyle(includingFractionalSeconds: true)
+    nonisolated static let withoutFractionalSeconds = Date.ISO8601FormatStyle()
+}
+
 public extension JSONDecoder {
-    static var bloomDecoder: JSONDecoder {
+    /// Configured once and only read afterwards, so a single instance can serve every decode.
+    static let bloomDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        
+
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let dateString = try container.decode(String.self)
-            
-            let withFractional = ISO8601DateFormatter()
-            withFractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            if let date = withFractional.date(from: dateString) {
+
+            if let date = (try? Date.ISO8601FormatStyle.withFractionalSeconds.parse(dateString))
+                ?? (try? Date.ISO8601FormatStyle.withoutFractionalSeconds.parse(dateString)) {
                 return date
             }
-            
-            let standard = ISO8601DateFormatter()
-            if let date = standard.date(from: dateString) {
-                return date
-            }
-            
+
             throw DecodingError.dataCorruptedError(
                 in: container,
                 debugDescription: "Invalid date format: \(dateString)"
             )
         }
-        
+
         return decoder
-    }
+    }()
 }
 
 public final class MessageBox: Codable {
