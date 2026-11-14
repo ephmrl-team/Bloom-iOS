@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B1000001302CED1C009523BE /* BloomKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1000002302CED1C009523BE /* BloomKit.xcframework */; };
 		5E9B9A90302F91DA00C4CD91 /* Bip39 in Frameworks */ = {isa = PBXBuildFile; productRef = 5E9B9A8F302F91DA00C4CD91 /* Bip39 */; };
 		DBBEC4D1302CED1C009523BE /* BlurSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = DBBEC4D0302CED1C009523BE /* BlurSwiftUI */; };
 		DBBEC4D3302CED1C009523BE /* BlurUIKit in Frameworks */ = {isa = PBXBuildFile; productRef = DBBEC4D2302CED1C009523BE /* BlurUIKit */; };
@@ -27,6 +28,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B1000002302CED1C009523BE /* BloomKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = BloomKit.xcframework; path = BloomKit.xcframework; sourceTree = "<group>"; };
 		DBBEC4723029C65A009523BE /* Bloom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bloom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -60,6 +62,7 @@
 				DBBEC4D1302CED1C009523BE /* BlurSwiftUI in Frameworks */,
 				DBBEC4E5302CF133009523BE /* DequeModule in Frameworks */,
 				5E9B9A90302F91DA00C4CD91 /* Bip39 in Frameworks */,
+				B1000001302CED1C009523BE /* BloomKit.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				DBBEC4743029C65A009523BE /* Bloom */,
+				B1000002302CED1C009523BE /* BloomKit.xcframework */,
 				DBBEC4733029C65A009523BE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -403,8 +407,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TimOliver/BlurUIKit";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.5.0;
+				kind = exactVersion;
+				version = 1.7.0;
 			};
 		};
 		DBBEC4E3302CF133009523BE /* XCRemoteSwiftPackageReference "swift-collections" */ = {
