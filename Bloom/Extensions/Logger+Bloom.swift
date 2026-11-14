@@ -7,5 +7,5 @@ import Foundation
 import OSLog
 
 extension Logger {
-    static let bloom = Logger(subsystem: "pw.ephmrl.bloom", category: "app")
+    nonisolated static let bloom = Logger(subsystem: "pw.ephmrl.bloom", category: "app")
 }

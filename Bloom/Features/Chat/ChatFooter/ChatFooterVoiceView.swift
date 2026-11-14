@@ -10,7 +10,7 @@ import SwiftUI
 struct ChatFooterVoiceView: View {
     let isRecordingLocked: Bool
 
-    @StateObject private var recorder = AudioRecorderManager()
+    @State private var recorder = AudioRecorderManager()
 
     var body: some View {
         ChatFooterWaveformView(samples: recorder.samples)
@@ -18,7 +18,7 @@ struct ChatFooterVoiceView: View {
             .padding(.trailing, Theme.spacing.md)
             .onChange(of: isRecordingLocked) { _, locked in
                 if locked {
-                    recorder.startRecording()
+                    Task { await recorder.startRecording() }
                 }
             }
 
