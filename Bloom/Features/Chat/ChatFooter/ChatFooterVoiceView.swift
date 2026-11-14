@@ -33,6 +33,8 @@ struct ChatFooterVoiceView: View {
                 .foregroundStyle(Theme.colors.red)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Stop recording")
+        .accessibilityIdentifier("stopRecordingButton")
         .frame(width: 36, height: 36)
         .background(Theme.colors.red.opacity(0.35), in: Circle())
         .padding(.leading, Theme.spacing.md)

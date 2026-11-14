@@ -35,6 +35,8 @@ struct ChatFooterTextView: View {
         .foregroundStyle(.primary)
         .textFieldStyle(.plain)
         .tint(Theme.colors.primary)
+        .accessibilityLabel("Message")
+        .accessibilityIdentifier("chatMessageField")
         .opacity(isExpanded ? 0 : 1)
         
         ChatFooterSendView(

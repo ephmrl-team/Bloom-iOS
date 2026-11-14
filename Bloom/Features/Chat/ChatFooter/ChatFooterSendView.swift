@@ -64,6 +64,8 @@ struct ChatFooterSendView: View {
                 cancelHoldSequence()
             }
         })
+        .accessibilityLabel(hasText ? "Send message" : "Record voice message")
+        .accessibilityIdentifier("chatSendButton")
         .padding(barHeight == 44 ? Theme.spacing.xs + 2 : barHeight == 52 ? Theme.spacing.md - 2 : Theme.spacing.lg)
         .frame(width: barHeight + 2, height: barHeight + 2)
         .animation(.smooth(duration: 0.235), value: text)

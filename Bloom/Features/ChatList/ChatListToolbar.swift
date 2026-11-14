@@ -25,6 +25,8 @@ struct ChatListToolbar: ToolbarContent {
                     .foregroundColor(.primary)
             }
             .controlSize(.regular)
+            .accessibilityLabel("Notifications")
+            .accessibilityIdentifier("notificationsButton")
         }
 
         ToolbarItem(placement: .principal) {
@@ -55,6 +57,8 @@ struct ChatListToolbar: ToolbarContent {
             }
             .buttonStyle(.plain)
             .controlSize(.regular)
+            .accessibilityLabel("Settings")
+            .accessibilityIdentifier("settingsButton")
             .glassEffect(.regular.interactive())
         }
         .sharedBackgroundVisibility(.hidden)
@@ -72,6 +76,8 @@ struct ChatListToolbar: ToolbarContent {
                     .foregroundColor(.primary)
             }
             .controlSize(.large)
+            .accessibilityLabel("New message")
+            .accessibilityIdentifier("newMessageButton")
             .heroTransitionSource(id: "newMessageButton")
         }
     }

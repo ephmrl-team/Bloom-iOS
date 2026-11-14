@@ -115,6 +115,7 @@ private struct MnemonicChallengeView: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityAddTraits(pick == option ? .isSelected : [])
+                    .accessibilityIdentifier("mnemonicOption\(challenge.id)_\(option)")
                 }
             }
         }

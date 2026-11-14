@@ -32,6 +32,7 @@ struct AuthMnemonicFooterView: View {
             }
             .buttonStyle(.plain)
             .disabled(!isEnabled)
+            .accessibilityIdentifier("continueButton")
             .glassEffect(
                 .regular
                     .interactive()

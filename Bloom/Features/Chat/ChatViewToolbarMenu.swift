@@ -67,5 +67,7 @@ struct ChatViewToolbarMenu: View {
                 .font(.headline)
                 .foregroundColor(.primary)
         }
+        .accessibilityLabel("Chat actions")
+        .accessibilityIdentifier("chatActionsButton")
     }
 }

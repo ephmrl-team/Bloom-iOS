@@ -58,6 +58,7 @@ struct AuthWelcomeFooterView: View {
             }
             .buttonStyle(.plain)
             .disabled(isLoading)
+            .accessibilityIdentifier("continueButton")
             .glassEffect(
                 .regular
                     .interactive()

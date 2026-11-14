@@ -52,6 +52,8 @@ private struct MnemonicField: View {
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled(true)
                 .keyboardType(.asciiCapable)
+                .accessibilityLabel("Word \(index + 1)")
+                .accessibilityIdentifier("mnemonicWord\(index + 1)")
                 .foregroundStyle(.primary)
                 .font(.system(.headline, design: .rounded, weight: .medium))
                 .submitLabel(index < totalCount - 1 ? .next : .done)

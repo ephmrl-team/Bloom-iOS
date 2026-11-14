@@ -55,6 +55,8 @@ struct ChatViewToolbarUser: View {
                 content
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Chat profile: \(name)")
+            .accessibilityIdentifier("chatProfileButton")
         }
     }
 

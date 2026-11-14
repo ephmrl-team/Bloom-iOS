@@ -49,6 +49,7 @@ struct ChatListView: View {
                 ChatsListRowView(chat: chat)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
+                    .accessibilityIdentifier("chatRow_\(chat.id)")
             }
         }
         .listStyle(.plain)

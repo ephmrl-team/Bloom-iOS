@@ -36,6 +36,7 @@ struct AuthMnemonicRevealView: View {
                     isRevealed.toggle()
                 }
                 .buttonStyle(.bordered)
+                .accessibilityIdentifier("togglePhraseButton")
             }
             .padding(.horizontal, 36)
             .padding(.bottom, Theme.spacing.xxl)
