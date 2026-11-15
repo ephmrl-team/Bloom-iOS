@@ -19,6 +19,7 @@ final class BloomManager {
     var currentUser: User?
     var conversations: [ChatResponse] = []
     private(set) var startup: Startup = .starting
+    private(set) var startupError: String?
     private(set) var hasRestoredSession = false
     private(set) var hasLoadedChats = false
 
@@ -36,10 +37,12 @@ final class BloomManager {
 
     func start() async {
         startup = .starting
+        startupError = nil
         do {
             try backend.initialize()
         } catch {
             Logger.bloom.error("backend failed to start: \(error, privacy: .public)")
+            startupError = error.localizedDescription
             startup = .failed
             return
         }

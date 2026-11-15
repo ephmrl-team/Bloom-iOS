@@ -6,6 +6,7 @@
 import SwiftUI
 
 struct StartupFailureView: View {
+    let detail: String?
     let retry: () -> Void
 
     var body: some View {
@@ -21,6 +22,13 @@ struct StartupFailureView: View {
                 .font(.subheadline)
                 .foregroundStyle(Theme.colors.secondaryText)
 
+            if let detail {
+                Text(detail)
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(Theme.colors.secondaryText)
+                    .accessibilityIdentifier("startupErrorDetail")
+            }
+
             Button("Try again", action: retry)
                 .buttonStyle(.borderedProminent)
                 .padding(.top, Theme.spacing.sm)
@@ -31,5 +39,5 @@ struct StartupFailureView: View {
 }
 
 #Preview {
-    StartupFailureView {}
+    StartupFailureView(detail: "The operation couldn't be completed.") {}
 }

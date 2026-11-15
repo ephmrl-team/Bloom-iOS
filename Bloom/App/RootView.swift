@@ -22,7 +22,7 @@ struct RootView: View {
             case .starting:
                 ProgressView()
             case .failed:
-                StartupFailureView {
+                StartupFailureView(detail: bloomManager.startupError) {
                     Task { await bloomManager.start() }
                 }
             case .ready:
