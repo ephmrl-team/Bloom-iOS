@@ -14,6 +14,10 @@ struct AuthWelcomeView: View {
 
     /// Item width as a share of the screen, so the neighbouring tiles stay in view.
     private static let itemWidthRatio: CGFloat = 0.5
+    /// Caps for iPad, where half of the width would be a 500pt tile next to a
+    /// one-line paragraph.
+    private static let maxItemWidth: CGFloat = 360
+    private static let maxTextWidth: CGFloat = 360
     private static let copies = 5
     private static let autoScrollDelay: Duration = .seconds(5)
     private static let slideAnimation = Animation.smooth(duration: 0.6)
@@ -28,7 +32,10 @@ struct AuthWelcomeView: View {
     var body: some View {
         GeometryReader { proxy in
             let width = proxy.size.width
-            let itemWidth = width * Self.itemWidthRatio
+            // shortcut: the scroll offset in points stops matching the page when this
+            // width changes (iPhone portrait to landscape), so the page can sit off
+            // centre until the next swipe. iPad holds one width, so it does not drift.
+            let itemWidth = min(width * Self.itemWidthRatio, Self.maxItemWidth)
             let margin = (width - itemWidth) / 2
 
             ScrollView(.horizontal) {
@@ -85,13 +92,15 @@ struct AuthWelcomeView: View {
 
     @ViewBuilder
     private func page(index: Int, pageWidth: CGFloat, width: CGFloat) -> some View {
+        let textWidth = min(width - 80, Self.maxTextWidth)
+
         if index == 0 {
             WelcomePageView(
                 title: Text("This is").font(Self.titleFont)
                     + Text(verbatim: " ").font(Self.titleFont)
                     + Text(verbatim: "Bloom").font(Self.nameFont),
                 subtitle: "End-to-End encrypted messenger with a seamless experience",
-                textWidth: width - 80,
+                textWidth: textWidth,
                 pageWidth: pageWidth,
                 tileDelay: 0,
                 appeared: appeared
@@ -108,7 +117,7 @@ struct AuthWelcomeView: View {
             WelcomePageView(
                 title: Text(feature.title).font(Self.titleFont),
                 subtitle: feature.subtitle,
-                textWidth: width - 80,
+                textWidth: textWidth,
                 pageWidth: pageWidth,
                 tileDelay: 0.08,
                 appeared: appeared
