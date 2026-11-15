@@ -28,11 +28,13 @@ struct WelcomePageView<Icon: View>: View {
                     // Cubic easing so the last few points of the swipe glide in instead of
                     // snapping the tile to its resting spot.
                     let eased = phase.value * phase.value * phase.value
+                    let distance = min(abs(phase.value), 1)
                     return content
                         .scaleEffect(1 - abs(eased) * 0.05)
                         .rotationEffect(.degrees(-eased * 10))
                         .offset(y: abs(eased) * 15)
-                        .opacity(1 - min(abs(phase.value), 1) * 0.45)
+                        .blur(radius: abs(eased) * 8)
+                        .opacity(1 - distance * 0.45)
                 }
                 .offset(y: appeared ? 0 : 16)
                 .opacity(appeared ? 1 : 0)
@@ -54,7 +56,7 @@ struct WelcomePageView<Icon: View>: View {
                 content
                     .offset(x: phase.value * 60)
                     // Only the centred copy is readable; the neighbours never bleed through.
-                    .opacity(abs(phase.value) < 0.05 ? 1 : 0)
+                    .opacity(phase.isIdentity ? 1 : 0)
             }
             .offset(y: appeared ? 0 : 16)
             .opacity(appeared ? 1 : 0)
