@@ -63,10 +63,12 @@ struct AuthWelcomeView: View {
             .scrollTargetBehavior(.viewAligned)
             .scrollIndicators(.hidden)
             .scrollPosition(id: $position)
-            // Jump as soon as the slider gets near an edge, not when the scroll stops:
-            // waiting for the idle phase let a swipe run out of copies first.
-            .onChange(of: position) { _, _ in
-                recenter()
+            // Pull the pool back only once the scroll has stopped. Doing it while the
+            // finger is down resets the offset mid-drag, which reads as a jerk back.
+            .onScrollPhaseChange { _, phase in
+                if phase == .idle {
+                    recenter()
+                }
             }
             .onAppear {
                 if position == nil {

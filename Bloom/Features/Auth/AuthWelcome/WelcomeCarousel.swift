@@ -36,12 +36,19 @@ struct WelcomeCarousel {
         item % pageCount
     }
 
-    /// The card to jump to once `item` has left the middle run, or `nil` while it is
-    /// still inside it. The target is the same page in the middle run.
+    /// How close to an edge of the pool the position may get before it is pulled back
+    /// to the middle run. One card: the outermost card has no neighbour on its outer
+    /// side, and jumping any earlier resets the scroll while the user is still dragging.
+    private static let edgeSlack = 1
+
+    /// The card to jump to once `item` has reached the edge of the pool, or `nil` while
+    /// it still has runway. The target is the same page in the middle run.
     func recenteredItem(forItem item: Int) -> Int? {
-        let first = startItem
-        let last = first + pageCount - 1
-        guard item < first || item > last else { return nil }
-        return first + pageIndex(forItem: item)
+        let nearStart = item <= Self.edgeSlack
+        let nearEnd = item >= poolCount - 1 - Self.edgeSlack
+        guard nearStart || nearEnd else { return nil }
+
+        let target = startItem + pageIndex(forItem: item)
+        return target == item ? nil : target
     }
 }

@@ -32,6 +32,22 @@ final class WelcomeCarouselUITests: XCTestCase {
         attachScreenshot(of: app, named: "welcome-after-one-advance")
     }
 
+    /// Swiping back from the logo used to pull the pool to its middle run while the
+    /// finger was still down, which showed up as a teleport and a jerk. The card before
+    /// the logo is the last feature, and reaching it must not move the pool.
+    func testSwipingBackFromTheLogoShowsTheLastPage() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-AppMode=mock"]
+        app.launch()
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
+        XCTAssertTrue(app.otherElements["welcomePage0"].waitForExistence(timeout: 5))
+
+        app.otherElements["welcomePage0"].swipeRight()
+
+        XCTAssertTrue(app.otherElements["welcomePage3"].waitForExistence(timeout: 5))
+        attachScreenshot(of: app, named: "welcome-back-from-logo")
+    }
+
     private func attachScreenshot(of app: XCUIApplication, named name: String) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name

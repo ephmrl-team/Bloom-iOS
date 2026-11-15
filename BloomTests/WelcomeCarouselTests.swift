@@ -31,20 +31,30 @@ struct WelcomeCarouselTests {
         #expect(Set(pages) == [0, 1, 2, 3])
     }
 
-    @Test("A card inside the middle run is not moved")
-    func middleRunIsStable() {
-        for item in 4..<8 {
+    @Test("A card away from the edges is not moved")
+    func innerCardsAreStable() {
+        for item in 2..<10 {
             #expect(carousel.recenteredItem(forItem: item) == nil)
         }
     }
 
+    @Test("Swiping back from the first page to the last one stays inside the pool")
+    func steppingBackFromTheStartDoesNotJump() {
+        // The logo is the first page; the card before it is the last feature. This is
+        // the gesture that used to teleport.
+        let previous = carousel.startItem - 1
+        #expect(carousel.pageIndex(forItem: previous) == 3)
+        #expect(carousel.recenteredItem(forItem: previous) == nil)
+    }
+
     @Test("A jump keeps the page and lands in the middle run")
     func jumpKeepsThePage() {
-        for item in 0..<carousel.poolCount where !(4..<8).contains(item) {
+        for item in 0..<carousel.poolCount {
             let target = carousel.recenteredItem(forItem: item)
-            let unwrapped = try? #require(target)
-            #expect(unwrapped.map(carousel.pageIndex(forItem:)) == carousel.pageIndex(forItem: item))
-            #expect(unwrapped.map { (4..<8).contains($0) } == true)
+            guard let target else { continue }
+
+            #expect(carousel.pageIndex(forItem: target) == carousel.pageIndex(forItem: item))
+            #expect((4..<8).contains(target))
         }
     }
 
@@ -54,6 +64,14 @@ struct WelcomeCarouselTests {
             let target = try #require(carousel.recenteredItem(forItem: item) ?? item)
             #expect(carousel.recenteredItem(forItem: target) == nil)
         }
+    }
+
+    @Test("Every card can be reached before the pool pulls back")
+    func allPagesAreReachable() {
+        let reached = (0..<carousel.poolCount)
+            .filter { carousel.recenteredItem(forItem: $0) == nil }
+            .map(carousel.pageIndex(forItem:))
+        #expect(Set(reached) == [0, 1, 2, 3])
     }
 
     @Test("There is a whole run of runway on both sides of the middle run")
