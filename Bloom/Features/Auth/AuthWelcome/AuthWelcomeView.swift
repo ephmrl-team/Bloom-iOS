@@ -46,8 +46,9 @@ struct AuthWelcomeView: View {
             .scrollTargetBehavior(.viewAligned)
             .scrollIndicators(.hidden)
             .scrollPosition(id: $position)
-            .onScrollPhaseChange { _, phase in
-                guard phase == .idle else { return }
+            // Jump as soon as the slider gets near an edge, not when the scroll stops:
+            // waiting for the idle phase let a swipe run out of copies first.
+            .onChange(of: position) { _, _ in
                 recenter()
             }
             .onAppear {
