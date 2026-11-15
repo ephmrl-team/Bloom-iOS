@@ -18,20 +18,14 @@ struct AuthWelcomeView: View {
     /// one-line paragraph.
     private static let maxItemWidth: CGFloat = 360
     private static let maxTextWidth: CGFloat = 360
-    private static let copies = 3
     private static let autoScrollDelay: Duration = .seconds(5)
     private static let slideAnimation = Animation.smooth(duration: 0.6)
 
     @State private var appeared = false
-    /// Starts empty on purpose: `scrollPosition` ignores the value the binding is
-    /// created with, so a preset index left the carousel sitting on the first copy —
-    /// the left neighbour missing — until something moved it. Setting it once on
-    /// appear is a real change and lands before the first frame.
-    @State private var position: Int?
-
-    private var carousel: WelcomeCarousel {
-        WelcomeCarousel(pageCount: WelcomeFeature.all.count + 1, copies: Self.copies)
-    }
+    @State private var carousel = WelcomeCarousel(pageCount: WelcomeFeature.all.count + 1)
+    /// Slot the scroll is on. Starts empty because `scrollPosition` ignores the value the
+    /// binding is created with; setting it once on appear is a real change.
+    @State private var slot: Int?
 
     var body: some View {
         GeometryReader { proxy in
@@ -43,18 +37,16 @@ struct AuthWelcomeView: View {
             let margin = (width - itemWidth) / 2
 
             ScrollView(.horizontal) {
-                // Eagerly built on purpose: a fast swipe must never reach a page that is
-                // not ready yet, and lazy rows arrive too late.
                 HStack(spacing: 0) {
-                    ForEach(0..<carousel.poolCount, id: \.self) { id in
-                        let page = carousel.pageIndex(forItem: id)
+                    ForEach(carousel.slots, id: \.self) { index in
+                        let page = carousel.pageIndex(forSlot: index)
                         pageView(index: page, pageWidth: itemWidth, width: width)
                             .frame(width: itemWidth)
                             .accessibilityElement(children: .contain)
                             .accessibilityIdentifier("welcomePage\(page)")
-                            // Only the centred copy is readable: the pool holds three of
-                            // every page, and a reader should not hear them all.
-                            .accessibilityHidden(id != position)
+                            // Only the centred page is readable; a reader should not
+                            // hear the peek cards as well.
+                            .accessibilityHidden(page != carousel.currentPage)
                     }
                 }
                 .scrollTargetLayout()
@@ -62,17 +54,17 @@ struct AuthWelcomeView: View {
             .contentMargins(.horizontal, margin, for: .scrollContent)
             .scrollTargetBehavior(.viewAligned)
             .scrollIndicators(.hidden)
-            .scrollPosition(id: $position)
-            // Pull the pool back only once the scroll has stopped. Doing it while the
-            // finger is down resets the offset mid-drag, which reads as a jerk back.
+            .scrollPosition(id: $slot)
+            // Shift the window once the scroll has stopped: doing it under the finger
+            // would move the cards the user is touching.
             .onScrollPhaseChange { _, phase in
                 if phase == .idle {
-                    recenter()
+                    settle()
                 }
             }
             .onAppear {
-                if position == nil {
-                    position = carousel.startItem
+                if slot == nil {
+                    slot = WelcomeCarousel.currentSlot
                 }
             }
         }
@@ -88,14 +80,15 @@ struct AuthWelcomeView: View {
         // Keyed on the page, so a swipe cancels the countdown and nothing fires in the
         // middle of a gesture. Reduce Motion and VoiceOver turn the carousel into a
         // plain slider: nothing moves unless the user moves it.
-        .task(id: reduceMotion || voiceOver ? nil : position) {
-            guard !reduceMotion, !voiceOver, let current = position else { return }
+        .task(id: reduceMotion || voiceOver ? nil : slot) {
+            guard !reduceMotion, !voiceOver, slot != nil else { return }
 
             try? await Task.sleep(for: Self.autoScrollDelay)
             guard !Task.isCancelled else { return }
 
+            // One card to the right; the window shifts when the scroll stops.
             withAnimation(Self.slideAnimation) {
-                self.position = current + 1
+                self.slot = WelcomeCarousel.currentSlot + 1
             }
         }
     }
@@ -136,17 +129,17 @@ struct AuthWelcomeView: View {
         }
     }
 
-    /// Keeps the slider endless by jumping by whole runs without animation.
-    ///
-    /// The jump lands on the same page in the middle run, so what is on screen does not
-    /// change — the copies are identical. `WelcomeCarousel` owns which index that is.
-    private func recenter() {
-        guard let position, let target = carousel.recenteredItem(forItem: position) else { return }
+    /// Shifts the window by the pages that were swiped, without animation and together
+    /// with the scroll position, so the cards on screen do not move at all: the slot the
+    /// scroll stopped on becomes the middle one and its page becomes the current page.
+    private func settle() {
+        guard let slot, slot != WelcomeCarousel.currentSlot else { return }
 
         var transaction = Transaction()
         transaction.animation = nil
         withTransaction(transaction) {
-            self.position = target
+            let target = carousel.settle(atSlot: slot)
+            self.slot = target
         }
     }
 

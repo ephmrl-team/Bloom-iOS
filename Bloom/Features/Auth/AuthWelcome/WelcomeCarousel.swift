@@ -3,52 +3,47 @@
 //  Bloom
 //
 
-/// Index math for the endless welcome carousel.
+/// The window the welcome carousel scrolls through.
 ///
-/// The pool is `copies` back-to-back runs of the pages and the middle run is the one on
-/// screen. Once the position leaves that run the pool jumps by whole runs to the same
-/// page in the middle, which looks like nothing happened because every run holds the same
-/// pages. Kept out of the view so the jumps can be checked without a screen.
+/// Three cards are in the scroll view at any moment: the current page and one on either
+/// side. When a swipe settles, the window shifts by the pages that were swiped and the
+/// current page returns to the middle slot, so the same three cards keep being reused
+/// instead of the scroll running to the end of a fixed pool. The cards under the finger
+/// do not move: the slot that was swiped into becomes the middle one, which is what makes
+/// the shift invisible.
 struct WelcomeCarousel {
+    /// Cards in the scroll view. More would be built and never seen.
+    static let windowSize = 3
+    /// Slot the current page sits in.
+    static let currentSlot = 1
+
     let pageCount: Int
-    let copies: Int
+    private(set) var currentPage: Int
 
-    init(pageCount: Int, copies: Int = 3) {
+    init(pageCount: Int, currentPage: Int = 0) {
         self.pageCount = max(pageCount, 1)
-        self.copies = max(copies, 3)
+        self.currentPage = ((currentPage % self.pageCount) + self.pageCount) % self.pageCount
     }
 
-    /// Cards in the scroll view. All of them are built eagerly, so this is what the
-    /// screen costs: three runs is the fewest that still leaves a whole run of runway on
-    /// either side of the middle one.
-    var poolCount: Int {
-        pageCount * copies
+    /// Slots of the window, left to right.
+    var slots: Range<Int> {
+        0..<Self.windowSize
     }
 
-    /// Where the carousel opens: the first page of the middle run, so both of its
-    /// neighbours exist and the left edge is never empty.
-    var startItem: Int {
-        pageCount * (copies / 2)
+    /// Which page a slot shows.
+    func pageIndex(forSlot slot: Int) -> Int {
+        wrap(currentPage + slot - Self.currentSlot)
     }
 
-    /// Which page a card shows.
-    func pageIndex(forItem item: Int) -> Int {
-        item % pageCount
+    /// Takes the slot the scroll came to rest on and returns the slot to hold from now
+    /// on. The window moves by the swiped distance, so the card the user swiped to
+    /// becomes the current one and everything on screen stays where it is.
+    mutating func settle(atSlot slot: Int) -> Int {
+        currentPage = wrap(currentPage + slot - Self.currentSlot)
+        return Self.currentSlot
     }
 
-    /// How close to an edge of the pool the position may get before it is pulled back
-    /// to the middle run. One card: the outermost card has no neighbour on its outer
-    /// side, and jumping any earlier resets the scroll while the user is still dragging.
-    private static let edgeSlack = 1
-
-    /// The card to jump to once `item` has reached the edge of the pool, or `nil` while
-    /// it still has runway. The target is the same page in the middle run.
-    func recenteredItem(forItem item: Int) -> Int? {
-        let nearStart = item <= Self.edgeSlack
-        let nearEnd = item >= poolCount - 1 - Self.edgeSlack
-        guard nearStart || nearEnd else { return nil }
-
-        let target = startItem + pageIndex(forItem: item)
-        return target == item ? nil : target
+    private func wrap(_ page: Int) -> Int {
+        ((page % pageCount) + pageCount) % pageCount
     }
 }
