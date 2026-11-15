@@ -17,6 +17,9 @@ struct WelcomePageView<Icon: View>: View {
     /// Delay of the tile entrance, so the side tiles follow the centred one.
     var tileDelay: Double = 0
     var appeared: Bool = true
+    /// Only the centred page blurs in. The neighbours already carry the carousel's
+    /// distance blur, and animating another blur on top of it made that blur flicker.
+    var blurIn: Bool = true
     @ViewBuilder var icon: Icon
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -48,7 +51,7 @@ struct WelcomePageView<Icon: View>: View {
                         .opacity(1 - Double(distance) * 0.35)
                 }
                 .offset(y: appeared ? 0 : 16)
-                .blur(radius: appeared ? 0 : 8)
+                .blur(radius: blurIn && !appeared ? 8 : 0)
                 .opacity(appeared ? 1 : 0)
                 .animation(.smooth(duration: 0.75).delay(tileDelay), value: appeared)
 
@@ -74,7 +77,7 @@ struct WelcomePageView<Icon: View>: View {
                     .opacity(1 - min(Double(abs(progress)) * 2, 1))
             }
             .offset(y: appeared ? 0 : 16)
-            .blur(radius: appeared ? 0 : 8)
+            .blur(radius: blurIn && !appeared ? 8 : 0)
             .opacity(appeared ? 1 : 0)
             .animation(.smooth(duration: 0.75).delay(0.14), value: appeared)
 

@@ -40,7 +40,12 @@ struct AuthWelcomeView: View {
                 HStack(spacing: 0) {
                     ForEach(carousel.slots, id: \.self) { index in
                         let page = carousel.pageIndex(forSlot: index)
-                        pageView(index: page, pageWidth: itemWidth, width: width)
+                        pageView(
+                            index: page,
+                            pageWidth: itemWidth,
+                            width: width,
+                            blurIn: index == carousel.currentSlot
+                        )
                             .frame(width: itemWidth)
                             .accessibilityElement(children: .contain)
                             // The centred page is the one a test can address; the peek
@@ -98,7 +103,7 @@ struct AuthWelcomeView: View {
     }
 
     @ViewBuilder
-    private func pageView(index: Int, pageWidth: CGFloat, width: CGFloat) -> some View {
+    private func pageView(index: Int, pageWidth: CGFloat, width: CGFloat, blurIn: Bool) -> some View {
         let textWidth = min(width - 80, Self.maxTextWidth)
 
         if index == 0 {
@@ -109,7 +114,8 @@ struct AuthWelcomeView: View {
                 textWidth: textWidth,
                 pageWidth: pageWidth,
                 tileDelay: 0,
-                appeared: appeared
+                appeared: appeared,
+                blurIn: blurIn
             ) {
                 Image("GiantLogo")
                     .resizable()
@@ -126,7 +132,8 @@ struct AuthWelcomeView: View {
                 textWidth: textWidth,
                 pageWidth: pageWidth,
                 tileDelay: 0.08,
-                appeared: appeared
+                appeared: appeared,
+                blurIn: blurIn
             ) {
                 WelcomeFeatureTile(feature: feature)
             }
