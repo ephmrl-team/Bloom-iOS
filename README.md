@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="https://github.com/user-attachments/assets/49b4898d-e443-4232-866b-17a18369dfaf" alt="Bloom Logo" width="150"/>
+  <img src="https://github.com/user-attachments/assets/e54561b6-0a13-4fbb-af9f-88e0ea252e42" alt="Bloom Logo" width="150"/>
   <br/>
 
   # Bloom
