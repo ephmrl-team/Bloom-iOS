@@ -25,8 +25,10 @@ struct WelcomePageView<Icon: View>: View {
             icon
                 .frame(width: 138, height: 138)
                 .scaleEffect(1 - distance * 0.08)
-                .rotation3DEffect(.degrees(Double(progress) * -12), axis: (0, 1, 0), perspective: 0.5)
-                .blur(radius: distance * 14)
+                .rotation3DEffect(.degrees(Double(progress) * -18), axis: (0, 1, 0), perspective: 0.5)
+                .rotationEffect(.degrees(Double(progress) * 10))
+                .offset(y: distance * 15)
+                .blur(radius: distance * 8)
                 .opacity(1 - Double(distance) * 0.5)
 
             VStack(spacing: Theme.spacing.sm) {
@@ -34,7 +36,7 @@ struct WelcomePageView<Icon: View>: View {
                     .multilineTextAlignment(.center)
 
                 Text(subtitle)
-                    .font(.system(.headline, design: .rounded, weight: .medium))
+                    .font(.system(size: 18, weight: .medium, design: .rounded))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }

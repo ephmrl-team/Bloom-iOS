@@ -28,7 +28,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Всегда под рукой"
+            "value": "Синхронизация"
           }
         }
       }
@@ -348,7 +348,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Удобное общение"
+            "value": "Общение"
           }
         }
       }
@@ -828,7 +828,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сквозное шифрование"
+            "value": "Шифрование"
           }
         }
       }

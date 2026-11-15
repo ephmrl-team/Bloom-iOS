@@ -125,6 +125,6 @@ struct AuthWelcomeView: View {
         }
     }
 
-    private static let titleFont = Font.system(.largeTitle, design: .rounded, weight: .semibold)
-    private static let nameFont = Font.system(.largeTitle, design: .rounded, weight: .black)
+    private static let titleFont = Font.system(size: 32, weight: .semibold, design: .rounded)
+    private static let nameFont = Font.system(size: 32, weight: .black, design: .rounded)
 }
