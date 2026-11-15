@@ -25,14 +25,12 @@ struct WelcomePageView<Icon: View>: View {
                 // Native scroll transition: the transform is driven by the scroll view,
                 // so the pages are rasterised once instead of rebuilding every frame.
                 .scrollTransition(.interactive, axis: .horizontal) { content, phase in
-                    let distance = abs(phase.value)
+                    let distance = min(abs(phase.value), 1)
                     return content
                         .scaleEffect(1 - distance * 0.05)
-                        .rotation3DEffect(.degrees(phase.value * 18), axis: (0, 1, 0), perspective: 0.5)
                         .rotationEffect(.degrees(-phase.value * 10))
                         .offset(y: distance * 15)
-                        .blur(radius: distance * 8)
-                        .opacity(1 - distance * 0.3)
+                        .opacity(1 - distance * 0.45)
                 }
                 .offset(y: appeared ? 0 : 16)
                 .opacity(appeared ? 1 : 0)
@@ -53,7 +51,8 @@ struct WelcomePageView<Icon: View>: View {
             .scrollTransition(.interactive, axis: .horizontal) { content, phase in
                 content
                     .offset(x: phase.value * 60)
-                    .opacity(1 - min(abs(phase.value) / 0.4, 1))
+                    // Only the centred copy is readable; the neighbours never bleed through.
+                    .opacity(abs(phase.value) < 0.05 ? 1 : 0)
             }
             .offset(y: appeared ? 0 : 16)
             .opacity(appeared ? 1 : 0)
@@ -80,8 +79,6 @@ struct WelcomeFeatureTile: View {
                     .shadow(color: .white.opacity(0.55), radius: 0.5, y: 1)
                     .shadow(color: .black.opacity(0.16), radius: 1.5, y: -0.5)
             }
-            // Rasterised once so scrolling and the side-tile blur do not redraw the gradient.
-            .drawingGroup()
             .shadow(color: .black.opacity(0.2), radius: 20, x: 4, y: 4)
             .accessibilityHidden(true)
     }
