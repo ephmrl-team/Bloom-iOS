@@ -10,6 +10,7 @@ import SwiftUI
 struct AuthMnemonicFooterView: View {
     let isEnabled: Bool
     let isLoading: Bool
+    var title: LocalizedStringKey = "Continue"
     let action: () -> Void
     
     @State private var isKeyboardVisible = false
@@ -22,7 +23,7 @@ struct AuthMnemonicFooterView: View {
                         ProgressView()
                             .tint(isEnabled ? .white : .primary)
                     }
-                    Text("Continue")
+                    Text(title)
                 }
                 .font(.system(.headline, design: .rounded, weight: .semibold))
                 .foregroundStyle(isEnabled ? .white : .primary)

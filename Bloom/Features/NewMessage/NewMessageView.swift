@@ -30,9 +30,12 @@ struct NewMessageView: View {
                         Button {
                             router.dismissModal()
                         } label: {
-                            Image(systemName: "xmark")
-                                .font(.headline)
-                                .foregroundColor(.primary)
+                            Image("x.mark")
+                                .renderingMode(.template)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 14, height: 14)
+                                .foregroundStyle(.primary)
                         }
                         .controlSize(.regular)
                         .accessibilityLabel("Close")

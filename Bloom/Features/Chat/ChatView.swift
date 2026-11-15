@@ -4,8 +4,6 @@
 //
 
 import SwiftUI
-import BlurSwiftUI
-import BlurUIKit
 
 struct ChatView: View {
     let chatId: Int
@@ -28,11 +26,10 @@ struct ChatView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ChatViewToolbar(chat: chat)
         }
-        .toolbarBackground(.hidden, for: .navigationBar)
-        .topVariableBlur()
         .bottomSafeAreaGradient()
         .task {
             guard store == nil else { return }

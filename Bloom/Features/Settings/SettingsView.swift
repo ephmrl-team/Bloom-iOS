@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SettingsView: View {
+    var allowsDismiss = true
+
     @Environment(Router.self) private var router
     @Environment(AppState.self) private var appState
     @Environment(BloomManager.self) private var bloomManager
@@ -18,7 +20,9 @@ struct SettingsView: View {
                 Button(role: .destructive) {
                     bloomManager.logout()
 
-                    router.dismissModal()
+                    if allowsDismiss {
+                        router.dismissModal()
+                    }
 
                     appState.logout()
                 } label: {
@@ -38,16 +42,21 @@ struct SettingsView: View {
                 Text(bloomManager.currentUser?.displayName ?? bloomManager.currentUser?.username ?? "Settings")
                     .font(.system(.headline, design: .rounded))
             }
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    router.dismissModal()
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.headline)
-                        .foregroundColor(.primary)
+            if allowsDismiss {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        router.dismissModal()
+                    } label: {
+                        Image("x.mark")
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 14, height: 14)
+                            .foregroundStyle(.primary)
+                    }
+                    .controlSize(.regular)
+                    .accessibilityLabel("Close")
                 }
-                .controlSize(.regular)
-                .accessibilityLabel("Close")
             }
         }
         .topVariableBlur()

@@ -6,16 +6,11 @@
 //
 
 import SwiftUI
-import BlurSwiftUI
-import BlurUIKit
 
 struct ChatListView: View {
-    var namespace: Namespace.ID
-    
     @Environment(Router.self) private var router
     @Environment(BloomManager.self) private var bloomManager
     @State private var searchText = ""
-    @State private var logoRotation: Double = 0
 
     private var visibleChats: [ChatResponse] {
         let query = searchText.trim().lowercased()
@@ -34,11 +29,7 @@ struct ChatListView: View {
             } else if !searchText.trim().isEmpty && bloomManager.hasLoadedChats {
                 ContentUnavailableView.search(text: searchText)
             } else if bloomManager.hasLoadedChats {
-                ContentUnavailableView(
-                    "No chats yet",
-                    systemImage: "bubble.left.and.bubble.right",
-                    description: Text("Tap the compose button to start one.")
-                )
+                emptyState
             } else {
                 ProgressView()
             }
@@ -46,13 +37,11 @@ struct ChatListView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .searchable(text: $searchText)
-        .toolbarBackground(.hidden, for: .bottomBar)
-        .toolbarBackground(.hidden, for: .navigationBar)
+        .searchToolbarBehavior(.minimize)
         .toolbar {
-            ChatListToolbar(logoRotation: logoRotation)
+            ChatListToolbar()
         }
         .topVariableBlur()
-        .bottomSafeAreaGradient()
     }
 
     private var chats: some View {
@@ -66,12 +55,27 @@ struct ChatListView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .onScrollGeometryChange(for: Double.self) { geometry in
-            max(0, -(geometry.contentOffset.y + geometry.contentInsets.top) / 3)
-        } action: { _, newValue in
-            logoRotation = newValue
-        }
         .scrollDismissesKeyboard(.immediately)
         .scrollEdgeEffectHidden(true, for: .all)
+    }
+
+    private var emptyState: some View {
+        ContentUnavailableView {
+            VStack(spacing: Theme.spacing.md) {
+                Text("🥲")
+                    .font(.system(size: 64))
+
+                Text("No chats here yet.")
+                    .font(.system(.title2, design: .rounded, weight: .bold))
+            }
+        } description: {
+            Text("Start a chat: tap the button below → add or select a friend.")
+        } actions: {
+            Button("Start a new chat") {
+                router.presentModal(.newMessage)
+            }
+            .buttonStyle(.glassProminent)
+            .tint(Theme.colors.primary)
+        }
     }
 }

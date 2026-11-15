@@ -7,65 +7,42 @@
 
 import SwiftUI
 
-
 struct ChatListToolbar: ToolbarContent {
-    let logoRotation: Double
-    
     @Environment(Router.self) private var router
-    @Environment(BloomManager.self) private var bloomManager
-    
+
     @ToolbarContentBuilder
     var body: some ToolbarContent {
         ToolbarItem(placement: .principal) {
             HStack(spacing: Theme.spacing.sm) {
-                        Image("Logo")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 19, height: 19)
-                            .rotationEffect(.degrees(logoRotation))
+                toolbarIcon("logo")
+                    .foregroundStyle(Theme.colors.primary)
 
-                        Text("Bloom")
-                            .foregroundColor(.primary)
-                            .font(.system(.headline, design: .rounded, weight: .bold))
-                    }
-                    .fixedSize(horizontal: true, vertical: false)
-        }
-        
-        ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                router.presentModal(.settings)
-            } label: {
-                AvatarView(
-                    size: .md,
-                    square: false,
-                    id: bloomManager.currentUser?.id ?? "",
-                    name: bloomManager.currentUser?.displayName ?? bloomManager.currentUser?.username ?? "You"
-                )
+                Text("Chats")
+                    .font(.system(.headline, design: .rounded, weight: .bold))
             }
-            .buttonStyle(.plain)
-            .controlSize(.regular)
-            .accessibilityLabel("Settings")
-            .accessibilityIdentifier("settingsButton")
-            .glassEffect(.regular.interactive())
+            .fixedSize(horizontal: true, vertical: false)
         }
-        .sharedBackgroundVisibility(.hidden)
 
-        DefaultToolbarItem(kind: .search, placement: .bottomBar)
-
-        ToolbarSpacer(.fixed, placement: .bottomBar)
-
-        ToolbarItem(placement: .bottomBar) {
+        ToolbarItem(placement: .topBarTrailing) {
             Button {
                 router.presentModal(.newMessage)
             } label: {
-                Image(systemName: "square.and.pencil")
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                toolbarIcon("square.and.pencil")
+                    .foregroundStyle(.white)
             }
-            .controlSize(.large)
+            .buttonStyle(.glassProminent)
+            .tint(Theme.colors.primary)
             .accessibilityLabel("New message")
             .accessibilityIdentifier("newMessageButton")
             .heroTransitionSource(id: "newMessageButton")
         }
+    }
+
+    private func toolbarIcon(_ name: String) -> some View {
+        Image(name)
+            .renderingMode(.template)
+            .resizable()
+            .scaledToFit()
+            .frame(width: 18, height: 18)
     }
 }

@@ -46,9 +46,13 @@ struct AuthWelcomeFooterView: View {
                         ProgressView()
                             .tint(.white)
                     } else {
-                        Image(systemName: "key.fill")
+                        Image("cloud")
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
                     }
-                    Text(String(localized: "Continue"))
+                    Text("Continue")
                 }
                 .font(.system(.headline, design: .rounded, weight: .semibold))
                 .foregroundStyle(.white)
@@ -70,7 +74,15 @@ struct AuthWelcomeFooterView: View {
             .animation(.smooth(duration: 0.75).delay(0.24), value: appeared)
 
             NavigationLink(value: AuthRoute.mnemonic) {
-                Label("Continue with mnemonic", systemImage: "key.fill")
+                Label {
+                    Text("Continue with mnemonic")
+                } icon: {
+                    Image("key")
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 16, height: 16)
+                }
                     .font(.system(.headline, design: .rounded, weight: .semibold))
                     .foregroundStyle(.foreground)
             }

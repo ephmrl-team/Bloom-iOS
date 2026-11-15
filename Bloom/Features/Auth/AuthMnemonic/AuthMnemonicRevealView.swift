@@ -9,8 +9,7 @@ struct AuthMnemonicRevealView: View {
     let phrase: String
     @Binding var path: NavigationPath
 
-    @Environment(\.scenePhase) private var scenePhase
-    @State private var isRevealed = false
+    @State private var isQuizPresented = false
 
     private var words: [String] {
         phrase.split(separator: " ").map(String.init)
@@ -20,31 +19,26 @@ struct AuthMnemonicRevealView: View {
         ScrollView {
             VStack(spacing: Theme.spacing.xxl) {
                 VStack(spacing: Theme.spacing.md - 2) {
-                    Text("Save your recovery phrase")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                    Text("Remember phrase")
+                        .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                        .multilineTextAlignment(.center)
 
-                    Text("These 12 words are the only way to restore your account. Write them down and keep them offline.")
+                    Text("Save your seed phrase to recover your account if needed.")
                         .font(.system(.headline, design: .rounded, weight: .medium))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, Theme.spacing.xxl)
 
-                MnemonicWordsGrid(words: words, isRevealed: isRevealed)
-
-                Button(isRevealed ? "Hide words" : "Show words") {
-                    isRevealed.toggle()
-                }
-                .buttonStyle(.bordered)
-                .accessibilityIdentifier("togglePhraseButton")
+                MnemonicWordsGrid(words: words)
             }
             .padding(.horizontal, 36)
             .padding(.bottom, Theme.spacing.xxl)
         }
         .scrollIndicators(.hidden)
         .safeAreaInset(edge: .bottom) {
-            AuthMnemonicFooterView(isEnabled: isRevealed, isLoading: false) {
-                path.append(AuthRoute.mnemonicReview(phrase))
+            AuthMnemonicFooterView(isEnabled: true, isLoading: false, title: "Test Yourself") {
+                isQuizPresented = true
             }
         }
         .toolbarBackground(.hidden, for: .navigationBar)
@@ -52,20 +46,20 @@ struct AuthMnemonicRevealView: View {
         .topVariableBlur()
         .ignoresSafeArea(.container, edges: .bottom)
         .hidesSensitiveContent()
-        .onDisappear {
-            isRevealed = false
-        }
-        .onChange(of: scenePhase) { _, phase in
-            if phase != .active {
-                isRevealed = false
+        .sheet(isPresented: $isQuizPresented) {
+            AuthMnemonicQuizView(phrase: phrase) {
+                isQuizPresented = false
+                path.append(AuthRoute.success)
             }
+            .presentationDetents([.medium])
+            .presentationDragIndicator(.hidden)
+            .presentationBackground(Color(.systemBackground))
         }
     }
 }
 
 private struct MnemonicWordsGrid: View {
     let words: [String]
-    let isRevealed: Bool
 
     private let columns = [
         GridItem(.flexible(), spacing: Theme.spacing.md),
@@ -76,16 +70,15 @@ private struct MnemonicWordsGrid: View {
         LazyVGrid(columns: columns, spacing: Theme.spacing.md) {
             ForEach(Array(words.enumerated()), id: \.offset) { index, word in
                 HStack(spacing: Theme.spacing.sm) {
-                    Text("\(index + 1)")
-                        .font(.system(.subheadline, design: .rounded, weight: .semibold))
-                        .foregroundStyle(.secondary)
-
-                    Text(isRevealed ? word : "•••••")
+                    Text(word)
                         .font(.system(.headline, design: .rounded, weight: .medium))
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
 
                     Spacer(minLength: 0)
+
+                    Text("\(index + 1)")
+                        .font(.system(.title3, design: .rounded, weight: .semibold))
                 }
                 .padding(.horizontal, Theme.spacing.lg)
                 .frame(height: 48)
