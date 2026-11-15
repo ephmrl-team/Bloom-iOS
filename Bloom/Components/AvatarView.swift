@@ -55,7 +55,7 @@ struct AvatarView: View {
             }
         }
         .frame(width: dimension, height: dimension)
-        .cornerRadius(square ? 0 : dimension / 2)
+        .clipShape(square ? AnyShape(Rectangle()) : AnyShape(Circle()))
     }
     
     private var defaultAvatarView: some View {
