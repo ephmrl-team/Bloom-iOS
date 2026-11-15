@@ -107,6 +107,7 @@ struct AuthWelcomeView: View {
                     .resizable()
                     .scaledToFit()
                     .clipShape(RoundedRectangle(cornerRadius: 36))
+                    .compositingGroup()
                     .shadow(color: .black.opacity(0.2), radius: 20, x: 4, y: 4)
             }
         } else {
@@ -143,6 +144,6 @@ struct AuthWelcomeView: View {
         }
     }
 
-    private static let titleFont = Font.system(size: 30, weight: .semibold, design: .rounded)
-    private static let nameFont = Font.system(size: 30, weight: .black, design: .rounded)
+    private static let titleFont = Font.system(size: 32, weight: .semibold, design: .rounded)
+    private static let nameFont = Font.system(size: 32, weight: .black, design: .rounded)
 }

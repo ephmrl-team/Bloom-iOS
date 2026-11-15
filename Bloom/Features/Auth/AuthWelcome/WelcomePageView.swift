@@ -22,11 +22,20 @@ struct WelcomePageView<Icon: View>: View {
     }
 
     private var scale: CGFloat {
-        (1 - distance * 0.05) * (appeared ? 1 : 0.92)
+        1 - distance * 0.05
     }
 
+    /// Same entrance as the buttons in the footer: a short rise with a blur fade.
     private var appearOffset: CGFloat {
-        appeared || reduceMotion ? 0 : 24
+        appeared || reduceMotion ? 0 : 16
+    }
+
+    private var appearBlur: CGFloat {
+        appeared || reduceMotion ? 0 : 8
+    }
+
+    private var appearAnimation: Animation? {
+        reduceMotion ? nil : .smooth(duration: 0.75)
     }
 
     private var tileOpacity: Double {
@@ -35,10 +44,6 @@ struct WelcomePageView<Icon: View>: View {
 
     private var textOpacity: Double {
         (1 - Double(min(abs(progress) * 2, 1))) * (appeared ? 1 : 0)
-    }
-
-    private var appearAnimation: Animation? {
-        reduceMotion ? nil : .smooth(duration: 0.55)
     }
 
     var body: some View {
@@ -51,9 +56,9 @@ struct WelcomePageView<Icon: View>: View {
                 .rotation3DEffect(.degrees(Double(progress) * -18), axis: (0, 1, 0), perspective: 0.5)
                 .rotationEffect(.degrees(Double(progress) * 10))
                 .offset(y: distance * 15 + appearOffset)
-                .blur(radius: distance * 8)
+                .blur(radius: distance * 8 + appearBlur)
                 .opacity(tileOpacity)
-                .animation(appearAnimation, value: appeared)
+                .animation(appearAnimation?.delay(0.12), value: appeared)
 
             VStack(spacing: Theme.spacing.sm) {
                 title
@@ -66,9 +71,10 @@ struct WelcomePageView<Icon: View>: View {
             }
             .frame(width: textWidth)
             // The copy clears out sooner than the tile it belongs to.
-            .offset(x: -progress * 60, y: appearOffset * 0.6)
+            .offset(x: -progress * 60, y: appearOffset)
+            .blur(radius: appearBlur)
             .opacity(textOpacity)
-            .animation(appearAnimation?.delay(0.08), value: appeared)
+            .animation(appearAnimation?.delay(0.24), value: appeared)
 
             Spacer()
         }
@@ -91,6 +97,8 @@ struct WelcomeFeatureTile: View {
                     .shadow(color: .white.opacity(0.55), radius: 0.5, y: 1)
                     .shadow(color: .black.opacity(0.16), radius: 1.5, y: -0.5)
             }
+            // Rasterised once so scrolling and the side-tile blur do not redraw the gradient.
+            .drawingGroup()
             .shadow(color: .black.opacity(0.2), radius: 20, x: 4, y: 4)
             .accessibilityHidden(true)
     }
