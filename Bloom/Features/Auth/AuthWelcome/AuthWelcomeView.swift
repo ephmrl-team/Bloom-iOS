@@ -18,15 +18,19 @@ struct AuthWelcomeView: View {
     /// one-line paragraph.
     private static let maxItemWidth: CGFloat = 360
     private static let maxTextWidth: CGFloat = 360
-    private static let copies = 5
+    private static let copies = 3
     private static let autoScrollDelay: Duration = .seconds(5)
     private static let slideAnimation = Animation.smooth(duration: 0.6)
 
     @State private var appeared = false
-    @State private var position: Int? = (WelcomeFeature.all.count + 1) * 2
+    /// Starts empty on purpose: `scrollPosition` ignores the value the binding is
+    /// created with, so a preset index left the carousel sitting on the first copy —
+    /// the left neighbour missing — until something moved it. Setting it once on
+    /// appear is a real change and lands before the first frame.
+    @State private var position: Int?
 
-    private var pageCount: Int {
-        WelcomeFeature.all.count + 1
+    private var carousel: WelcomeCarousel {
+        WelcomeCarousel(pageCount: WelcomeFeature.all.count + 1, copies: Self.copies)
     }
 
     var body: some View {
@@ -40,13 +44,15 @@ struct AuthWelcomeView: View {
 
             ScrollView(.horizontal) {
                 // Eagerly built on purpose: a fast swipe must never reach a page that is
-                // not ready yet, and lazy rows arrive too late. The pool is wide enough
-                // that the endless jump back to the middle copy is rare.
+                // not ready yet, and lazy rows arrive too late.
                 HStack(spacing: 0) {
-                    ForEach(0..<(pageCount * Self.copies), id: \.self) { id in
-                        page(index: id % pageCount, pageWidth: itemWidth, width: width)
+                    ForEach(0..<carousel.poolCount, id: \.self) { id in
+                        let page = carousel.pageIndex(forItem: id)
+                        pageView(index: page, pageWidth: itemWidth, width: width)
                             .frame(width: itemWidth)
-                            // Only the centred copy is readable: the pool holds five of
+                            .accessibilityElement(children: .contain)
+                            .accessibilityIdentifier("welcomePage\(page)")
+                            // Only the centred copy is readable: the pool holds three of
                             // every page, and a reader should not hear them all.
                             .accessibilityHidden(id != position)
                     }
@@ -63,7 +69,9 @@ struct AuthWelcomeView: View {
                 recenter()
             }
             .onAppear {
-                position = pageCount * 2
+                if position == nil {
+                    position = carousel.startItem
+                }
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -91,7 +99,7 @@ struct AuthWelcomeView: View {
     }
 
     @ViewBuilder
-    private func page(index: Int, pageWidth: CGFloat, width: CGFloat) -> some View {
+    private func pageView(index: Int, pageWidth: CGFloat, width: CGFloat) -> some View {
         let textWidth = min(width - 80, Self.maxTextWidth)
 
         if index == 0 {
@@ -125,26 +133,12 @@ struct AuthWelcomeView: View {
         }
     }
 
-    /// Keeps the slider endless by jumping by whole copies without animation.
+    /// Keeps the slider endless by jumping by whole runs without animation.
     ///
-    /// The window is two copies wide and every jump is one copy, so a jump always
-    /// lands in the middle copy and cannot trigger the opposite jump on the next
-    /// phase change (a one-copy window bounced between two indices forever). It also
-    /// leaves five cards of runway at either end, so the copies ahead of the swipe are
-    /// always ready before the slider reaches the edge of the pool.
+    /// The jump lands on the same page in the middle run, so what is on screen does not
+    /// change — the copies are identical. `WelcomeCarousel` owns which index that is.
     private func recenter() {
-        guard let position else { return }
-
-        let shift = pageCount * 2
-        let cushion = pageCount + 1
-        let target: Int?
-        if position < cushion {
-            target = position + shift
-        } else if position >= pageCount * Self.copies - cushion {
-            target = position - shift
-        } else {
-            return
-        }
+        guard let position, let target = carousel.recenteredItem(forItem: position) else { return }
 
         var transaction = Transaction()
         transaction.animation = nil
