@@ -353,12 +353,12 @@
         }
       }
     },
-    "End-to-end encrypted messenger with seamless experience": {
+    "End-to-End encrypted messenger with a seamless experience": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "End-to-end encrypted messenger with seamless experience"
+            "value": "End-to-End encrypted messenger with a seamless experience"
           }
         },
         "ru": {

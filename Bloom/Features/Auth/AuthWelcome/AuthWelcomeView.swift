@@ -118,15 +118,18 @@ struct AuthWelcomeView: View {
     ///
     /// The window is two copies wide and every jump is one copy, so a jump always
     /// lands in the middle copy and cannot trigger the opposite jump on the next
-    /// phase change (a one-copy window bounced between two indices forever).
+    /// phase change (a one-copy window bounced between two indices forever). It also
+    /// leaves five cards of runway at either end, so the copies ahead of the swipe are
+    /// always ready before the slider reaches the edge of the pool.
     private func recenter() {
         guard let position else { return }
 
         let shift = pageCount * 2
+        let cushion = pageCount + 1
         let target: Int?
-        if position < pageCount {
+        if position < cushion {
             target = position + shift
-        } else if position >= pageCount * 4 {
+        } else if position >= pageCount * Self.copies - cushion {
             target = position - shift
         } else {
             return
