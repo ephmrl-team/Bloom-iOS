@@ -38,19 +38,26 @@ final class BloomManager {
         startup = .starting
         do {
             try backend.initialize()
-            if let data = try backend.restoreSession() {
-                do {
-                    let user = try JSONDecoder.bloomDecoder.decode(User.self, from: data)
-                    hasRestoredSession = true
-                    setupSession(user: user)
-                } catch {
-                    Logger.bloom.error("restored session decode failed: \(error, privacy: .public)")
-                }
-            }
-            startup = .ready
         } catch {
             Logger.bloom.error("backend failed to start: \(error, privacy: .public)")
             startup = .failed
+            return
+        }
+
+        restoreSession()
+        startup = .ready
+    }
+
+    /// A missing or expired session is a normal state: the app opens on the welcome screen.
+    private func restoreSession() {
+        guard let data = try? backend.restoreSession() else { return }
+
+        do {
+            let user = try JSONDecoder.bloomDecoder.decode(User.self, from: data)
+            hasRestoredSession = true
+            setupSession(user: user)
+        } catch {
+            Logger.bloom.error("restored session decode failed: \(error, privacy: .public)")
         }
     }
 

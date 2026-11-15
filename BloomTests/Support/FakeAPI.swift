@@ -15,6 +15,7 @@ final class FakeAPI: BloomAPI {
 
     var initializeError: Error?
     var restoreData: Data?
+    var restoreError: Error?
     var registerResult: (recoveryPhrase: String?, userJSON: Data)?
     var loginData: Data?
     var messagesData: Data?
@@ -39,7 +40,10 @@ final class FakeAPI: BloomAPI {
         if let initializeError { throw initializeError }
     }
 
-    func restoreSession() throws -> Data? { restoreData }
+    func restoreSession() throws -> Data? {
+        if let restoreError { throw restoreError }
+        return restoreData
+    }
 
     func register() async throws -> (recoveryPhrase: String?, userJSON: Data) {
         guard let registerResult else { throw StubError() }

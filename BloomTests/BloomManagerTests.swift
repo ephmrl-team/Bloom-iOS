@@ -42,6 +42,17 @@ struct BloomManagerTests {
         #expect(api.userUpdateStartCount == 1)
     }
 
+    @Test("Starts without a saved session")
+    func startsWithoutSession() async {
+        let api = FakeAPI()
+        api.restoreError = StubError()
+        let manager = BloomManager(backend: api)
+
+        #expect(await eventually { manager.startup == .ready })
+        #expect(manager.hasRestoredSession == false)
+        #expect(manager.currentUser == nil)
+    }
+
     @Test("Ignores a session payload it cannot decode")
     func ignoresBrokenSession() async {
         let api = FakeAPI()
