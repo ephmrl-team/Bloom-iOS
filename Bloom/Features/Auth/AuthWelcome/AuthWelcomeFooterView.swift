@@ -33,7 +33,12 @@ struct AuthWelcomeFooterView: View {
                         failure = .registration
                         isFailurePresented = true
                     } else {
-                        appState.authenticate()
+                        task?.cancel()
+                        task = Task {
+                            // Mock starts without a session, so sign in before entering the app.
+                            _ = await bloomManager.loginUser(recoveryKey: MockData.mnemonic)
+                            appState.authenticate()
+                        }
                     }
                     return
                 }
