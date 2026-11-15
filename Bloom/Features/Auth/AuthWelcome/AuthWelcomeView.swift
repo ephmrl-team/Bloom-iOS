@@ -29,8 +29,8 @@ struct AuthWelcomeView: View {
                         .scaledToFit()
                         .rotationEffect(.degrees(rotation))
                         .frame(width: 128, height: 128)
-                        .background(.foreground)
                         .clipShape(RoundedRectangle(cornerRadius: 32))
+                        .accessibilityHidden(true)
                 }
                 .buttonStyle(ScaleButtonStyle(appeared: appeared))
                 .opacity(appeared ? 1 : 0)
