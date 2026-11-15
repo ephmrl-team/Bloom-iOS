@@ -43,7 +43,11 @@ struct AuthWelcomeView: View {
                         pageView(index: page, pageWidth: itemWidth, width: width)
                             .frame(width: itemWidth)
                             .accessibilityElement(children: .contain)
-                            .accessibilityIdentifier("welcomePage\(page)")
+                            // The centred page is the one a test can address; the peek
+                            // cards repeat pages, so they get their slot instead.
+                            .accessibilityIdentifier(
+                                index == carousel.currentSlot ? "welcomePage\(page)" : "welcomeSlot\(index)"
+                            )
                             // Only the centred page is readable; a reader should not
                             // hear the peek cards as well.
                             .accessibilityHidden(page != carousel.currentPage)
@@ -64,7 +68,7 @@ struct AuthWelcomeView: View {
             }
             .onAppear {
                 if slot == nil {
-                    slot = WelcomeCarousel.currentSlot
+                    slot = WelcomeCarousel.middleSlot
                 }
             }
         }
@@ -88,7 +92,7 @@ struct AuthWelcomeView: View {
 
             // One card to the right; the window shifts when the scroll stops.
             withAnimation(Self.slideAnimation) {
-                self.slot = WelcomeCarousel.currentSlot + 1
+                self.slot = min((slot ?? WelcomeCarousel.middleSlot) + 1, WelcomeCarousel.windowSize - 1)
             }
         }
     }
@@ -129,17 +133,18 @@ struct AuthWelcomeView: View {
         }
     }
 
-    /// Shifts the window by the pages that were swiped, without animation and together
-    /// with the scroll position, so the cards on screen do not move at all: the slot the
-    /// scroll stopped on becomes the middle one and its page becomes the current page.
+    /// Shifts the window when the swipe stopped near an end, without animation and in
+    /// the same update as the scroll position, so the cards on screen do not move: the
+    /// current page goes back to the middle slot and the scroll follows it exactly.
     private func settle() {
-        guard let slot, slot != WelcomeCarousel.currentSlot else { return }
+        guard let slot else { return }
 
-        var transaction = Transaction()
-        transaction.animation = nil
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
         withTransaction(transaction) {
-            let target = carousel.settle(atSlot: slot)
-            self.slot = target
+            if let target = carousel.settle(atSlot: slot) {
+                self.slot = target
+            }
         }
     }
 
