@@ -59,7 +59,7 @@ struct WelcomePageView<Icon: View>: View {
                     .multilineTextAlignment(.center)
 
                 Text(subtitle)
-                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }

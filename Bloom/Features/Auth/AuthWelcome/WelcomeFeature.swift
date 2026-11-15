@@ -34,7 +34,7 @@ struct WelcomeFeature: Identifiable {
         WelcomeFeature(
             id: "encryption",
             title: "Seamless encryption",
-            subtitle: "Messages are encrypted on your device, so only you can read them",
+            subtitle: "Only you can read your messages",
             icon: "key",
             hue: 0.35,
             saturation: 0.5,

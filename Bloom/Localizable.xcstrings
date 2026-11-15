@@ -513,18 +513,18 @@
         }
       }
     },
-    "Messages are encrypted on your device, so only you can read them": {
+    "Only you can read your messages": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Messages are encrypted on your device, so only you can read them"
+            "value": "Only you can read your messages"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сообщения шифруются на устройстве — прочитать их можете только вы"
+            "value": "Только вы можете прочитать свои сообщения"
           }
         }
       }
