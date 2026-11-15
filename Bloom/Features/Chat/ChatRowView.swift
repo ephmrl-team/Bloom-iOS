@@ -94,20 +94,20 @@ struct ChatRowView: View, Equatable {
 
     private var contextMenuActions: [ContextMenuAction] {
         var actions: [ContextMenuAction] = [
-            ContextMenuAction(title: "Копировать", systemImage: "doc.on.doc") {
+            ContextMenuAction(title: String(localized: "Copy"), systemImage: "doc.on.doc") {
                 onCopy(item.id)
             },
-            ContextMenuAction(title: "Ответить", systemImage: "arrowshape.turn.up.left") {
+            ContextMenuAction(title: String(localized: "Reply"), systemImage: "arrowshape.turn.up.left") {
                 onReply(item.id)
             },
-            ContextMenuAction(title: "Переслать", systemImage: "arrowshape.turn.up.right") {
+            ContextMenuAction(title: String(localized: "Forward"), systemImage: "arrowshape.turn.up.right") {
                 onForward(item.id)
             }
         ]
 
         if item.me {
             actions.append(
-                ContextMenuAction(title: "Удалить", systemImage: "trash", isDestructive: true) {
+                ContextMenuAction(title: String(localized: "Delete"), systemImage: "trash", isDestructive: true) {
                     onDelete(item.id)
                 }
             )

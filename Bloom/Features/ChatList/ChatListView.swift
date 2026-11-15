@@ -17,10 +17,22 @@ struct ChatListView: View {
     @State private var searchText = ""
     @State private var logoRotation: Double = 0
 
+    private var visibleChats: [ChatResponse] {
+        let query = searchText.trim().lowercased()
+        guard !query.isEmpty else { return bloomManager.conversations }
+
+        return bloomManager.conversations.filter { chat in
+            let name = chat.recipient?.displayName ?? chat.recipient?.username ?? chat.title ?? ""
+            return name.lowercased().contains(query)
+        }
+    }
+
     var body: some View {
         Group {
-            if !bloomManager.conversations.isEmpty {
+            if !visibleChats.isEmpty {
                 chats
+            } else if !searchText.trim().isEmpty && bloomManager.hasLoadedChats {
+                ContentUnavailableView.search(text: searchText)
             } else if bloomManager.hasLoadedChats {
                 ContentUnavailableView(
                     "No chats yet",
@@ -45,7 +57,7 @@ struct ChatListView: View {
 
     private var chats: some View {
         List {
-            ForEach(bloomManager.conversations, id: \.id) { chat in
+            ForEach(visibleChats, id: \.id) { chat in
                 ChatsListRowView(chat: chat)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)

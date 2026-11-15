@@ -47,9 +47,21 @@ struct SettingsView: View {
                         .foregroundColor(.primary)
                 }
                 .controlSize(.regular)
+                .accessibilityLabel("Close")
             }
         }
         .topVariableBlur()
         .bottomSafeAreaGradient()
     }
 }
+
+#if DEBUG
+#Preview {
+    NavigationStack {
+        SettingsView()
+    }
+    .environment(Router())
+    .environment(AppState())
+    .environment(BloomManager(backend: MockAPI()))
+}
+#endif

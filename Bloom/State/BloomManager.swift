@@ -84,14 +84,9 @@ final class BloomManager {
         backend.savedRecoveryKey() != nil
     }
 
-    func searchUsers(_ query: String) async -> [User] {
-        do {
-            let payload = try await backend.searchUsers(query: query)
-            return try JSONDecoder.bloomDecoder.decode([User].self, from: payload)
-        } catch {
-            Logger.bloom.error("user search failed: \(error, privacy: .public)")
-            return []
-        }
+    func searchUsers(_ query: String) async throws -> [User] {
+        let payload = try await backend.searchUsers(query: query)
+        return try JSONDecoder.bloomDecoder.decode([User].self, from: payload)
     }
 
     func user(id: String) async -> User? {

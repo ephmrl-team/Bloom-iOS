@@ -173,18 +173,20 @@ struct BloomManagerTests {
         #expect(manager.conversations.isEmpty)
     }
 
-    @Test("Searches users and reports an empty list on failure")
-    func searchesUsers() async {
+    @Test("Searches users and propagates failures")
+    func searchesUsers() async throws {
         let api = FakeAPI()
         api.searchResult = .success(try! JSONEncoder.bloomEncoder.encode([Fixtures.user("user_1")]))
         let manager = BloomManager(backend: api)
 
-        let found = await manager.searchUsers("ann")
+        let found = try await manager.searchUsers("ann")
         #expect(found.map(\.id) == ["user_1"])
         #expect(api.searchQueries == ["ann"])
 
         api.searchResult = .failure(StubError())
-        #expect(await manager.searchUsers("ann").isEmpty)
+        await #expect(throws: StubError.self) {
+            try await manager.searchUsers("ann")
+        }
     }
 
     @Test("Logs out and clears every trace of the session")

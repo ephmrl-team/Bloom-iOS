@@ -10,6 +10,11 @@ import SwiftUI
 struct RootView: View {
     @Environment(AppState.self) private var appState
     @Environment(BloomManager.self) private var bloomManager
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var rootTransition: AnyTransition {
+        reduceMotion ? .opacity : .opacity.combined(with: .blur(radius: 10))
+    }
 
     var body: some View {
         ZStack {
@@ -36,17 +41,11 @@ struct RootView: View {
         switch appState.root {
         case .auth:
             AuthFlow()
-                .transition(
-                    .opacity
-                        .combined(with: .blur(radius: 10))
-                )
+                .transition(rootTransition)
 
         case .main:
             ContentView()
-                .transition(
-                    .opacity
-                        .combined(with: .blur(radius: 10))
-                )
+                .transition(rootTransition)
         }
     }
 }

@@ -46,9 +46,9 @@ struct AuthWelcomeFooterView: View {
                         ProgressView()
                             .tint(.white)
                     } else {
-                        Image(systemName: "icloud.fill")
+                        Image(systemName: "key.fill")
                     }
-                    Text("Continue with iCloud")
+                    Text(String(localized: "Continue"))
                 }
                 .font(.system(.headline, design: .rounded, weight: .semibold))
                 .foregroundStyle(.white)

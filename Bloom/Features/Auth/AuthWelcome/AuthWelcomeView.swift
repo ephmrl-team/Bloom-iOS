@@ -41,7 +41,7 @@ struct AuthWelcomeView: View {
                         Text("Bloom")
                             .fontWeight(.black)
                     }
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .font(.system(.largeTitle, design: .rounded, weight: .bold))
                     .opacity(appeared ? 1 : 0)
                     .offset(y: appeared ? 0 : 16)
                     .blur(radius: appeared ? 0 : 8)
