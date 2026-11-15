@@ -14,6 +14,7 @@ struct AuthWelcomeFooterView: View {
     @Environment(AppState.self) private var appState
     
     @State private var isLoading = false
+    @State private var task: Task<Void, Never>?
     @State private var failure: Failure?
     @State private var isFailurePresented = false
 
@@ -38,31 +39,8 @@ struct AuthWelcomeFooterView: View {
                 }
                 #endif
 
-                isLoading = true
-                Task {
-                    var user: User? = nil
-                    var route: AuthRoute = .success
-                    let isLogin = bloomManager.checkSession()
-
-                    if isLogin {
-                        user = await bloomManager.loginUser()
-                    } else {
-                        let registration = await bloomManager.registerUser()
-                        user = registration.user
-                        if let phrase = registration.mnemonic {
-                            route = .mnemonicReveal(phrase)
-                        }
-                    }
-
-                    isLoading = false
-                    // A phrase means the account exists even if its record failed to decode.
-                    if user != nil || route != .success {
-                        path.append(route)
-                    } else {
-                        failure = isLogin ? .login : .registration
-                        isFailurePresented = true
-                    }
-                }
+                task?.cancel()
+                task = Task { await signIn() }
             } label: {
                 HStack(spacing: 8) {
                     if isLoading {
@@ -122,6 +100,9 @@ struct AuthWelcomeFooterView: View {
         .padding(.horizontal, 36)
         .padding(.top, 16)
         .padding(.bottom, 36)
+        .onDisappear {
+            task?.cancel()
+        }
         .alert(
             failure == .login ? "Login Error" : "Registration Error",
             isPresented: $isFailurePresented
@@ -139,6 +120,36 @@ struct AuthWelcomeFooterView: View {
             } else {
                 Text("Failed to register. Please check your internet connection and try again.")
             }
+        }
+    }
+
+    /// Signs in or registers, then reports the outcome unless the screen is gone.
+    private func signIn() async {
+        isLoading = true
+        defer { isLoading = false }
+
+        var user: User? = nil
+        var route: AuthRoute = .success
+        let isLogin = bloomManager.checkSession()
+
+        if isLogin {
+            user = await bloomManager.loginUser()
+        } else {
+            let registration = await bloomManager.registerUser()
+            user = registration.user
+            if let phrase = registration.mnemonic {
+                route = .mnemonicReveal(phrase)
+            }
+        }
+
+        guard !Task.isCancelled else { return }
+
+        // A phrase means the account exists even if its record failed to decode.
+        if user != nil || route != .success {
+            path.append(route)
+        } else {
+            failure = isLogin ? .login : .registration
+            isFailurePresented = true
         }
     }
 }
