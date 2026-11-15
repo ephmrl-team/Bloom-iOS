@@ -13,10 +13,12 @@ struct AuthWelcomeView: View {
     /// Item width as a share of the screen, so the neighbouring tiles stay in view.
     private static let itemWidthRatio: CGFloat = 0.5
     private static let copies = 3
+    private static let autoScrollDelay: Duration = .seconds(8)
 
     @State private var appeared = false
     @State private var offset: CGFloat = 0
     @State private var position: Int?
+    @State private var isScrolling = false
 
     private var pageCount: Int {
         WelcomeFeature.all.count + 1
@@ -29,7 +31,9 @@ struct AuthWelcomeView: View {
             let margin = (width - itemWidth) / 2
 
             ScrollView(.horizontal) {
-                LazyHStack(spacing: 0) {
+                // Eagerly built on purpose: three copies of four light pages must be ready
+                // before a fast swipe reaches them, and lazy rows arrive too late.
+                HStack(spacing: 0) {
                     ForEach(0..<(pageCount * Self.copies), id: \.self) { id in
                         page(
                             index: id % pageCount,
@@ -51,6 +55,7 @@ struct AuthWelcomeView: View {
                 offset = newValue
             }
             .onScrollPhaseChange { _, phase in
+                isScrolling = phase != .idle
                 guard phase == .idle else { return }
                 recenter()
             }
@@ -65,6 +70,17 @@ struct AuthWelcomeView: View {
         .onAppear {
             withAnimation(.snappy(duration: 0.75)) {
                 appeared = true
+            }
+        }
+        // Restarts after every page change, so the timer never fights a swipe.
+        .task(id: position) {
+            guard position != nil else { return }
+
+            try? await Task.sleep(for: Self.autoScrollDelay)
+            guard !Task.isCancelled, !isScrolling, let position else { return }
+
+            withAnimation(.smooth(duration: 0.55)) {
+                self.position = position + 1
             }
         }
     }
@@ -84,12 +100,13 @@ struct AuthWelcomeView: View {
                     + Text(verbatim: "Bloom").font(Self.nameFont),
                 subtitle: "End-to-end encrypted messenger with seamless experience",
                 progress: progress,
-                textWidth: width
+                textWidth: width - 80,
+                appeared: appeared
             ) {
                 Image("GiantLogo")
                     .resizable()
                     .scaledToFit()
-                    .clipShape(RoundedRectangle(cornerRadius: 32))
+                    .clipShape(RoundedRectangle(cornerRadius: 36))
                     .shadow(color: .black.opacity(0.2), radius: 20, x: 4, y: 4)
             }
         } else {
@@ -98,7 +115,8 @@ struct AuthWelcomeView: View {
                 title: Text(feature.title).font(Self.titleFont),
                 subtitle: feature.subtitle,
                 progress: progress,
-                textWidth: width
+                textWidth: width - 80,
+                appeared: appeared
             ) {
                 WelcomeFeatureTile(feature: feature)
             }
@@ -125,6 +143,6 @@ struct AuthWelcomeView: View {
         }
     }
 
-    private static let titleFont = Font.system(size: 32, weight: .semibold, design: .rounded)
-    private static let nameFont = Font.system(size: 32, weight: .black, design: .rounded)
+    private static let titleFont = Font.system(size: 30, weight: .semibold, design: .rounded)
+    private static let nameFont = Font.system(size: 30, weight: .black, design: .rounded)
 }
