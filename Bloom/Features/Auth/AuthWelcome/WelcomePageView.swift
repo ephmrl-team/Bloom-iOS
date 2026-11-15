@@ -8,8 +8,6 @@ import SwiftUI
 struct WelcomePageView<Icon: View>: View {
     let title: Text
     let subtitle: LocalizedStringKey
-    /// 0 while the page is centred, ±1 once it is a full page away.
-    var progress: CGFloat = 0
     /// Width the copy wraps at, which is narrower than the page so the paragraph stays tight.
     var textWidth: CGFloat?
     /// Delay of the tile entrance, so the side tiles follow the centred one.
@@ -17,49 +15,49 @@ struct WelcomePageView<Icon: View>: View {
     var appeared: Bool = true
     @ViewBuilder var icon: Icon
 
-    private var distance: CGFloat {
-        min(abs(progress), 1)
-    }
-
-    /// Copy fades slightly faster than the tile it belongs to.
-    private var textFade: Double {
-        1 - Double(min(abs(progress) * 2, 1))
-    }
-
     var body: some View {
         VStack(spacing: Theme.spacing.xxl) {
             Spacer()
 
             icon
                 .frame(width: 138, height: 138)
-                .scaleEffect(1 - distance * 0.05)
-                .rotation3DEffect(.degrees(Double(progress) * -18), axis: (0, 1, 0), perspective: 0.5)
-                .rotationEffect(.degrees(Double(progress) * 10))
-                .offset(y: distance * 15 + (appeared ? 0 : 16))
-                .blur(radius: distance * 8 + (appeared ? 0 : 8))
-                .opacity((1 - Double(distance) * 0.3) * (appeared ? 1 : 0))
+                .compositingGroup()
+                // Native scroll transition: the transform is driven by the scroll view,
+                // so the pages are rasterised once instead of rebuilding every frame.
+                .scrollTransition(.interactive, axis: .horizontal) { content, phase in
+                    let distance = abs(phase.value)
+                    return content
+                        .scaleEffect(1 - distance * 0.05)
+                        .rotation3DEffect(.degrees(phase.value * 18), axis: (0, 1, 0), perspective: 0.5)
+                        .rotationEffect(.degrees(-phase.value * 10))
+                        .offset(y: distance * 15)
+                        .blur(radius: distance * 8)
+                        .opacity(1 - distance * 0.3)
+                }
+                .offset(y: appeared ? 0 : 16)
+                .opacity(appeared ? 1 : 0)
                 .animation(.smooth(duration: 0.75).delay(tileDelay), value: appeared)
 
             VStack(spacing: Theme.spacing.sm) {
                 title
                     .multilineTextAlignment(.center)
-                    .offset(y: appeared ? 0 : 16)
-                    .blur(radius: appeared ? 0 : 8)
-                    .opacity(textFade * (appeared ? 1 : 0))
-                    .animation(.smooth(duration: 0.75).delay(0.24), value: appeared)
 
                 Text(subtitle)
                     .font(.system(size: 17, weight: .medium, design: .rounded))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
-                    .offset(y: appeared ? 0 : 16)
-                    .blur(radius: appeared ? 0 : 8)
-                    .opacity(textFade * (appeared ? 1 : 0))
-                    .animation(.smooth(duration: 0.75).delay(0.32), value: appeared)
             }
             .frame(width: textWidth)
+            .compositingGroup()
             // The copy clears out sooner than the tile it belongs to.
-            .offset(x: -progress * 60)
+            .scrollTransition(.interactive, axis: .horizontal) { content, phase in
+                content
+                    .offset(x: phase.value * 60)
+                    .opacity(1 - min(abs(phase.value) / 0.4, 1))
+            }
+            .offset(y: appeared ? 0 : 16)
+            .opacity(appeared ? 1 : 0)
+            .animation(.smooth(duration: 0.75).delay(0.14), value: appeared)
 
             Spacer()
         }
