@@ -36,7 +36,7 @@ struct WelcomePageView<Icon: View>: View {
                 // text travel together instead of the tile easing off on its own, which
                 // made it look like it parked and then jumped.
                 .visualEffect { content, proxy in
-                    let progress = Self.progress(proxy, pageWidth: page)
+                    let progress = PageGeometry.progress(proxy, pageWidth: page)
                     let distance = abs(progress)
                     // Reduce Motion keeps the depth cues (scale, lift, fade) and drops
                     // the rotation and blur, which read as movement.
@@ -67,7 +67,7 @@ struct WelcomePageView<Icon: View>: View {
             // any moment only the page nearest the middle shows text, but it does not
             // blink out on the first few points of a swipe.
             .visualEffect { content, proxy in
-                let progress = Self.progress(proxy, pageWidth: page)
+                let progress = PageGeometry.progress(proxy, pageWidth: page)
                 return content
                     .offset(x: reduced ? 0 : progress * 80)
                     .opacity(1 - min(Double(abs(progress)) * 2, 1))
@@ -79,15 +79,20 @@ struct WelcomePageView<Icon: View>: View {
             Spacer()
         }
     }
+}
 
-    /// Where this page sits relative to the centre of the carousel: 0 when it fills the
-    /// middle, ±1 when a neighbour does.
-    ///
-    /// Read from the geometry proxy inside `visualEffect`, which runs on the render pass:
-    /// measuring into `@State` instead made every page re-evaluate its body on every
-    /// scroll frame. The scroll view's own bounds, expressed in this page's coordinates,
-    /// give the centre without needing the parent to publish one.
-    private nonisolated static func progress(_ proxy: GeometryProxy, pageWidth: CGFloat) -> CGFloat {
+/// Where a page sits relative to the centre of the carousel: 0 when it fills the middle,
+/// ±1 when a neighbour does.
+///
+/// Read from the geometry proxy inside `visualEffect`, which runs on the render pass:
+/// measuring into `@State` instead made every page re-evaluate its body on every scroll
+/// frame. The scroll view's own bounds, expressed in the page's coordinates, give the
+/// centre without needing the parent to publish one.
+///
+/// File scope rather than a member: the effect closure is `@Sendable`, and a member of the
+/// generic view would capture its metatype.
+private enum PageGeometry {
+    nonisolated static func progress(_ proxy: GeometryProxy, pageWidth: CGFloat) -> CGFloat {
         guard pageWidth > 0, let bounds = proxy.bounds(of: .scrollView) else { return 0 }
         let progress = (proxy.size.width / 2 - bounds.midX) / pageWidth
         return min(max(progress, -1), 1)
