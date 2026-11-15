@@ -101,6 +101,7 @@ struct AuthWelcomeView: View {
                 subtitle: "End-to-end encrypted messenger with seamless experience",
                 progress: progress,
                 textWidth: width - 80,
+                tileDelay: index % pageCount == 0 ? 0 : 0.08,
                 appeared: appeared
             ) {
                 Image("GiantLogo")
@@ -117,6 +118,7 @@ struct AuthWelcomeView: View {
                 subtitle: feature.subtitle,
                 progress: progress,
                 textWidth: width - 80,
+                tileDelay: index % pageCount == 0 ? 0 : 0.08,
                 appeared: appeared
             ) {
                 WelcomeFeatureTile(feature: feature)
