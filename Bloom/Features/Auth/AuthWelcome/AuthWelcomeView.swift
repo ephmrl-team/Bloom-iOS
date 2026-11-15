@@ -104,7 +104,8 @@ struct AuthWelcomeView: View {
 
         if index == 0 {
             WelcomePageView(
-                title: Text("This is \(Text(verbatim: "Bloom").font(Self.nameFont))"),
+                title: Text("This is \(Text(verbatim: "Bloom").font(Self.nameFont))")
+                    .font(Self.titleFont),
                 subtitle: "End-to-End encrypted messenger with a seamless experience",
                 textWidth: textWidth,
                 pageWidth: pageWidth,
