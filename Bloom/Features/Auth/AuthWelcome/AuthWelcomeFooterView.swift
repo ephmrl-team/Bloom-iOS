@@ -46,7 +46,8 @@ struct AuthWelcomeFooterView: View {
                     }
 
                     isLoading = false
-                    if user != nil {
+                    // A phrase means the account exists even if its record failed to decode.
+                    if user != nil || route != .success {
                         path.append(route)
                     } else {
                         showErrorAlert = true

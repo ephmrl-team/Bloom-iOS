@@ -65,14 +65,23 @@ final class BloomManager {
     }
 
     func registerUser() async -> (user: User?, mnemonic: String?) {
+        let result: (recoveryPhrase: String?, userJSON: Data)
         do {
-            let result = try await backend.register()
+            result = try await backend.register()
+        } catch {
+            Logger.bloom.error("register failed: \(error, privacy: .public)")
+            return (nil, nil)
+        }
+
+        do {
             let user = try JSONDecoder.bloomDecoder.decode(User.self, from: result.userJSON)
             setupSession(user: user)
             return (user, result.recoveryPhrase)
         } catch {
-            Logger.bloom.error("register failed: \(error, privacy: .public)")
-            return (nil, nil)
+            // The account exists now and the phrase is the only way back into it:
+            // hand it over even though the session could not be set up.
+            Logger.bloom.error("registered user decode failed: \(error, privacy: .public)")
+            return (nil, result.recoveryPhrase)
         }
     }
 
