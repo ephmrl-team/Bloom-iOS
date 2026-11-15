@@ -10,6 +10,7 @@ import SwiftUI
 struct AuthWelcomeView: View {
     @Binding var path: NavigationPath
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOver
 
     /// Item width as a share of the screen, so the neighbouring tiles stay in view.
     private static let itemWidthRatio: CGFloat = 0.5
@@ -18,7 +19,7 @@ struct AuthWelcomeView: View {
     private static let slideAnimation = Animation.smooth(duration: 0.6)
 
     @State private var appeared = false
-    @State private var position: Int?
+    @State private var position: Int? = (WelcomeFeature.all.count + 1) * 2
 
     private var pageCount: Int {
         WelcomeFeature.all.count + 1
@@ -38,6 +39,9 @@ struct AuthWelcomeView: View {
                     ForEach(0..<(pageCount * Self.copies), id: \.self) { id in
                         page(index: id % pageCount, pageWidth: itemWidth, width: width)
                             .frame(width: itemWidth)
+                            // Only the centred copy is readable: the pool holds five of
+                            // every page, and a reader should not hear them all.
+                            .accessibilityHidden(id != position)
                     }
                 }
                 .scrollTargetLayout()
@@ -65,10 +69,10 @@ struct AuthWelcomeView: View {
             }
         }
         // Keyed on the page, so a swipe cancels the countdown and nothing fires in the
-        // middle of a gesture. Reduce Motion turns the carousel into a plain slider:
-        // nothing moves unless the user moves it.
-        .task(id: reduceMotion ? nil : position) {
-            guard !reduceMotion, let current = position else { return }
+        // middle of a gesture. Reduce Motion and VoiceOver turn the carousel into a
+        // plain slider: nothing moves unless the user moves it.
+        .task(id: reduceMotion || voiceOver ? nil : position) {
+            guard !reduceMotion, !voiceOver, let current = position else { return }
 
             try? await Task.sleep(for: Self.autoScrollDelay)
             guard !Task.isCancelled else { return }
