@@ -18,7 +18,10 @@ final class NetworkMonitor {
     init() {
         monitor.pathUpdateHandler = { [weak self] path in
             let isOnline = path.status == .satisfied
-            Task { @MainActor in self?.isOnline = isOnline }
+            // The monitor calls back on the queue it was started with, which is the main one.
+            MainActor.assumeIsolated {
+                self?.isOnline = isOnline
+            }
         }
         monitor.start(queue: .main)
     }
