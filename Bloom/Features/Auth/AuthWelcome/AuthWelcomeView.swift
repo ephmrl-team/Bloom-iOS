@@ -106,7 +106,7 @@ struct AuthWelcomeView: View {
                 Image("GiantLogo")
                     .resizable()
                     .scaledToFit()
-                    .clipShape(RoundedRectangle(cornerRadius: 36))
+                    .clipShape(RoundedRectangle(cornerRadius: 34))
                     .compositingGroup()
                     .shadow(color: .black.opacity(0.2), radius: 20, x: 4, y: 4)
             }

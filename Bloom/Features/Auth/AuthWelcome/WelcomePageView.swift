@@ -85,14 +85,14 @@ struct WelcomeFeatureTile: View {
     let feature: WelcomeFeature
 
     var body: some View {
-        RoundedRectangle(cornerRadius: 36)
+        RoundedRectangle(cornerRadius: 34)
             .fill(feature.gradient)
             .overlay {
                 Image(feature.icon)
                     .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 76, height: 76)
+                    .frame(width: 82, height: 82)
                     .foregroundStyle(feature.iconColor)
                     .shadow(color: .white.opacity(0.55), radius: 0.5, y: 1)
                     .shadow(color: .black.opacity(0.16), radius: 1.5, y: -0.5)
