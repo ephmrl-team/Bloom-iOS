@@ -13,11 +13,10 @@ struct AuthWelcomeView: View {
     /// Item width as a share of the screen, so the neighbouring tiles stay in view.
     private static let itemWidthRatio: CGFloat = 0.5
     private static let copies = 5
-    private static let autoScrollDelay: Duration = .seconds(8)
+    private static let autoScrollDelay: Duration = .seconds(5)
 
     @State private var appeared = false
     @State private var position: Int?
-    @State private var isScrolling = false
 
     private var pageCount: Int {
         WelcomeFeature.all.count + 1
@@ -46,7 +45,6 @@ struct AuthWelcomeView: View {
             .scrollIndicators(.hidden)
             .scrollPosition(id: $position)
             .onScrollPhaseChange { _, phase in
-                isScrolling = phase != .idle
                 guard phase == .idle else { return }
                 recenter()
             }
@@ -63,15 +61,16 @@ struct AuthWelcomeView: View {
                 appeared = true
             }
         }
-        // Restarts after every page change, so the timer never fights a swipe.
+        // Keyed on the page, so a swipe cancels the countdown and nothing fires in the
+        // middle of a gesture.
         .task(id: position) {
-            guard position != nil else { return }
+            guard let current = position else { return }
 
             try? await Task.sleep(for: Self.autoScrollDelay)
-            guard !Task.isCancelled, !isScrolling, let position else { return }
+            guard !Task.isCancelled else { return }
 
-            withAnimation(.smooth(duration: 0.55)) {
-                self.position = position + 1
+            withAnimation(.smooth(duration: 0.6)) {
+                self.position = current + 1
             }
         }
     }
@@ -84,7 +83,7 @@ struct AuthWelcomeView: View {
                     + Text(verbatim: " ").font(Self.titleFont)
                     + Text(verbatim: "Bloom").font(Self.nameFont),
                 subtitle: "End-to-end encrypted messenger with seamless experience",
-                textWidth: width - 80,
+                textWidth: min(width * Self.itemWidthRatio - Theme.spacing.md, 320),
                 tileDelay: index % pageCount == 0 ? 0 : 0.08,
                 appeared: appeared
             ) {
@@ -100,7 +99,7 @@ struct AuthWelcomeView: View {
             WelcomePageView(
                 title: Text(feature.title).font(Self.titleFont),
                 subtitle: feature.subtitle,
-                textWidth: width - 80,
+                textWidth: min(width * Self.itemWidthRatio - Theme.spacing.md, 320),
                 tileDelay: index % pageCount == 0 ? 0 : 0.08,
                 appeared: appeared
             ) {
@@ -109,15 +108,19 @@ struct AuthWelcomeView: View {
         }
     }
 
-    /// Keeps the slider endless by jumping to the middle copy without an animation.
+    /// Keeps the slider endless by jumping by whole copies without animation.
+    ///
+    /// The window is two copies wide and every jump is one copy, so a jump always
+    /// lands in the middle copy and cannot trigger the opposite jump on the next
+    /// phase change (a one-copy window bounced between two indices forever).
     private func recenter() {
         guard let position else { return }
 
         let jump = pageCount * 2
         let target: Int
-        if position < jump {
+        if position < pageCount {
             target = position + jump
-        } else if position >= pageCount * 3 {
+        } else if position >= pageCount * 4 {
             target = position - jump
         } else {
             return
