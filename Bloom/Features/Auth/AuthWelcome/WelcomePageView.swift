@@ -14,28 +14,15 @@ struct WelcomePageView<Icon: View>: View {
     var textWidth: CGFloat?
     /// Width of one page, used to normalise the distance to the centre of the carousel.
     var pageWidth: CGFloat = 0
-    /// Centre of the carousel, measured by the parent, so no scroll-view offset is needed.
-    var containerMidX: CGFloat = 0
     /// Delay of the tile entrance, so the side tiles follow the centred one.
     var tileDelay: Double = 0
     var appeared: Bool = true
     @ViewBuilder var icon: Icon
 
-    /// Where this page sits relative to the centre: 0 when it fills the middle, ±1 when a
-    /// neighbour does. Read from the page's own frame, because the scroll view's phase
-    /// says "identity" for every page that is merely on screen.
-    @State private var midX: CGFloat?
-
-    private var progress: CGFloat {
-        guard pageWidth > 0, let midX else { return 0 }
-        return min(max((midX - containerMidX) / pageWidth, -1), 1)
-    }
-
-    private var distance: CGFloat {
-        abs(progress)
-    }
-
     var body: some View {
+        // Read once, so the effects below capture a value instead of the view.
+        let page = pageWidth
+
         VStack(spacing: Theme.spacing.xxl) {
             Spacer()
 
@@ -45,11 +32,16 @@ struct WelcomePageView<Icon: View>: View {
                 // Linear in `progress`, the rate the copy moves at too: the tile and the
                 // text travel together instead of the tile easing off on its own, which
                 // made it look like it parked and then jumped.
-                .scaleEffect(1 - distance * 0.1)
-                .rotationEffect(.degrees(progress * 10))
-                .offset(y: distance * 16)
-                .blur(radius: distance * 8)
-                .opacity(1 - Double(distance) * 0.35)
+                .visualEffect { content, proxy in
+                    let progress = Self.progress(proxy, pageWidth: page)
+                    let distance = abs(progress)
+                    return content
+                        .scaleEffect(1 - distance * 0.1)
+                        .rotationEffect(.degrees(progress * 10))
+                        .offset(y: distance * 16)
+                        .blur(radius: distance * 8)
+                        .opacity(1 - Double(distance) * 0.35)
+                }
                 .offset(y: appeared ? 0 : 16)
                 .opacity(appeared ? 1 : 0)
                 .animation(.smooth(duration: 0.75).delay(tileDelay), value: appeared)
@@ -69,19 +61,31 @@ struct WelcomePageView<Icon: View>: View {
             // full page apart, so theirs reach zero exactly as the centred one does: at
             // any moment only the page nearest the middle shows text, but it does not
             // blink out on the first few points of a swipe.
-            .offset(x: progress * 80)
-            .opacity(1 - min(Double(distance) * 2, 1))
+            .visualEffect { content, proxy in
+                let progress = Self.progress(proxy, pageWidth: page)
+                return content
+                    .offset(x: progress * 80)
+                    .opacity(1 - min(Double(abs(progress)) * 2, 1))
+            }
             .offset(y: appeared ? 0 : 16)
             .opacity(appeared ? 1 : 0)
             .animation(.smooth(duration: 0.75).delay(0.14), value: appeared)
 
             Spacer()
         }
-        .onGeometryChange(for: CGFloat.self) { proxy in
-            proxy.frame(in: .global).midX
-        } action: { newValue in
-            midX = newValue
-        }
+    }
+
+    /// Where this page sits relative to the centre of the carousel: 0 when it fills the
+    /// middle, ±1 when a neighbour does.
+    ///
+    /// Read from the geometry proxy inside `visualEffect`, which runs on the render pass:
+    /// measuring into `@State` instead made every page re-evaluate its body on every
+    /// scroll frame. The scroll view's own bounds, expressed in this page's coordinates,
+    /// give the centre without needing the parent to publish one.
+    private nonisolated static func progress(_ proxy: GeometryProxy, pageWidth: CGFloat) -> CGFloat {
+        guard pageWidth > 0, let bounds = proxy.bounds(of: .scrollView) else { return 0 }
+        let progress = (proxy.size.width / 2 - bounds.midX) / pageWidth
+        return min(max(progress, -1), 1)
     }
 }
 

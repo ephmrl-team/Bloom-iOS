@@ -28,7 +28,6 @@ struct AuthWelcomeView: View {
             let width = proxy.size.width
             let itemWidth = width * Self.itemWidthRatio
             let margin = (width - itemWidth) / 2
-            let centerX = proxy.frame(in: .global).midX
 
             ScrollView(.horizontal) {
                 // Eagerly built on purpose: a fast swipe must never reach a page that is
@@ -36,7 +35,7 @@ struct AuthWelcomeView: View {
                 // that the endless jump back to the middle copy is rare.
                 HStack(spacing: 0) {
                     ForEach(0..<(pageCount * Self.copies), id: \.self) { id in
-                        page(index: id % pageCount, pageWidth: itemWidth, centerX: centerX, width: width)
+                        page(index: id % pageCount, pageWidth: itemWidth, width: width)
                             .frame(width: itemWidth)
                     }
                 }
@@ -79,7 +78,7 @@ struct AuthWelcomeView: View {
     }
 
     @ViewBuilder
-    private func page(index: Int, pageWidth: CGFloat, centerX: CGFloat, width: CGFloat) -> some View {
+    private func page(index: Int, pageWidth: CGFloat, width: CGFloat) -> some View {
         if index == 0 {
             WelcomePageView(
                 title: Text("This is").font(Self.titleFont)
@@ -88,7 +87,6 @@ struct AuthWelcomeView: View {
                 subtitle: "End-to-End encrypted messenger with a seamless experience",
                 textWidth: width - 80,
                 pageWidth: pageWidth,
-                containerMidX: centerX,
                 tileDelay: 0,
                 appeared: appeared
             ) {
@@ -106,7 +104,6 @@ struct AuthWelcomeView: View {
                 subtitle: feature.subtitle,
                 textWidth: width - 80,
                 pageWidth: pageWidth,
-                containerMidX: centerX,
                 tileDelay: 0.08,
                 appeared: appeared
             ) {
