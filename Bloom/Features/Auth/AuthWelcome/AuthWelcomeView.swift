@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AuthWelcomeView: View {
     @Binding var path: NavigationPath
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// Item width as a share of the screen, so the neighbouring tiles stay in view.
     private static let itemWidthRatio: CGFloat = 0.5
@@ -59,14 +60,15 @@ struct AuthWelcomeView: View {
         }
         .ignoresSafeArea(.container, edges: .bottom)
         .onAppear {
-            withAnimation(.snappy(duration: 0.75)) {
+            withAnimation(reduceMotion ? nil : .snappy(duration: 0.75)) {
                 appeared = true
             }
         }
         // Keyed on the page, so a swipe cancels the countdown and nothing fires in the
-        // middle of a gesture.
-        .task(id: position) {
-            guard let current = position else { return }
+        // middle of a gesture. Reduce Motion turns the carousel into a plain slider:
+        // nothing moves unless the user moves it.
+        .task(id: reduceMotion ? nil : position) {
+            guard !reduceMotion, let current = position else { return }
 
             try? await Task.sleep(for: Self.autoScrollDelay)
             guard !Task.isCancelled else { return }

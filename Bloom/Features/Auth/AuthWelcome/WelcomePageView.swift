@@ -19,9 +19,12 @@ struct WelcomePageView<Icon: View>: View {
     var appeared: Bool = true
     @ViewBuilder var icon: Icon
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
-        // Read once, so the effects below capture a value instead of the view.
+        // Read once, so the effects below capture values instead of the view.
         let page = pageWidth
+        let reduced = reduceMotion
 
         VStack(spacing: Theme.spacing.xxl) {
             Spacer()
@@ -35,11 +38,13 @@ struct WelcomePageView<Icon: View>: View {
                 .visualEffect { content, proxy in
                     let progress = Self.progress(proxy, pageWidth: page)
                     let distance = abs(progress)
+                    // Reduce Motion keeps the depth cues (scale, lift, fade) and drops
+                    // the rotation and blur, which read as movement.
                     return content
                         .scaleEffect(1 - distance * 0.1)
-                        .rotationEffect(.degrees(progress * 10))
+                        .rotationEffect(.degrees(reduced ? 0 : progress * 10))
                         .offset(y: distance * 16)
-                        .blur(radius: distance * 8)
+                        .blur(radius: reduced ? 0 : distance * 8)
                         .opacity(1 - Double(distance) * 0.35)
                 }
                 .offset(y: appeared ? 0 : 16)
@@ -64,7 +69,7 @@ struct WelcomePageView<Icon: View>: View {
             .visualEffect { content, proxy in
                 let progress = Self.progress(proxy, pageWidth: page)
                 return content
-                    .offset(x: progress * 80)
+                    .offset(x: reduced ? 0 : progress * 80)
                     .opacity(1 - min(Double(abs(progress)) * 2, 1))
             }
             .offset(y: appeared ? 0 : 16)
