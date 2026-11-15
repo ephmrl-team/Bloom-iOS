@@ -2,7 +2,8 @@
 .DS_Store
 build/
 DerivedData/
-*.xcodeproj/project.xcworkspace/
+*.xcodeproj/project.xcworkspace/*
+!*.xcodeproj/project.xcworkspace/xcshareddata/
 *.xcodeproj/xcuserdata/
 *.xcworkspace/xcuserdata/
 *.xcuserstate
@@ -16,9 +17,11 @@ DerivedData/
 *.mode2v3
 *.perspectivev3
 
-# Local tooling (opencode)
+# Local tooling
 opencode.json
 .opencode/
+.agents/
+skills-lock.json
 
 # Log files
 *.log
@@ -26,4 +29,5 @@ opencode.json
 # Crash reports
 *.crash
 
+# Binary framework, distributed out of band
 BloomKit.xcframework
