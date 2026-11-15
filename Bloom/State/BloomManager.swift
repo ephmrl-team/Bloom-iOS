@@ -22,6 +22,7 @@ final class BloomManager {
     private(set) var startupError: String?
     private(set) var hasRestoredSession = false
     private(set) var hasLoadedChats = false
+    private(set) var hasChatListError = false
 
     @ObservationIgnored private let backend: any BloomAPI
 
@@ -142,6 +143,7 @@ final class BloomManager {
         backend.clearCredentials()
         conversations = []
         currentUser = nil
+        hasChatListError = false
     }
 
     private func setupSession(user: User) {
@@ -167,7 +169,9 @@ final class BloomManager {
 
         do {
             conversations = try JSONDecoder.bloomDecoder.decode([ChatResponse].self, from: data)
+            hasChatListError = false
         } catch {
+            hasChatListError = true
             Logger.bloom.error("chat list decode failed: \(error, privacy: .public)")
         }
     }

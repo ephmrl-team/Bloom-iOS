@@ -9,6 +9,7 @@ import OSLog
 @main
 struct BloomApp: App {
     @State private var appState = AppState()
+    @State private var networkMonitor = NetworkMonitor()
     @State private var environment: AppEnvironment?
     @State private var startupError: String?
 
@@ -23,6 +24,7 @@ struct BloomApp: App {
             if let environment {
                 RootView()
                     .environment(appState)
+                    .environment(networkMonitor)
                     .environment(environment.bloomManager)
             } else {
                 StartupFailureView(detail: startupError) {

@@ -177,6 +177,38 @@
         }
       }
     },
+    "Connecting…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecting…"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подключение…"
+          }
+        }
+      }
+    },
+    "Connection error": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection error"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ошибка подключения"
+          }
+        }
+      }
+    },
     "Continue": {
       "localizations": {
         "en": {
@@ -541,6 +573,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Сообщение"
+          }
+        }
+      }
+    },
+    "No internet": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No internet"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет интернета"
           }
         }
       }

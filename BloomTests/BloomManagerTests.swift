@@ -161,6 +161,20 @@ struct BloomManagerTests {
         api.onChatsUpdate?(Data("{\"id\":".utf8))
 
         #expect(manager.conversations.map(\.id) == [7])
+        #expect(manager.hasChatListError)
+    }
+
+    @Test("Clears the chat list error once a readable payload arrives")
+    func clearsChatListError() async {
+        let api = FakeAPI()
+        api.loginData = Fixtures.userJSON(Fixtures.user())
+        let manager = BloomManager(backend: api)
+        _ = await manager.loginUser(recoveryKey: "key")
+        api.onChatsUpdate?(Data("{\"id\":".utf8))
+
+        api.onChatsUpdate?(Fixtures.chatsJSON([7]))
+
+        #expect(manager.hasChatListError == false)
     }
 
     @Test("Opens a chat once and keeps it at the top")

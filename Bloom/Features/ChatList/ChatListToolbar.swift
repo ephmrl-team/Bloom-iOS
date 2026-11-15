@@ -11,6 +11,8 @@ struct ChatListToolbar: ToolbarContent {
     @Binding var searchText: String
     @Binding var isSearching: Bool
     @Environment(Router.self) private var router
+    @Environment(BloomManager.self) private var bloomManager
+    @Environment(NetworkMonitor.self) private var networkMonitor
 
     @ToolbarContentBuilder
     var body: some ToolbarContent {
@@ -41,14 +43,13 @@ struct ChatListToolbar: ToolbarContent {
     }
 
     private var title: some View {
-        HStack(spacing: Theme.spacing.sm) {
-            toolbarIcon("logo", size: 18)
-                .foregroundStyle(Theme.colors.primary)
-
-            Text("Chats")
-                .font(.system(.headline, design: .rounded, weight: .bold))
-        }
-        .fixedSize(horizontal: true, vertical: false)
+        ChatListTitle(
+            state: ChatListTitleState(
+                isOnline: networkMonitor.isOnline,
+                hasLoadedChats: bloomManager.hasLoadedChats,
+                hasError: bloomManager.hasChatListError
+            )
+        )
     }
 
     private var searchButton: some View {
