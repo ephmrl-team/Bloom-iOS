@@ -9,13 +9,31 @@ struct WelcomePageView<Icon: View>: View {
     let title: Text
     let subtitle: LocalizedStringKey
     /// Width the copy wraps at: wider than the page so the paragraph stays on two lines,
-    /// as in the design. The neighbours' copy is hidden by the scroll transition, so the
+    /// as in the design. The neighbouring copies are faded out by `progress`, so the
     /// overhang never shows up beside the centred tile.
     var textWidth: CGFloat?
+    /// Width of one page, used to normalise the distance to the centre of the carousel.
+    var pageWidth: CGFloat = 0
+    /// Centre of the carousel, measured by the parent, so no scroll-view offset is needed.
+    var containerMidX: CGFloat = 0
     /// Delay of the tile entrance, so the side tiles follow the centred one.
     var tileDelay: Double = 0
     var appeared: Bool = true
     @ViewBuilder var icon: Icon
+
+    /// Where this page sits relative to the centre: 0 when it fills the middle, ±1 when a
+    /// neighbour does. Read from the page's own frame, because the scroll view's phase
+    /// says "identity" for every page that is merely on screen.
+    @State private var midX: CGFloat?
+
+    private var progress: CGFloat {
+        guard pageWidth > 0, let midX else { return 0 }
+        return min(max((midX - containerMidX) / pageWidth, -1), 1)
+    }
+
+    private var distance: CGFloat {
+        abs(progress)
+    }
 
     var body: some View {
         VStack(spacing: Theme.spacing.xxl) {
@@ -24,19 +42,14 @@ struct WelcomePageView<Icon: View>: View {
             icon
                 .frame(width: 138, height: 138)
                 .compositingGroup()
-                // Native scroll transition: the transform is driven by the scroll view,
-                // so the pages are rasterised once instead of rebuilding every frame.
-                .scrollTransition(.interactive, axis: .horizontal) { content, phase in
-                    // Squared distance so the transform is already flat when the page
-                    // reaches the centre: the scroll view's snap no longer has any motion
-                    // left to cut off, which is what made the tile land with a jolt.
-                    let distance = min(abs(phase.value), 1)
-                    let eased = distance * distance
-                    return content
-                        .scaleEffect(1 - eased * 0.06)
-                        .offset(y: eased * 8)
-                        .opacity(1 - eased * 0.15)
-                }
+                // Linear in `progress`, the rate the copy moves at too: the tile and the
+                // text travel together instead of the tile easing off on its own, which
+                // made it look like it parked and then jumped.
+                .scaleEffect(1 - distance * 0.1)
+                .rotationEffect(.degrees(progress * 10))
+                .offset(y: distance * 16)
+                .blur(radius: distance * 8)
+                .opacity(1 - Double(distance) * 0.35)
                 .offset(y: appeared ? 0 : 16)
                 .opacity(appeared ? 1 : 0)
                 .animation(.smooth(duration: 0.75).delay(tileDelay), value: appeared)
@@ -52,19 +65,20 @@ struct WelcomePageView<Icon: View>: View {
             }
             .frame(width: textWidth)
             .compositingGroup()
-            // The copy is wider than the page, so it has to clear out immediately
-            // instead of fading across the swipe: otherwise the neighbour's copy and this
-            // one overlap while both are half visible beside the centred tile.
-            .scrollTransition(.interactive, axis: .horizontal) { content, phase in
-                content
-                    .offset(x: phase.value * 40)
-                    .opacity(1 - min(abs(phase.value) * 12, 1))
-            }
+            // Only the centred page shows its copy. The neighbour is a full page away, so
+            // it is gone after a sixth of a swipe and cannot be read at the screen edges.
+            .offset(x: progress * 40)
+            .opacity(1 - min(Double(distance) * 6, 1))
             .offset(y: appeared ? 0 : 16)
             .opacity(appeared ? 1 : 0)
             .animation(.smooth(duration: 0.75).delay(0.14), value: appeared)
 
             Spacer()
+        }
+        .onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.frame(in: .global).midX
+        } action: { newValue in
+            midX = newValue
         }
     }
 }
