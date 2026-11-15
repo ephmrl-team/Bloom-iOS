@@ -6,6 +6,7 @@
 import Foundation
 import BloomKit
 import Bip39
+import OSLog
 
 /// The only place in the app that talks to `BloomKit`.
 @MainActor
@@ -14,6 +15,7 @@ final class BloomKitAPI: BloomAPI {
     var onUserUpdate: (@MainActor (User) -> Void)?
 
     private let client: ClientBloomClient
+    private let storagePath: String
     private let chatsObserver = ChatsObserver()
     private let userObserver = UserObserver()
     private var isObservingChats = false
@@ -44,10 +46,21 @@ final class BloomKitAPI: BloomAPI {
         }
 
         self.client = client
+        self.storagePath = storagePath
     }
 
     func initialize() throws {
-        try client.initialize()
+        do {
+            try client.initialize()
+        } catch {
+            // A local database encrypted with a key we no longer have can never be read again,
+            // so the only way out is to drop it and let the client create a fresh one.
+            guard Self.isDatabaseFailure(error) else { throw error }
+
+            Logger.bloom.error("local database is unreadable, resetting it: \(error, privacy: .public)")
+            Self.resetStorage(at: storagePath)
+            try client.initialize()
+        }
     }
 
     func restoreSession() throws -> Data? {
@@ -142,7 +155,8 @@ final class BloomKitAPI: BloomAPI {
     func clearCredentials() {
         client.clearCredentials()
         KeychainHelper.shared.delete(service: Self.service, account: Self.recoveryAccount)
-        KeychainHelper.shared.delete(service: Self.service, account: Self.databaseKeyAccount)
+        // The database key is deliberately kept: dropping it while the encrypted database is
+        // still on disk leaves the next launch unable to open it.
     }
 
     func startSync() {
@@ -204,6 +218,17 @@ final class BloomKitAPI: BloomAPI {
         }
         let mnemonic = try Mnemonic(mnemonic: recoveryKey.components(separatedBy: " "))
         return mnemonic.entropy.map { String(format: "%02x", $0) }.joined()
+    }
+
+    nonisolated static func isDatabaseFailure(_ error: Error) -> Bool {
+        error.localizedDescription.lowercased().contains("database")
+    }
+
+    nonisolated static func resetStorage(at path: String) {
+        let contents = (try? FileManager.default.contentsOfDirectory(atPath: path)) ?? []
+        for name in contents {
+            try? FileManager.default.removeItem(atPath: (path as NSString).appendingPathComponent(name))
+        }
     }
 }
 
