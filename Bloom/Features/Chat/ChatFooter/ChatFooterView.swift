@@ -6,14 +6,11 @@
 //
 
 import SwiftUI
-import PhotosUI
 
 struct ChatFooterView: View {
     @State private var text: String = ""
     @FocusState private var focused: Bool
     @State private var isKeyboardVisible = false
-    
-    @State private var selectedPhotoItem: PhotosPickerItem? = nil
     
     @State private var inputBarHeight: CGFloat = 44
     @State private var isRecordingLocked: Bool = false
@@ -27,20 +24,6 @@ struct ChatFooterView: View {
     var body: some View {
         GlassEffectContainer(spacing: Theme.spacing.md) {
             HStack(alignment: .bottom, spacing: Theme.spacing.md) {
-                
-                if !isExpanded {
-                    PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
-                        Image(systemName: "plus")
-                            .foregroundStyle(.primary)
-                            .font(.title3)
-                            .frame(width: 44, height: 44)
-                    }
-                    .buttonStyle(.plain)
-                    .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 22))
-                    .glassEffectID("actionButton", in: glassNamespace)
-                    .glassEffectTransition(.matchedGeometry)
-                }
-                
                 HStack(alignment: .bottom, spacing: Theme.spacing.xs) {
                     if isExpanded {
                         ChatFooterVoiceView(isRecordingLocked: isRecordingLocked)
@@ -90,13 +73,5 @@ struct ChatFooterView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
             isKeyboardVisible = false
         }
-        .onChange(of: selectedPhotoItem) { _, newItem in
-            if let newItem {
-                handleSelectedPhoto(newItem)
-            }
-        }
-    }
-    
-    private func handleSelectedPhoto(_ item: PhotosPickerItem) {
     }
 }

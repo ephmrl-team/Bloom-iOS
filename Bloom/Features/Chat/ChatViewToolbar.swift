@@ -18,12 +18,6 @@ struct ChatViewToolbar: ToolbarContent {
 
         }
         .sharedBackgroundVisibility(.hidden)
-
-        ToolbarSpacer(.flexible, placement: .topBarTrailing)
-
-        ToolbarItem(placement: .topBarTrailing) {
-            ChatViewToolbarMenu()
-        }
     }
 }
 

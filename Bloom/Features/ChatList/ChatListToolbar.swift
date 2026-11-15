@@ -16,19 +16,6 @@ struct ChatListToolbar: ToolbarContent {
     
     @ToolbarContentBuilder
     var body: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-                print("notifications")
-            } label: {
-                Image(systemName: "bell.fill")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-            }
-            .controlSize(.regular)
-            .accessibilityLabel("Notifications")
-            .accessibilityIdentifier("notificationsButton")
-        }
-
         ToolbarItem(placement: .principal) {
             HStack(spacing: Theme.spacing.sm) {
                         Image("Logo")
