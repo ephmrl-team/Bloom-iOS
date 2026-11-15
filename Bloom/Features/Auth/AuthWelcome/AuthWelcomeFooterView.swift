@@ -74,6 +74,7 @@ struct AuthWelcomeFooterView: View {
                     .font(.system(.headline, design: .rounded, weight: .semibold))
                     .foregroundStyle(.foreground)
             }
+            .accessibilityIdentifier("mnemonicLoginButton")
             .frame(maxWidth: .infinity)
             .frame(height: 28)
             .disabled(isLoading)

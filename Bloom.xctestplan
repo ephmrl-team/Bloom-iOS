@@ -1,0 +1,68 @@
+{
+  "configurations" : [
+    {
+      "id" : "6C0F1E54-1B4A-4F87-9A11-5B2E7C3D8A01",
+      "name" : "Default",
+      "options" : {
+
+      }
+    },
+    {
+      "id" : "6C0F1E54-1B4A-4F87-9A11-5B2E7C3D8A02",
+      "name" : "Performance",
+      "options" : {
+
+      },
+      "testTargets" : [
+        {
+          "target" : {
+            "containerPath" : "container:Bloom.xcodeproj",
+            "identifier" : "AA0000000000000000000023",
+            "name" : "BloomPerformanceTests"
+          }
+        }
+      ]
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:Bloom.xcodeproj",
+          "identifier" : "DBBEC4713029C65A009523BE",
+          "name" : "Bloom"
+        }
+      ]
+    },
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Bloom.xcodeproj",
+      "identifier" : "DBBEC4713029C65A009523BE",
+      "name" : "Bloom"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Bloom.xcodeproj",
+        "identifier" : "AA0000000000000000000021",
+        "name" : "BloomTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Bloom.xcodeproj",
+        "identifier" : "AA0000000000000000000022",
+        "name" : "BloomUITests"
+      }
+    },
+    {
+      "enabled" : false,
+      "target" : {
+        "containerPath" : "container:Bloom.xcodeproj",
+        "identifier" : "AA0000000000000000000023",
+        "name" : "BloomPerformanceTests"
+      }
+    }
+  ],
+  "version" : 1
+}

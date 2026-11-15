@@ -18,7 +18,7 @@ struct AuthMnemonicView: View {
     @State private var showErrorAlert = false
     
     private var isComplete: Bool {
-        words.allSatisfy { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+        MnemonicPhrase.isValid(words)
     }
     
     var body: some View {
@@ -66,11 +66,9 @@ struct AuthMnemonicView: View {
     
     private func performLogin() {
         isLoading = true
-        
-        let mnemonicPhrase = words
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
-            .joined(separator: " ")
-        
+
+        let mnemonicPhrase = MnemonicPhrase.phrase(from: words)
+
         Task {
             let user = await bloomManager.loginUser(recoveryKey: mnemonicPhrase)
             isLoading = false

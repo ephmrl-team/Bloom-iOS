@@ -26,6 +26,7 @@ struct AuthSuccessView: View {
                 appState.authenticate()
             }
             .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier("continueToChatsButton")
             .frame(maxWidth: .infinity)
         }
         .padding(24)
