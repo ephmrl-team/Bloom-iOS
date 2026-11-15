@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var router = Router()
-    @Namespace private var heroNamespace
 
     var body: some View {
         MainTabView()
@@ -19,7 +18,7 @@ struct ContentView: View {
                 switch modal {
                 case .newMessage:
                     NewMessageView()
-                        .presentationDetents([.medium, .large])
+                        .presentationDetents([.large])
                         .presentationDragIndicator(.hidden)
                 case .settings:
                     NavigationStack {
@@ -30,7 +29,6 @@ struct ContentView: View {
                 }
             }
             .environment(router)
-            .environment(\.heroNamespace, heroNamespace)
             .onAppear {
                 router.pushPendingRouteIfNeeded()
             }

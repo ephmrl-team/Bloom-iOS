@@ -39,6 +39,21 @@ final class ChatListChromeUITests: XCTestCase {
         attachScreenshot(of: app, named: "search-closed")
     }
 
+    func testComposerOpensAFullHeightSheet() {
+        let app = launchChats()
+
+        app.buttons["newMessageButton"].tap()
+        let close = element("newMessageCloseButton", in: app)
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        // A large sheet puts its toolbar under the status bar; a medium one starts near mid-screen.
+        XCTAssertLessThan(close.frame.minY, 120)
+        attachScreenshot(of: app, named: "new-message-sheet")
+
+        close.tap()
+        XCTAssertTrue(app.buttons["newMessageButton"].waitForExistence(timeout: 5))
+        XCTAssertFalse(close.exists)
+    }
+
     private func launchChats() -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-AppMode=mock"]

@@ -91,7 +91,6 @@ struct ChatListToolbar: ToolbarContent {
         .tint(Theme.colors.primary)
         .accessibilityLabel("New message")
         .accessibilityIdentifier("newMessageButton")
-        .heroTransitionSource(id: "newMessageButton")
     }
 
     private func toolbarIcon(_ name: String, size: CGFloat) -> some View {

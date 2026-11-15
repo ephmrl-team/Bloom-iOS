@@ -39,6 +39,7 @@ struct NewMessageView: View {
                         }
                         .controlSize(.regular)
                         .accessibilityLabel("Close")
+                        .accessibilityIdentifier("newMessageCloseButton")
                     }
                 }
                 .topVariableBlur()
@@ -47,7 +48,6 @@ struct NewMessageView: View {
                     await search()
                 }
         }
-        .heroNavigationTransition(id: "newMessageButton")
     }
 
     @ViewBuilder
