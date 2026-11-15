@@ -8,7 +8,9 @@ import SwiftUI
 struct WelcomePageView<Icon: View>: View {
     let title: Text
     let subtitle: LocalizedStringKey
-    /// Width the copy wraps at, which is narrower than the page so the paragraph stays tight.
+    /// Width the copy wraps at: wider than the page so the paragraph stays on two lines,
+    /// as in the design. The neighbours' copy is hidden by the scroll transition, so the
+    /// overhang never shows up beside the centred tile.
     var textWidth: CGFloat?
     /// Delay of the tile entrance, so the side tiles follow the centred one.
     var tileDelay: Double = 0
@@ -25,16 +27,15 @@ struct WelcomePageView<Icon: View>: View {
                 // Native scroll transition: the transform is driven by the scroll view,
                 // so the pages are rasterised once instead of rebuilding every frame.
                 .scrollTransition(.interactive, axis: .horizontal) { content, phase in
-                    // Cubic easing so the last few points of the swipe glide in instead of
-                    // snapping the tile to its resting spot.
-                    let eased = phase.value * phase.value * phase.value
+                    // Squared distance so the transform is already flat when the page
+                    // reaches the centre: the scroll view's snap no longer has any motion
+                    // left to cut off, which is what made the tile land with a jolt.
                     let distance = min(abs(phase.value), 1)
+                    let eased = distance * distance
                     return content
-                        .scaleEffect(1 - abs(eased) * 0.05)
-                        .rotationEffect(.degrees(-eased * 10))
-                        .offset(y: abs(eased) * 15)
-                        .blur(radius: abs(eased) * 8)
-                        .opacity(1 - distance * 0.45)
+                        .scaleEffect(1 - eased * 0.06)
+                        .offset(y: eased * 8)
+                        .opacity(1 - eased * 0.15)
                 }
                 .offset(y: appeared ? 0 : 16)
                 .opacity(appeared ? 1 : 0)
@@ -51,12 +52,13 @@ struct WelcomePageView<Icon: View>: View {
             }
             .frame(width: textWidth)
             .compositingGroup()
-            // The copy clears out sooner than the tile it belongs to.
+            // The copy is wider than the page, so it has to clear out immediately
+            // instead of fading across the swipe: otherwise the neighbour's copy and this
+            // one overlap while both are half visible beside the centred tile.
             .scrollTransition(.interactive, axis: .horizontal) { content, phase in
                 content
-                    .offset(x: phase.value * 60)
-                    // Only the centred copy is readable; the neighbours never bleed through.
-                    .opacity(phase.isIdentity ? 1 : 0)
+                    .offset(x: phase.value * 40)
+                    .opacity(1 - min(abs(phase.value) * 12, 1))
             }
             .offset(y: appeared ? 0 : 16)
             .opacity(appeared ? 1 : 0)
