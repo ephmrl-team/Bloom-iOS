@@ -241,6 +241,22 @@
         }
       }
     },
+    "Could not sign in with the saved key. Use your phrase instead.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not sign in with the saved key. Use your phrase instead."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не получилось войти по сохранённому ключу. Войдите по фразе."
+          }
+        }
+      }
+    },
     "Couldn't load messages": {
       "localizations": {
         "en": {

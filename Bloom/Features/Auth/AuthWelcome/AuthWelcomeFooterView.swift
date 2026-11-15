@@ -14,7 +14,14 @@ struct AuthWelcomeFooterView: View {
     @Environment(AppState.self) private var appState
     
     @State private var isLoading = false
-    @State private var showErrorAlert = false
+    @State private var failure: Failure?
+    @State private var isFailurePresented = false
+
+    /// Kept until the next failure, so the alert keeps its own title while it dismisses.
+    private enum Failure {
+        case registration
+        case login
+    }
     
     var body: some View {
         VStack(spacing: 16) {
@@ -22,7 +29,8 @@ struct AuthWelcomeFooterView: View {
                 #if DEBUG
                 if AppMode.current == .mock {
                     if MockScenario.current == .error {
-                        showErrorAlert = true
+                        failure = .registration
+                        isFailurePresented = true
                     } else {
                         appState.authenticate()
                     }
@@ -34,8 +42,9 @@ struct AuthWelcomeFooterView: View {
                 Task {
                     var user: User? = nil
                     var route: AuthRoute = .success
+                    let isLogin = bloomManager.checkSession()
 
-                    if bloomManager.checkSession() {
+                    if isLogin {
                         user = await bloomManager.loginUser()
                     } else {
                         let registration = await bloomManager.registerUser()
@@ -50,7 +59,8 @@ struct AuthWelcomeFooterView: View {
                     if user != nil || route != .success {
                         path.append(route)
                     } else {
-                        showErrorAlert = true
+                        failure = isLogin ? .login : .registration
+                        isFailurePresented = true
                     }
                 }
             } label: {
@@ -112,10 +122,23 @@ struct AuthWelcomeFooterView: View {
         .padding(.horizontal, 36)
         .padding(.top, 16)
         .padding(.bottom, 36)
-        .alert("Registration Error", isPresented: $showErrorAlert) {
+        .alert(
+            failure == .login ? "Login Error" : "Registration Error",
+            isPresented: $isFailurePresented
+        ) {
+            if failure == .login {
+                // The saved key is unusable, so offer the route that still works.
+                Button("Continue with mnemonic") {
+                    path.append(AuthRoute.mnemonic)
+                }
+            }
             Button("OK", role: .cancel) {}
         } message: {
-            Text("Failed to register. Please check your internet connection and try again.")
+            if failure == .login {
+                Text("Could not sign in with the saved key. Use your phrase instead.")
+            } else {
+                Text("Failed to register. Please check your internet connection and try again.")
+            }
         }
     }
 }
