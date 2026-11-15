@@ -32,31 +32,31 @@ struct WelcomeFeature: Identifiable {
 
     static let all: [WelcomeFeature] = [
         WelcomeFeature(
-            id: "chats",
-            title: "Private chats",
-            subtitle: "Messages are encrypted before they leave your phone",
+            id: "encryption",
+            title: "Seamless encryption",
+            subtitle: "Messages are encrypted on your device, so only you can read them",
+            icon: "key",
+            hue: 0.35,
+            saturation: 0.5,
+            brightness: 0.9
+        ),
+        WelcomeFeature(
+            id: "conversations",
+            title: "Easy conversations",
+            subtitle: "Voice notes, quick replies and a clean interface",
             icon: "chat.bubbles",
             hue: 0.58,
             saturation: 0.55,
             brightness: 0.95
         ),
         WelcomeFeature(
-            id: "sync",
-            title: "Always in sync",
-            subtitle: "Pick up the conversation on any of your devices",
+            id: "handy",
+            title: "Always with you",
+            subtitle: "Open the same chats on every device you sign in to",
             icon: "cloud",
             hue: 0.09,
             saturation: 0.65,
             brightness: 1.0
-        ),
-        WelcomeFeature(
-            id: "recovery",
-            title: "Yours to recover",
-            subtitle: "Twelve words are all you need to get your account back",
-            icon: "key",
-            hue: 0.35,
-            saturation: 0.5,
-            brightness: 0.9
         )
     ]
 }

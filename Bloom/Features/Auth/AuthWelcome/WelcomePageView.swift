@@ -6,11 +6,12 @@
 import SwiftUI
 
 struct WelcomePageView<Icon: View>: View {
-    let title: LocalizedStringKey
+    let title: Text
     let subtitle: LocalizedStringKey
     /// 0 while the page is centred, ±1 once it is a full page away.
     var progress: CGFloat = 0
-    var width: CGFloat?
+    /// Width the copy wraps at, which is wider than the page itself so it stays on two lines.
+    var textWidth: CGFloat?
     @ViewBuilder var icon: Icon
 
     private var distance: CGFloat {
@@ -23,14 +24,13 @@ struct WelcomePageView<Icon: View>: View {
 
             icon
                 .frame(width: 138, height: 138)
-                .rotation3DEffect(.degrees(Double(progress) * -18), axis: (0, 1, 0), perspective: 0.4)
-                .scaleEffect(1 - distance * 0.12)
-                .blur(radius: distance * 8)
+                .scaleEffect(1 - distance * 0.08)
+                .rotation3DEffect(.degrees(Double(progress) * -12), axis: (0, 1, 0), perspective: 0.5)
+                .blur(radius: distance * 14)
                 .opacity(1 - Double(distance) * 0.5)
 
-            VStack(spacing: Theme.spacing.md - 2) {
-                Text(title)
-                    .font(.system(.largeTitle, design: .rounded, weight: .bold))
+            VStack(spacing: Theme.spacing.sm) {
+                title
                     .multilineTextAlignment(.center)
 
                 Text(subtitle)
@@ -38,14 +38,13 @@ struct WelcomePageView<Icon: View>: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
-            // The copy trails behind the tile, so it leaves the screen sooner.
-            .offset(x: -progress * 90)
-            .opacity(1 - Double(distance) * 0.85)
+            .frame(width: textWidth)
+            // The copy clears out sooner than the tile it belongs to.
+            .offset(x: -progress * 60)
+            .opacity(1 - Double(min(abs(progress) * 2, 1)))
 
             Spacer()
         }
-        .padding(.horizontal, 36)
-        .frame(width: width)
     }
 }
 
@@ -72,7 +71,11 @@ struct WelcomeFeatureTile: View {
 
 #Preview {
     VStack(spacing: 40) {
-        WelcomePageView(title: "Private chats", subtitle: "Messages are encrypted") {
+        WelcomePageView(
+            title: Text("Easy conversations").font(.system(.largeTitle, design: .rounded, weight: .semibold)),
+            subtitle: "Voice notes, quick replies and a clean interface",
+            textWidth: 340
+        ) {
             WelcomeFeatureTile(feature: WelcomeFeature.all[0])
         }
         .frame(height: 320)

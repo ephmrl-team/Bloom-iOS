@@ -17,18 +17,18 @@
         }
       }
     },
-    "Always in sync": {
+    "Always with you": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Always in sync"
+            "value": "Always with you"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Всегда синхронизировано"
+            "value": "Всегда под рукой"
           }
         }
       }
@@ -44,7 +44,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Хранилище приложения недоступно."
+            "value": "Нет доступа к хранилищу приложения."
           }
         }
       }
@@ -60,7 +60,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сервер недоступен в этом режиме приложения."
+            "value": "Сервер недоступен в этом режиме."
           }
         }
       }
@@ -76,7 +76,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сервер не вернул данные."
+            "value": "Сервер ничего не вернул."
           }
         }
       }
@@ -108,7 +108,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Профиль чата: %@"
+            "value": "Профиль: %@"
           }
         }
       }
@@ -140,7 +140,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Проверьте подключение и попробуйте снова."
+            "value": "Проверьте интернет и попробуйте снова."
           }
         }
       }
@@ -220,7 +220,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Продолжить с мнемоникой"
+            "value": "Войти по фразе"
           }
         }
       }
@@ -268,7 +268,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Не удалось загрузить список людей"
+            "value": "Не удалось загрузить людей"
           }
         }
       }
@@ -300,7 +300,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Не удалось запустить Bloom"
+            "value": "Bloom не запустился"
           }
         }
       }
@@ -337,6 +337,22 @@
         }
       }
     },
+    "Easy conversations": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Easy conversations"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удобное общение"
+          }
+        }
+      }
+    },
     "End-to-end encrypted messenger with seamless experience": {
       "localizations": {
         "en": {
@@ -348,7 +364,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Мессенджер со сквозным шифрованием и удобным опытом"
+            "value": "Простой мессенджер со сквозным шифрованием"
           }
         }
       }
@@ -364,7 +380,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Введите мнемонику"
+            "value": "Введите фразу"
           }
         }
       }
@@ -380,7 +396,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Не удалось зарегистрироваться. Проверьте подключение и попробуйте снова."
+            "value": "Не получилось создать аккаунт. Проверьте интернет и попробуйте снова."
           }
         }
       }
@@ -428,7 +444,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Неверная мнемоническая фраза. Проверьте, что все слова написаны правильно."
+            "value": "Неверная фраза. Проверьте, что все слова написаны без ошибок."
           }
         }
       }
@@ -444,7 +460,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Был(а) недавно"
+            "value": "Недавно в сети"
           }
         }
       }
@@ -476,7 +492,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ошибка входа"
+            "value": "Не удалось войти"
           }
         }
       }
@@ -497,18 +513,18 @@
         }
       }
     },
-    "Messages are encrypted before they leave your phone": {
+    "Messages are encrypted on your device, so only you can read them": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Messages are encrypted before they leave your phone"
+            "value": "Messages are encrypted on your device, so only you can read them"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сообщения шифруются до отправки с телефона"
+            "value": "Сообщения шифруются на устройстве — прочитать их можете только вы"
           }
         }
       }
@@ -524,7 +540,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сообщения, сохранённые на потом, появятся здесь."
+            "value": "Сообщения, которые вы сохраните, появятся здесь."
           }
         }
       }
@@ -572,7 +588,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Здесь пока нет чатов."
+            "value": "Пока нет чатов"
           }
         }
       }
@@ -604,7 +620,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сообщений пока нет"
+            "value": "Пока нет сообщений"
           }
         }
       }
@@ -620,7 +636,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Нет сохранённых сообщений"
+            "value": "Пока ничего не сохранено"
           }
         }
       }
@@ -641,18 +657,18 @@
         }
       }
     },
-    "Pick up the conversation on any of your devices": {
+    "Open the same chats on every device you sign in to": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pick up the conversation on any of your devices"
+            "value": "Open the same chats on every device you sign in to"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Продолжайте переписку на любом устройстве"
+            "value": "Одна и та же переписка на всех ваших устройствах"
           }
         }
       }
@@ -669,22 +685,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Закрепить"
-          }
-        }
-      }
-    },
-    "Private chats": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Private chats"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Приватные чаты"
           }
         }
       }
@@ -732,7 +732,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Записать голосовое сообщение"
+            "value": "Записать голосовое"
           }
         }
       }
@@ -748,7 +748,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ошибка регистрации"
+            "value": "Не удалось создать аккаунт"
           }
         }
       }
@@ -764,7 +764,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Запомните фразу"
+            "value": "Сохраните фразу"
           }
         }
       }
@@ -796,7 +796,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сохраните seed-фразу, чтобы восстановить аккаунт при необходимости."
+            "value": "Фраза восстановления вернёт доступ к аккаунту, если что-то случится."
           }
         }
       }
@@ -812,7 +812,23 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сохранённые"
+            "value": "Избранное"
+          }
+        }
+      }
+    },
+    "Seamless encryption": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seamless encryption"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сквозное шифрование"
           }
         }
       }
@@ -828,7 +844,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Отправить сообщение"
+            "value": "Отправить"
           }
         }
       }
@@ -860,7 +876,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Начните чат: нажмите кнопку ниже → добавьте или выберите друга."
+            "value": "Нажмите кнопку ниже, чтобы выбрать друга и начать переписку."
           }
         }
       }
@@ -876,7 +892,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Начать новый чат"
+            "value": "Новый чат"
           }
         }
       }
@@ -940,7 +956,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Не удалось выполнить операцию."
+            "value": "Не получилось выполнить операцию."
           }
         }
       }
@@ -956,23 +972,23 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Запись не началась."
+            "value": "Не удалось начать запись."
           }
         }
       }
     },
-    "This is **Bloom**": {
+    "This is": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "This is **Bloom**"
+            "value": "This is"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Это **Bloom**"
+            "value": "Это"
           }
         }
       }
@@ -988,23 +1004,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Попробовать снова"
-          }
-        }
-      }
-    },
-    "Twelve words are all you need to get your account back": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Twelve words are all you need to get your account back"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Двенадцати слов достаточно, чтобы вернуть аккаунт"
+            "value": "Повторить"
           }
         }
       }
@@ -1020,7 +1020,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Введите сообщение..."
+            "value": "Сообщение..."
           }
         }
       }
@@ -1036,7 +1036,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Неизвестно"
+            "value": "Без имени"
           }
         }
       }
@@ -1053,6 +1053,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Не удалось сохранить значение в Keychain."
+          }
+        }
+      }
+    },
+    "Voice notes, quick replies and a clean interface": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voice notes, quick replies and a clean interface"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Голосовые сообщения, быстрые ответы и ничего лишнего"
           }
         }
       }
@@ -1100,23 +1116,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Введите 12 слов мнемонической фразы, чтобы войти"
-          }
-        }
-      }
-    },
-    "Yours to recover": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yours to recover"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Восстановление у вас"
+            "value": "Введите 12 слов фразы восстановления, чтобы войти."
           }
         }
       }
