@@ -40,6 +40,9 @@ struct ChatListView: View {
         .toolbar {
             ChatListToolbar(searchText: $searchText, isSearching: $isSearching)
         }
+        // The toolbar runs its own transition for the button-to-field swap; an explicit
+        // withAnimation overrides it with a custom curve.
+        .animation(.default, value: isSearching)
         .topVariableBlur()
     }
 

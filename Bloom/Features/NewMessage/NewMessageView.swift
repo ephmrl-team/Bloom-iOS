@@ -10,14 +10,12 @@ struct NewMessageView: View {
     @Environment(Router.self) private var router
     @Environment(BloomManager.self) private var bloomManager
 
-    @State private var searchText = ""
     @State private var users: [User] = []
     @State private var loadFailed = false
 
     var body: some View {
         NavigationStack {
             content
-                .searchable(text: $searchText, placement: .navigationBarDrawer)
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden(true)
                 .toolbarBackground(.hidden, for: .navigationBar)
@@ -44,8 +42,8 @@ struct NewMessageView: View {
                 }
                 .topVariableBlur()
                 .bottomSafeAreaGradient()
-                .task(id: searchText) {
-                    await search()
+                .task {
+                    await loadUsers()
                 }
         }
     }
@@ -59,11 +57,9 @@ struct NewMessageView: View {
                 Text("Check your connection and try again.")
             } actions: {
                 Button("Try again") {
-                    Task { await search() }
+                    Task { await loadUsers() }
                 }
             }
-        } else if users.isEmpty && !searchText.isEmpty {
-            ContentUnavailableView.search(text: searchText)
         } else {
             List(users, id: \.id) { user in
                 NewMessageRowView(user: user) {
@@ -78,18 +74,13 @@ struct NewMessageView: View {
         }
     }
 
-    private func search() async {
-        if !searchText.isEmpty {
-            try? await Task.sleep(for: .milliseconds(250))
-            guard !Task.isCancelled else { return }
-        }
-
+    private func loadUsers() async {
         do {
-            users = try await bloomManager.searchUsers(searchText)
+            users = try await bloomManager.searchUsers("")
             loadFailed = false
         } catch {
             guard !Task.isCancelled else { return }
-            Logger.bloom.error("user search failed: \(error, privacy: .public)")
+            Logger.bloom.error("user list load failed: \(error, privacy: .public)")
             loadFailed = true
         }
     }

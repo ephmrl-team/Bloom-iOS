@@ -21,6 +21,7 @@ struct ChatListToolbar: ToolbarContent {
                 ChatSearchField(text: $searchText)
                     // The toolbar sizes an item to its ideal width, so the field asks for the whole bar.
                     .frame(minWidth: 0, idealWidth: 10_000, maxWidth: .infinity)
+                    .frame(height: 44)
 
             }
 
@@ -54,28 +55,21 @@ struct ChatListToolbar: ToolbarContent {
 
     private var searchButton: some View {
         Button {
-            withAnimation(.snappy) { isSearching = true }
+            isSearching = true
         } label: {
-            toolbarIcon("magnifyingglass", size: 24)
+            toolbarIcon("magnifyingglass", size: 28)
         }
-        .buttonStyle(.glass)
-        .buttonBorderShape(.circle)
         .accessibilityLabel("Search")
         .accessibilityIdentifier("searchButton")
     }
 
     private var closeSearchButton: some View {
         Button {
-            withAnimation(.snappy) {
-                searchText = ""
-                isSearching = false
-            }
+            searchText = ""
+            isSearching = false
         } label: {
-            toolbarIcon("x.mark", size: 24)
-                .foregroundStyle(.white)
+            toolbarIcon("x.mark", size: 28)
         }
-        .buttonStyle(.glassProminent)
-        .tint(Theme.colors.primary)
         .accessibilityLabel("Close search")
         .accessibilityIdentifier("searchCloseButton")
     }
@@ -84,7 +78,7 @@ struct ChatListToolbar: ToolbarContent {
         Button {
             router.presentModal(.newMessage)
         } label: {
-            toolbarIcon("square.and.pencil", size: 24)
+            toolbarIcon("square.and.pencil", size: 28)
                 .foregroundStyle(.white)
         }
         .buttonStyle(.glassProminent)
