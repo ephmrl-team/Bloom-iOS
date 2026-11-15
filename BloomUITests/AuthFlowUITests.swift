@@ -18,6 +18,15 @@ final class AuthFlowUITests: XCTestCase {
         return app
     }
 
+    /// A Debug build reopened without launch arguments still uses the mock backend.
+    func testDebugBuildDefaultsToMock() {
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
+
+        XCTAssertTrue(app.buttons["continueWithoutAccountButton"].waitForExistence(timeout: 10))
+    }
+
     /// The mock backend has nothing to authorise, so the iCloud button goes straight in.
     func testMockContinueSkipsSignIn() {
         let app = launch()

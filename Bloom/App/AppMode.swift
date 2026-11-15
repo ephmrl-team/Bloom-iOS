@@ -24,7 +24,9 @@ enum AppMode: String {
            let mode = AppMode(rawValue: String(raw)) {
             return mode
         }
-        return .dev
+        // A launch argument only survives an Xcode launch. Debug builds default to mock
+        // so the app still has a backend after it is reopened from the home screen.
+        return .mock
         #else
         return .release
         #endif
