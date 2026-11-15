@@ -22,18 +22,32 @@
 
 ## What Bloom is
 
-A native iPhone and iPad messenger. Accounts are identified by a 12-word
-recovery phrase instead of a password; messages are decrypted on the device by
-the backend client. The UI is plain SwiftUI with a small custom navigation
-layer and the system Liquid Glass effects.
+A native iPhone and iPad messenger. An account is a 12-word recovery phrase
+instead of a password; messages are decrypted on the device by the backend
+client. The interface is plain SwiftUI: native tabs, native toolbars, Liquid
+Glass, and a thin `NavigationPath` router on top.
+
+## What is in the app
+
+- **Onboarding** — an endless slider: the app itself, then three promises
+  (encryption, easy conversations, sync). Sign in with iCloud or with a
+  recovery phrase.
+- **Recovery phrase** — shown once after registration with a "test yourself"
+  quiz, hidden from the app switcher and from screenshots.
+- **Chats** — list with search, empty and error states, and real message
+  history with optimistic sending.
+- **Saved** — reserved for kept messages; currently an empty state.
+- **Settings** — profile summary and log out.
+- **Localization** — English and Russian in `Bloom/Localizable.xcstrings`.
 
 ## Stack
 
 | Area | What we use |
 |---|---|
 | UI | SwiftUI, Liquid Glass (`glassEffect`, `GlassEffectContainer`) |
+| Navigation | Native `TabView` per tab, `NavigationStack`, `NavigationPath` based `Router` |
 | State | Swift Observation (`@Observable`), injected through `.environment` |
-| Navigation | `NavigationPath` based `Router` (`Bloom/Navigation`) |
+| Icons | One asset catalog (`Bloom/Assets.xcassets`), template SVGs and the app logo |
 | Blur | `BlurUIKit` / `BlurSwiftUI` variable blur |
 | Collections | `swift-collections` (`Deque` for message lists) |
 | Mnemonic | `Bip39.swift` (BIP39 validation and entropy handling) |
@@ -48,7 +62,7 @@ Language mode is `SWIFT_VERSION = 5.0` with approachable concurrency and
 ### Requirements
 
 - Xcode 26 or newer
-- iOS 26 device (the project is developed on physical devices)
+- iOS 26 device (the project is built and tested on physical devices)
 
 ### Build
 
@@ -77,21 +91,40 @@ The app picks its backend at launch (`Bloom/App/AppMode.swift`):
 
 - **dev** — debug builds, mock scenarios only.
 - **mock** — in-memory backend with fake users and chats, Debug only:
-  `-AppMode=mock`, optionally `-MockScenario=empty|error|large`.
+  `-AppMode=mock`, optionally `-MockScenario=empty|error|large`. In this mode
+  *Continue with iCloud* opens the chats without any credentials.
 - **release** — production. The real `BloomKit` client is the only backend.
+
+## Tests
+
+`Bloom.xctestplan` holds two configurations: **Default** (unit and UI tests)
+and **Performance** (launch time and scroll hitches, disabled by default).
+
+```bash
+# unit tests
+xcodebuild test -project Bloom.xcodeproj -scheme Bloom \
+  -destination 'platform=iOS,id=<DEVICE ID>' -only-testing:BloomTests
+
+# UI tests, mock backend
+xcodebuild test -project Bloom.xcodeproj -scheme Bloom \
+  -destination 'platform=iOS,id=<DEVICE ID>' -only-testing:BloomUITests
+```
 
 ## Project layout
 
 ```
 Bloom/
-  App/          app entry point, root view, auth flow
+  App/          entry point, root view, auth flow, tabs
   Navigation/   Router, routes, app state
-  State/        BloomManager, MessagesStore, audio, API layer, models
+  State/        BloomManager, MessagesStore, audio, API layer, models, mocks
   Core/         Theme tokens
   Components/   reusable views
-  Features/     Auth, ChatList, Chat, NewMessage, Profile, Settings
-BloomTests/     unit tests (Swift Testing)
-BloomUITests/   UI tests (XCTest)
+  Features/     Auth, ChatList, Chat, NewMessage, Profile, Settings, Saved
+  Assets.xcassets
+BloomTests/             unit tests (Swift Testing)
+BloomUITests/           UI tests (XCTest, run against the mock backend)
+BloomPerformanceTests/  launch and scroll metrics (device only)
+Scripts/                file size and security checks
 ```
 
 ## Security status — read before trusting claims
@@ -104,6 +137,9 @@ BloomUITests/   UI tests (XCTest)
   `NSFaceIDUsageDescription`. Do not describe the app as Face ID protected until
   it exists.
 - Screens that show the recovery phrase are hidden from the app switcher.
+- A local database that cannot be opened is cleared on launch instead of
+  trapping the app in a failing state; the encryption key is never deleted on
+  its own.
 
 ## Contributing
 
