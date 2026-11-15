@@ -25,12 +25,14 @@ struct WelcomePageView<Icon: View>: View {
                 // Native scroll transition: the transform is driven by the scroll view,
                 // so the pages are rasterised once instead of rebuilding every frame.
                 .scrollTransition(.interactive, axis: .horizontal) { content, phase in
-                    let distance = min(abs(phase.value), 1)
+                    // Cubic easing so the last few points of the swipe glide in instead of
+                    // snapping the tile to its resting spot.
+                    let eased = phase.value * phase.value * phase.value
                     return content
-                        .scaleEffect(1 - distance * 0.05)
-                        .rotationEffect(.degrees(-phase.value * 10))
-                        .offset(y: distance * 15)
-                        .opacity(1 - distance * 0.45)
+                        .scaleEffect(1 - abs(eased) * 0.05)
+                        .rotationEffect(.degrees(-eased * 10))
+                        .offset(y: abs(eased) * 15)
+                        .opacity(1 - min(abs(phase.value), 1) * 0.45)
                 }
                 .offset(y: appeared ? 0 : 16)
                 .opacity(appeared ? 1 : 0)
