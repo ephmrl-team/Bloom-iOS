@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-checks:
+    name: Lint and static security checks
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: File size limits
+        run: ./Scripts/check-file-size.sh
+
+      - name: Security audit
+        run: ./Scripts/security-audit.sh
+
+      - name: SwiftLint
+        run: |
+          if command -v swiftlint > /dev/null; then
+            swiftlint lint --strict
+          else
+            echo "swiftlint is not installed on this runner, skipping."
+          fi
+
+  build-and-test:
+    name: Build and unit tests
+    runs-on: macos-26
+    needs: static-checks
+    steps:
+      - uses: actions/checkout@v4
+
+      # BloomKit.xcframework is not in the repository (see README), so the app
+      # cannot be linked here until it is provided to CI.
+      - name: Check for BloomKit
+        id: bloomkit
+        run: |
+          if [ -f BloomKit.xcframework/Info.plist ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "BloomKit.xcframework is missing, skipping build and tests."
+          fi
+
+      - name: Build (Debug)
+        if: steps.bloomkit.outputs.present == 'true'
+        run: |
+          xcodebuild -project Bloom.xcodeproj -scheme Bloom \
+            -destination 'generic/platform=iOS' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO build
+
+      - name: Strict concurrency
+        if: steps.bloomkit.outputs.present == 'true'
+        run: |
+          xcodebuild -project Bloom.xcodeproj -scheme Bloom \
+            -destination 'generic/platform=iOS' \
+            SWIFT_STRICT_CONCURRENCY=complete \
+            CODE_SIGNING_ALLOWED=NO build
+
+      # Simulator use is allowed in CI only (AGENTS.md §2, rule 9).
+      - name: Unit tests on simulator
+        if: steps.bloomkit.outputs.present == 'true'
+        run: |
+          UDID=$(xcrun simctl list devices available \
+            | grep -m1 -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
+          echo "Testing on simulator $UDID"
+          xcodebuild test -project Bloom.xcodeproj -scheme Bloom \
+            -destination "platform=iOS Simulator,id=$UDID" \
+            -only-testing:BloomTests \
+            CODE_SIGNING_ALLOWED=NO
