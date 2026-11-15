@@ -11,6 +11,7 @@ struct ChatListView: View {
     @Environment(Router.self) private var router
     @Environment(BloomManager.self) private var bloomManager
     @State private var searchText = ""
+    @State private var isSearching = false
 
     private var visibleChats: [ChatResponse] {
         let query = searchText.trim().lowercased()
@@ -36,10 +37,8 @@ struct ChatListView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
-        .searchable(text: $searchText)
-        .searchToolbarBehavior(.minimize)
         .toolbar {
-            ChatListToolbar()
+            ChatListToolbar(searchText: $searchText, isSearching: $isSearching)
         }
         .topVariableBlur()
     }

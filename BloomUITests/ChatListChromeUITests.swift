@@ -19,6 +19,26 @@ final class ChatListChromeUITests: XCTestCase {
         attachScreenshot(of: app, named: "chat-list")
     }
 
+    func testSearchReplacesTheTitleAndTheComposer() {
+        let app = launchChats()
+
+        app.buttons["searchButton"].tap()
+        let field = app.textFields.firstMatch
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["newMessageButton"].exists)
+        attachScreenshot(of: app, named: "search-open")
+
+        field.typeText("Nina")
+        XCTAssertTrue(element("chatRow_2", in: app).waitForNonExistence(timeout: 5))
+        XCTAssertTrue(element("chatRow_1", in: app).exists)
+        attachScreenshot(of: app, named: "search-filtered")
+
+        app.buttons["searchCloseButton"].tap()
+        XCTAssertTrue(app.buttons["newMessageButton"].waitForExistence(timeout: 5))
+        XCTAssertTrue(element("chatRow_2", in: app).waitForExistence(timeout: 5))
+        attachScreenshot(of: app, named: "search-closed")
+    }
+
     private func launchChats() -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-AppMode=mock"]

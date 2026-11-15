@@ -161,6 +161,22 @@
         }
       }
     },
+    "Close search": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close search"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закрыть поиск"
+          }
+        }
+      }
+    },
     "Continue": {
       "localizations": {
         "en": {
@@ -845,6 +861,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Шифрование"
+          }
+        }
+      }
+    },
+    "Search": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поиск"
           }
         }
       }
