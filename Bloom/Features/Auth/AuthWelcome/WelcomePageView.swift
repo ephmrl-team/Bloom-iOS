@@ -59,16 +59,18 @@ struct WelcomePageView<Icon: View>: View {
                     .multilineTextAlignment(.center)
 
                 Text(subtitle)
-                    .font(.system(size: 17, weight: .medium, design: .rounded))
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
             .frame(width: textWidth)
             .compositingGroup()
-            // Only the centred page shows its copy. The neighbour is a full page away, so
-            // it is gone after a sixth of a swipe and cannot be read at the screen edges.
-            .offset(x: progress * 40)
-            .opacity(1 - min(Double(distance) * 6, 1))
+            // The copy travels faster than the tile, and the neighbours' copies are a
+            // full page apart, so theirs reach zero exactly as the centred one does: at
+            // any moment only the page nearest the middle shows text, but it does not
+            // blink out on the first few points of a swipe.
+            .offset(x: progress * 80)
+            .opacity(1 - min(Double(distance) * 2, 1))
             .offset(y: appeared ? 0 : 16)
             .opacity(appeared ? 1 : 0)
             .animation(.smooth(duration: 0.75).delay(0.14), value: appeared)
