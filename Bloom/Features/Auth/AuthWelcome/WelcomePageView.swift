@@ -48,6 +48,7 @@ struct WelcomePageView<Icon: View>: View {
                         .opacity(1 - Double(distance) * 0.35)
                 }
                 .offset(y: appeared ? 0 : 16)
+                .blur(radius: appeared ? 0 : 8)
                 .opacity(appeared ? 1 : 0)
                 .animation(.smooth(duration: 0.75).delay(tileDelay), value: appeared)
 
@@ -73,6 +74,7 @@ struct WelcomePageView<Icon: View>: View {
                     .opacity(1 - min(Double(abs(progress)) * 2, 1))
             }
             .offset(y: appeared ? 0 : 16)
+            .blur(radius: appeared ? 0 : 8)
             .opacity(appeared ? 1 : 0)
             .animation(.smooth(duration: 0.75).delay(0.14), value: appeared)
 
