@@ -17,35 +17,13 @@ struct WelcomePageView<Icon: View>: View {
     var appeared: Bool = true
     @ViewBuilder var icon: Icon
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
     private var distance: CGFloat {
         min(abs(progress), 1)
     }
 
-    private var scale: CGFloat {
-        1 - distance * 0.05
-    }
-
-    private var tileOpacity: Double {
-        (1 - Double(distance) * 0.3) * (appeared ? 1 : 0)
-    }
-
+    /// Copy fades slightly faster than the tile it belongs to.
     private var textFade: Double {
-        (1 - Double(min(abs(progress) * 2, 1))) * (appeared ? 1 : 0)
-    }
-
-    /// Same entrance as the buttons in the footer: a short rise with a blur fade.
-    private func enter(_ delay: Double) -> Animation? {
-        reduceMotion ? nil : .smooth(duration: 0.6).delay(delay)
-    }
-
-    private var appearOffset: CGFloat {
-        appeared || reduceMotion ? 0 : 16
-    }
-
-    private var appearBlur: CGFloat {
-        appeared || reduceMotion ? 0 : 8
+        1 - Double(min(abs(progress) * 2, 1))
     }
 
     var body: some View {
@@ -54,30 +32,30 @@ struct WelcomePageView<Icon: View>: View {
 
             icon
                 .frame(width: 138, height: 138)
-                .scaleEffect(scale)
+                .scaleEffect(1 - distance * 0.05)
                 .rotation3DEffect(.degrees(Double(progress) * -18), axis: (0, 1, 0), perspective: 0.5)
                 .rotationEffect(.degrees(Double(progress) * 10))
-                .offset(y: distance * 15 + appearOffset)
-                .blur(radius: distance * 8 + appearBlur)
-                .opacity(tileOpacity)
-                .animation(enter(tileDelay), value: appeared)
+                .offset(y: distance * 15 + (appeared ? 0 : 16))
+                .blur(radius: distance * 8 + (appeared ? 0 : 8))
+                .opacity((1 - Double(distance) * 0.3) * (appeared ? 1 : 0))
+                .animation(.smooth(duration: 0.75).delay(tileDelay), value: appeared)
 
             VStack(spacing: Theme.spacing.sm) {
                 title
                     .multilineTextAlignment(.center)
-                    .opacity(textFade)
-                    .offset(y: appearOffset)
-                    .blur(radius: appearBlur)
-                    .animation(enter(0.1), value: appeared)
+                    .offset(y: appeared ? 0 : 16)
+                    .blur(radius: appeared ? 0 : 8)
+                    .opacity(textFade * (appeared ? 1 : 0))
+                    .animation(.smooth(duration: 0.75).delay(0.24), value: appeared)
 
                 Text(subtitle)
                     .font(.system(size: 17, weight: .medium, design: .rounded))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
-                    .opacity(textFade)
-                    .offset(y: appearOffset)
-                    .blur(radius: appearBlur)
-                    .animation(enter(0.18), value: appeared)
+                    .offset(y: appeared ? 0 : 16)
+                    .blur(radius: appeared ? 0 : 8)
+                    .opacity(textFade * (appeared ? 1 : 0))
+                    .animation(.smooth(duration: 0.75).delay(0.32), value: appeared)
             }
             .frame(width: textWidth)
             // The copy clears out sooner than the tile it belongs to.
