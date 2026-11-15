@@ -28,6 +28,18 @@ final class AuthFlowUITests: XCTestCase {
         XCTAssertTrue(app.buttons["newMessageButton"].waitForExistence(timeout: 10))
     }
 
+    /// MOCK also offers the guest entry, which opens the chat list without a session.
+    func testMockContinueWithoutAccountShowsChats() {
+        let app = launch()
+
+        let guest = app.buttons["continueWithoutAccountButton"]
+        XCTAssertTrue(guest.waitForExistence(timeout: 10))
+        guest.tap()
+
+        XCTAssertTrue(app.buttons["newMessageButton"].waitForExistence(timeout: 10))
+        XCTAssertTrue(element("chatRow_1", in: app).waitForExistence(timeout: 10))
+    }
+
     /// Signs in through the mock backend and lands on the chat list.
     private func signIn(_ app: XCUIApplication) {
         app.buttons["mnemonicLoginButton"].tap()

@@ -273,6 +273,22 @@
         }
       }
     },
+    "Continue without account": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue without account"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продолжить без аккаунта"
+          }
+        }
+      }
+    },
     "Copy": {
       "localizations": {
         "en": {
