@@ -11,6 +11,7 @@ struct AuthWelcomeFooterView: View {
     let appeared: Bool
     @Binding var path: NavigationPath
     @Environment(BloomManager.self) private var bloomManager
+    @Environment(AppState.self) private var appState
     
     @State private var isLoading = false
     @State private var showErrorAlert = false
@@ -18,6 +19,17 @@ struct AuthWelcomeFooterView: View {
     var body: some View {
         VStack(spacing: 16) {
             Button {
+                #if DEBUG
+                if AppMode.current == .mock {
+                    if MockScenario.current == .error {
+                        showErrorAlert = true
+                    } else {
+                        appState.authenticate()
+                    }
+                    return
+                }
+                #endif
+
                 isLoading = true
                 Task {
                     var user: User? = nil
@@ -50,9 +62,9 @@ struct AuthWelcomeFooterView: View {
                             .renderingMode(.template)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 20, height: 20)
+                            .frame(width: 25, height: 25)
                     }
-                    Text("Continue")
+                    Text("Continue with iCloud")
                 }
                 .font(.system(.headline, design: .rounded, weight: .semibold))
                 .foregroundStyle(.white)
@@ -81,7 +93,7 @@ struct AuthWelcomeFooterView: View {
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 16, height: 16)
+                        .frame(width: 24, height: 24)
                 }
                     .font(.system(.headline, design: .rounded, weight: .semibold))
                     .foregroundStyle(.foreground)

@@ -18,6 +18,16 @@ final class AuthFlowUITests: XCTestCase {
         return app
     }
 
+    /// The mock backend has nothing to authorise, so the iCloud button goes straight in.
+    func testMockContinueSkipsSignIn() {
+        let app = launch()
+
+        XCTAssertTrue(app.buttons["continueButton"].waitForExistence(timeout: 10))
+        app.buttons["continueButton"].tap()
+
+        XCTAssertTrue(app.buttons["newMessageButton"].waitForExistence(timeout: 10))
+    }
+
     /// Signs in through the mock backend and lands on the chat list.
     private func signIn(_ app: XCUIApplication) {
         app.buttons["mnemonicLoginButton"].tap()
