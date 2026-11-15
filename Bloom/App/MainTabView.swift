@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct MainTabView: View {
     private enum Tab: Hashable {
@@ -24,7 +25,7 @@ struct MainTabView: View {
                 SavedMessagesView()
             }
             .tabItem {
-                Label("Saved", image: "saved.flag")
+                tabIcon("saved.flag", label: "Saved")
             }
             .tag(Tab.saved)
 
@@ -42,7 +43,7 @@ struct MainTabView: View {
                     }
             }
             .tabItem {
-                Label("Chats", image: "chat.bubbles")
+                tabIcon("chat.bubbles", label: "Chats")
             }
             .tag(Tab.chats)
 
@@ -50,11 +51,26 @@ struct MainTabView: View {
                 SettingsView(allowsDismiss: false)
             }
             .tabItem {
-                Label("Settings", image: "gear")
+                tabIcon("gear", label: "Settings")
             }
             .tag(Tab.settings)
         }
         .tint(.primary)
+    }
+
+    /// Icons only, 32 pt: the tab bar carries no labels.
+    private func tabIcon(_ name: String, label: LocalizedStringKey) -> some View {
+        Image(uiImage: Self.tabImage(name))
+            .accessibilityLabel(label)
+    }
+
+    /// A tab item draws its image at the natural size, so the icon is rendered at 32 pt first.
+    private static func tabImage(_ name: String) -> UIImage {
+        let size = CGSize(width: 32, height: 32)
+        let image = UIGraphicsImageRenderer(size: size).image { _ in
+            UIImage(named: name)?.draw(in: CGRect(origin: .zero, size: size))
+        }
+        return image.withRenderingMode(.alwaysTemplate)
     }
 }
 
