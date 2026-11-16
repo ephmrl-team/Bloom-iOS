@@ -69,16 +69,30 @@ struct ChatSearchField: UIViewControllerRepresentable {
                     item.preferredSearchBarPlacement = .integratedButton
                     item.searchBarPlacementAllowsToolbarIntegration = false
                     item.hidesSearchBarWhenScrolling = false
-                    item.searchController = search
-                    item.searchBarPlacementBarButtonItem.image =
-                        UIImage(named: "magnifyingglass")?.withRenderingMode(.alwaysTemplate)
-                    item.searchBarPlacementBarButtonItem.accessibilityIdentifier = "searchButton"
+                    // The search controller is attached only while the search is open, so UIKit never
+                    // adds its own collapsed search button next to ours.
+                    // UIKit draws its own icon for the collapsed integrated button and ignores
+                    // searchBarPlacementBarButtonItem.image, so the opener is our own bar button item.
+                    let opener = UIBarButtonItem(
+                        image: UIImage(named: "magnifyingglass")?.withRenderingMode(.alwaysTemplate),
+                        style: .plain,
+                        target: self,
+                        action: #selector(presentSearch)
+                    )
+                    opener.accessibilityLabel = String(localized: "Search")
+                    opener.accessibilityIdentifier = "searchButton"
+                    item.rightBarButtonItem = opener
                     installedItem = item
                     isInstalled = true
                     return
                 }
                 ancestor = controller.parent
             }
+        }
+
+        @objc private func presentSearch() {
+            installedItem?.searchController = search
+            search.isActive = true
         }
 
         func updateSearchResults(for searchController: UISearchController) {
@@ -93,6 +107,7 @@ struct ChatSearchField: UIViewControllerRepresentable {
         func didDismissSearchController(_ searchController: UISearchController) {
             if !(searchController.searchBar.text ?? "").isEmpty { searchController.searchBar.text = "" }
             if !text.wrappedValue.isEmpty { text.wrappedValue = "" }
+            if installedItem?.searchController === search { installedItem?.searchController = nil }
         }
 
         func removeSearchController() {
