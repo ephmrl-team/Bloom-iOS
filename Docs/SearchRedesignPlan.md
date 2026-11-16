@@ -33,10 +33,10 @@ Bundle ID: `pw.ephmrl.bloom`
      --device 5EF96DBD-8C8E-547D-B6EE-EF6F97974AFC \
      pw.ephmrl.bloom
    ```
-6. Эталонное видео:  
-   `/Users/askold/Downloads/ScreenRecording_11-16-2026 03-53-12_1.mp4`  
-   848×253, 10.6 c, H.264. Это кроп навбара приложения GitHub.
-7. Эталон поведения: **GitHub iOS app** — поиск нативно живёт в верхнем баре, но само поле кастомное; кнопка поиска, поле и правая кнопка (X) анимируются как одна система.
+6. Эталонные видео:
+   - `/Users/askold/Downloads/ScreenRecording_11-16-2026 03-53-12_1.mp4` — старый кроп навбара, 848×253, 10.6 c;
+   - `/Users/askold/Downloads/IMG_9936.MP4` — новый полный эталон, 1170×434, 17.6 c, GitHub iOS, тёмная тема; разбор в §2.4.
+7. Эталон поведения: **GitHub iOS app** — поиск нативно живёт в верхнем баре, но само поле кастомное; кнопка поиска, поле, composer/X и back-кнопка анимируются как одна система.
 
 ---
 
@@ -49,6 +49,7 @@ Bundle ID: `pw.ephmrl.bloom`
 - нативно интегрирован в `NavigationStack` toolbar;
 - использует кастомное поле поиска (свой glass-капсул, свои иконки, скруглённый шрифт);
 - морфится из кнопки поиска в поле и обратно **1:1 как на видео**;
+- при переходе на новый экран морфится в нативную back-кнопку с `chevron.left` (поле — в leading-слоте), с нативной анимацией Apple;
 - превращает composer в X на время поиска;
 - сохраняет нативные кнопки, press-анимации и анимации переходов между экранами;
 - сохраняет заголовок по центру и его dissolve;
@@ -69,6 +70,7 @@ Bundle ID: `pw.ephmrl.bloom`
 11. **Никаких двойных кнопок.** Стекло кнопки рисует нативный button style; снаружи кнопки стекла быть не должно.
 12. **Физическое устройство**, без симулятора.
 13. Тесты сейчас не нужны; проверка вручную + запись экрана и сравнение с эталоном.
+14. **Navigation morph:** при push поле поиска морфится в нативную back-кнопку с `chevron.left`; поле концептуально занимает `.leading`-слот (там же, где back-кнопка). Кривые и bounce — нативные Apple; не оборачивать navigation push в кастомный `withAnimation`/`.smooth`. `.smooth` остаётся только для dissolve заголовка.
 
 ---
 
@@ -82,12 +84,16 @@ Bundle ID: `pw.ephmrl.bloom`
 - тап — из неё растёт стеклянная капсула поля;
 - поле занимает ширину бара, справа остаётся отдельная кнопка X;
 - кнопка, из которой росло поле, и X — визуально одна и та же правая кнопка;
+- поле концептуально в leading-слоте: при push оно морфится в нативную back-кнопку с `chevron.left`;
+- анимации (bounce/кривые) — нативные Apple, не кастомные;
 - поле кастомное: свой placeholder, свои иконки, свой шрифт;
 - кнопки при этом нативные, с нативными press/navigation-анимациями.
 
-Нам нужно повторить **поведение**, а не пиксели GitHub. Наш layout зеркальный: кнопка поиска слева, composer/X справа.
+Нам нужно повторить **поведение**, а не пиксели GitHub. Наш layout зеркальный: кнопка поиска слева, composer/X справа. Новый полный эталон `IMG_9936.MP4` (тёмная тема) разобран в §2.4 и уточняет тайминги и navigation morph.
 
 ### 2.2. Что видно на видео
+
+Старый кроп ниже (0.25 c). Новый полный эталон `IMG_9936.MP4` разобран в §2.4 с шагом 0.1 c; он уточняет тайминги и navigation morph.
 
 Текущий анализ по кадрам 0.25 c:
 
@@ -103,7 +109,7 @@ Bundle ID: `pw.ephmrl.bloom`
 2. Контент поля (placeholder, курсор) появляется **во время** растяжения.
 3. Лупа остаётся у ведущего края.
 4. Правая кнопка непрерывно превращается из лупы в X (иконка/tint/действие).
-5. Длительность раскрытия ~`0.4–0.5 c`, smooth/spring без заметного баунса.
+5. Длительность раскрытия ~`0.4–0.5 c`; в новом эталоне ~`0.3–0.4 c`, bounce/кривые — нативные Apple.
 
 ### 2.3. Обязательный протокол 0.1 c
 
@@ -148,6 +154,7 @@ struct ExtractFrames {
 ```bash
 xcrun swiftc -parse-as-library -o extract_frames extract_frames.swift
 ./extract_frames "/Users/askold/Downloads/ScreenRecording_11-16-2026 03-53-12_1.mp4" ref_frames
+./extract_frames "/Users/askold/Downloads/IMG_9936.MP4" ref_frames_9936
 ```
 
 Для теста:
@@ -175,6 +182,47 @@ xcrun swiftc -parse-as-library -o extract_frames extract_frames.swift
 
 Подгонять `duration`/`bounce` до совпадения. Не считать «на глаз».
 
+### 2.4. Новый эталон IMG_9936.MP4 (0.1 c)
+
+Файл: `/Users/askold/Downloads/IMG_9936.MP4` — 1170×434, 17.6 c, HEVC, GitHub iOS, тёмная тема. Кадры извлечены с шагом 0.1 c (177 кадров).
+
+#### Свёрнуто (0.0 c)
+- Чёрный верхний бар; слева аватар, крупный `My Work`; справа одна общая тёмная glass-пилюля с `+` и лупой (~100×33 pt, тонкая светлая окантовка).
+- `+` и лупа — две зоны одной glass-группы, не два отдельных круга.
+
+#### Раскрытие (1.3–1.7 c)
+- 1.3 c — лупа притушена (press).
+- 1.4 c — pressed, `+` ещё виден, заголовок `My Work` виден.
+- 1.5 c — иконки исчезли; на месте пилюли размытая glass-капсула; заголовок ещё виден.
+- 1.6 c — широкая размытая капсула тянется влево до середины; правый край на месте; заголовок/аватар/`+` гаснут; текста ещё нет.
+- 1.7 c — поле полностью раскрыто, стекло резкое.
+- Длительность ~0.3–0.4 c; без заметного баунса; промежуточное размытие — motion blur. Кривые — нативные Apple.
+
+#### Раскрытое состояние
+- Поле ~273×33 pt, от ~39 до ~312 pt; отдельная glass-кнопка `X` ~33 pt на ~341–374 pt; зазор ~29 pt; правый отступ ~16 pt.
+- В поле: лупа, серый `Search GitHub`, синий курсор; текст белый; при вводе — маленькая серая круглая кнопка очистки внутри поля у правого края; внешняя `X` остаётся отдельной и закрывает поиск.
+- `X` — тёмное стекло, не синяя кнопка.
+- Поле сразу в фокусе; клавиатура в кроп не видна.
+
+#### Закрытие по X (12.3–12.6 c)
+- 12.3 c — `X` нажат (ярче/крупнее).
+- 12.4 c — поле схлопнулось вправо, `X` ещё остаётся.
+- 12.5 c — размытая пилюля с `+`/лупой, вернулись аватар и `My Work`.
+- 12.6 c — пилюля устоялась. ~0.3 c, обратный морф.
+
+#### Ввод и переход на новый экран
+- Ввод фильтрует контент (`Code with "n"`).
+- Тап по результату → нативный push на `Code`: появляется навбар с back-кнопкой `‹` и заголовком `Code`.
+- **Ключевое:** поле поиска в leading-слоте морфится в нативную back-кнопку с `chevron.left` (glass-круг); заголовок нового экрана появляется нативно. Это нативный navigation transition Apple; bounce/кривые — системные, не кастомный `.smooth`/`withAnimation`.
+- Поле уходит вместе с экраном; отдельной кастомной анимации закрытия при push нет.
+
+#### Адаптация для Bloom
+- Layout зеркальный: поиск слева (leading), composer справа (trailing). Поле растёт вправо от поиска до composer; composer становится X; поле и X — отдельные glass-элементы с зазором.
+- Поле 44 pt, composer 44×44/icon 28; кастомные иконки, скруглённый шрифт.
+- Заголовок по центру, dissolve `.smooth` (opacity 1→0, scale 1→1.2, blur 0→6) — единственная явная кастомная кривая.
+- При push поле морфится в нативную back-кнопку; ProgressiveBlur и нативный toolbar остаются.
+- В видео X — тёмное стекло, а composer Bloom синий prominent; для 1:1 X делать обычным стеклом (или спросить, если хочется сохранить синий акцент).
+
 ---
 
 ## 3. Прошлые ошибки и их причины
@@ -194,6 +242,7 @@ xcrun swiftc -parse-as-library -o extract_frames extract_frames.swift
 | Поле не фокусировалось | `TextField` в toolbar host | Поле в overlay в основной иерархии |
 | Анимация дёргалась | Глобальный `.animation` + toolbar swap | Один `withAnimation`, без глобальных анимаций |
 | Кнопки «не кнопки» | Кастомные вью вместо нативных button styles | `.glass`/`.glassProminent` |
+| Поле не морфилось в back-кнопку при push | Overlay не участвовал в нативном navigation transition | Поле в leading-слоте + нативный push; overlay синхронизировать с back-кнопкой |
 
 ---
 
@@ -204,11 +253,14 @@ xcrun swiftc -parse-as-library -o extract_frames extract_frames.swift
 - Поиск, заголовок, composer — нативные `ToolbarItem` (нативные кнопки/анимации).
 - Поле — отдельный glass-слой над навигационным баром, через UIKit-хост (`UINavigationController.view`).
 - Поле растёт из фрейма нативной кнопки поиска до фрейма перед composer.
+- Поле привязано к leading-слоту; при push морфится в нативную back-кнопку с `chevron.left` (glass-круг), заголовок нового экрана появляется нативно.
 - Composer — нативная кнопка, превращается в X.
 - Заголовок — нативный `.principal`, растворяется.
+- Кривые/bounce — нативные Apple; кастомный `.smooth` только для dissolve заголовка.
 
-Плюсы: все требования, непрерывный 1:1 морфинг, нативные кнопки и переходы, кастомное поле.  
-Минусы: UIKit-хост, hit-testing, accessibility, координация фреймов.
+Плюсы: все требования, непрерывный 1:1 морфинг, нативные кнопки/переходы/navigation morph, кастомное поле.
+
+Минусы: UIKit-хост, hit-testing, accessibility, координация фреймов; overlay должен участвовать в нативном transition.
 
 **Это предпочтительный вариант: нативный toolbar + кастомное поле, которое взаимодействует с кнопками и анимируется.**
 
@@ -355,7 +407,7 @@ final class ChatListSearchGeometry {
 
 ```swift
 isSearching = true
-withAnimation(.smooth(duration: 0.4)) {
+withAnimation(.snappy) {
     isFieldExpanded = true
 }
 ```
@@ -363,7 +415,7 @@ withAnimation(.smooth(duration: 0.4)) {
 Закрытие:
 
 ```swift
-withAnimation(.smooth(duration: 0.4)) {
+withAnimation(.snappy) {
     isFieldExpanded = false
 } completion: {
     isSearching = false
@@ -425,26 +477,41 @@ HStack(spacing: Theme.spacing.sm) {
 
 ### 5.9. Анимация
 
+Кривые:
+- раскрытие/закрытие поля и navigation morph — **нативная анимация Apple** (системный toolbar/navigation transition), не кастомный `.smooth`;
+- для ширины overlay использовать системный preset (`.snappy`/`.spring`), подогнанный по 0.1 c; не хардкодить `.smooth` для поля;
+- `.smooth(duration: 0.3)` — только dissolve заголовка;
+- navigation push не оборачивать в `withAnimation`: нативный push сам анимирует leading-слот.
+
 Раскрытие:
 - `isSearching = true` — overlay в `collapsedFieldFrame`, нативная кнопка гаснет, заголовок начинает dissolve, composer → X;
-- сразу `withAnimation(.smooth(duration: 0.4)) { isFieldExpanded = true }`;
+- `withAnimation(.snappy)` (или системный preset): `isFieldExpanded = true`;
 - ширина `44 → expandedFieldFrame.width`, x фиксирован на `searchButtonFrame.minX`;
 - glass-капсула растягивается; лупа остаётся; `TextField` opacity `0→1`;
 - фокус после completion.
 
 Закрытие:
-- `withAnimation(.smooth(duration: 0.4)) { isFieldExpanded = false }`;
+- `withAnimation(.snappy)`: `isFieldExpanded = false`;
 - ширина `expanded → 44`, `TextField` opacity `1→0`;
 - заголовок reverse dissolve;
 - composer X → compose;
 - completion: `isSearching = false`, `searchText = ""`.
 
 Стартовые тайминги:
-- раскрытие/закрытие: `.smooth(duration: 0.4)` или `Spring(duration: 0.45, bounce: 0.05)`;
+- раскрытие/закрытие: системный `.snappy`/spring; подгонка по 0.1 c (в эталоне ~0.3–0.4 c);
 - заголовок: `.smooth(duration: 0.3)`;
 - composer icon/tint: `.smooth(duration: 0.2)`.
 
-Далее — подгонка по протоколу 0.1 c.
+Далее — подгонка по протоколу 0.1 c. Если системный preset не совпадает с эталоном, снять кривую с нативного toolbar transition и повторить; не заменять navigation transition кастомным `withAnimation`.
+
+### 5.10. Navigation morph: поле → back chevron
+
+- Поле концептуально занимает leading-слот — тот же, где нативная back-кнопка.
+- При push на новый экран (чат/результат) leading-слот меняется с поля на нативную back-кнопку; стекло поля морфится в glass-круг back-кнопки, появляется `chevron.left`; заголовок нового экрана появляется нативно.
+- Это **нативный navigation transition** Apple: не оборачивать push в `withAnimation`, не делать кастомный `.smooth`/`.snappy` для этого перехода. Кривые/bounce — системные.
+- Чтобы система могла морфить, поле должно быть либо нативным leading toolbar item, либо overlay, синхронизированный с фреймом/стеклом нативной back-кнопки на push. Если overlay не участвует в нативном переходе, он должен скрываться/передавать стекло back-кнопке в тот же кадр; проверить 0.1 c.
+- Back-кнопка в видео — тёмный glass-круг с `chevron.left`, не плоский chevron. В Bloom использовать нативную back-кнопку с glass-стилем (если система позволяет) или overlay-копию, совпадающую по фрейму.
+- Заголовок нового экрана — нативный; не рисовать кастомный.
 
 ---
 
@@ -459,6 +526,7 @@ HStack(spacing: Theme.spacing.sm) {
 - `Bloom/Features/ChatList/ChatListView.swift` — состояния, `.toolbar`, `.topVariableBlur()`, overlay host, `onDisappear`.
 - `Bloom/Features/ChatList/ChatListToolbar.swift` — нативные items, захват фреймов, dissolve, composer → X.
 - `Bloom/Features/ChatList/ChatSearchField.swift` — только поле, glass-капсула, без кнопки/close.
+- Navigation morph не требует нового файла: overlay синхронизируется с нативной back-кнопкой; при необходимости — `ChatListBackButtonMorph` в `ChatSearchOverlay.swift`.
 
 Не трогать:
 - `ChatListModifiers.swift` — ProgressiveBlur.
@@ -477,9 +545,10 @@ HStack(spacing: Theme.spacing.sm) {
 6. Overlay-поле: одна glass-капсула, лупа, TextField, позиционирование.
 7. State machine `isSearching` + `isFieldExpanded`, открытие/закрытие.
 8. Фокус после раскрытия.
-9. Сборка, установка, запись экрана, сравнение 0.1 c, подгонка.
-10. Проверка навигации, табов, поворота, Reduce Motion/Transparency, VoiceOver, тем.
-11. Коммит и пуш.
+9. Navigation morph: поле → нативная back-кнопка при push; проверить нативный transition и 0.1 c.
+10. Сборка, установка, запись экрана, сравнение 0.1 c, подгонка.
+11. Проверка навигации, табов, поворота, Reduce Motion/Transparency, VoiceOver, тем.
+12. Коммит и пуш.
 
 ---
 
@@ -493,6 +562,9 @@ HStack(spacing: Theme.spacing.sm) {
 - composer → X и обратно;
 - поле glass, кастомный шрифт/иконки, full width кроме composer;
 - 1:1 по протоколу 0.1 c;
+- navigation morph: поле → back chevron при открытии чата/результата;
+- bounce/кривые — нативные Apple; navigation push не обёрнут в кастомный `withAnimation`;
+- новый экран: нативный заголовок и back-кнопка (glass-круг);
 - заголовок dissolve;
 - ProgressiveBlur;
 - фокус/клавиатура;
@@ -517,6 +589,7 @@ HStack(spacing: Theme.spacing.sm) {
 5. **Composer 44×44** нативным стилем — замерить; fallback один кастомный ButtonStyle с стеклом внутри.
 6. **Hit-testing/accessibility overlay** — passthrough вне поля, скрыть нативные скрытые элементы из accessibility.
 7. **Тайминг** — только покадровое сравнение 0.1 c, не «на глаз».
+8. **Navigation morph** — overlay может не участвовать в нативном push; если поле не в leading-слоте, back-кнопка не морфится. Решение: поле в leading-слоте/синхронизация с back-кнопкой; если невозможно — спросить.
 
 ---
 
@@ -527,6 +600,8 @@ HStack(spacing: Theme.spacing.sm) {
 - [ ] Composer 44×44, icon 28, одна кнопка, composer → X.
 - [ ] Кастомное glass-поле, full width кроме composer.
 - [ ] Непрерывный морфинг 1:1 по 0.1 c.
+- [ ] Navigation morph: поле → back chevron с нативной анимацией Apple.
+- [ ] Кривые/bounce поля и navigation — нативные; `.smooth` только заголовок.
 - [ ] Заголовок dissolve `.smooth` (opacity/scale/blur).
 - [ ] Фокус/клавиатура, фильтрация, очистка.
 - [ ] Навигация/табы/поворот/Reduce Motion/Transparency/VoiceOver/темы.
@@ -536,6 +611,8 @@ HStack(spacing: Theme.spacing.sm) {
 
 ## 11. Открытое решение
 
-Основной вариант — **A** (нативный toolbar + кастомное поле overlay над навбаром). Он единственный одновременно даёт нативные кнопки/переходы и 1:1 glass-морфинг.
+Основной вариант — **A** (нативный toolbar + кастомное поле overlay над навбаром). Он единственный одновременно даёт нативные кнопки/переходы, navigation morph (поле → back chevron) и 1:1 glass-морфинг.
 
 Если UIKit-хост над навбаром не подходит — выбрать **B** (нативный toolbar swap, без 1:1) или **D** (`.searchable`, без кастомного поля). Варианты C и E не использовать: они уже отвергнуты.
+
+Если leading-слот/overlay не позволяет нативный navigation morph — остановиться и спросить, не заменять его кастомной анимацией.
