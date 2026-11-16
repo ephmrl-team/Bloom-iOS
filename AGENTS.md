@@ -54,6 +54,7 @@ Never invent APIs, build settings, files or project history. If you do not know 
 7. **Measure before optimizing.** Performance claims need numbers from §9. Objective-C and UIKit are allowed — and encouraged — where measurement shows a win (§10), not by default.
 8. **Be honest in the final report.** State what you changed, what you ran, what passed, what you could not run, and anything you assumed.
 9. **Never use the iOS Simulator. Always use a physical device.** The maintainer's simulators are broken. Every run, test, UI test, sanitizer run, profiling session and performance measurement goes to a connected physical iPhone/iPad. The only exception: the maintainer's prompt for the current task explicitly asks you to use a simulator. A general wish to "test it" is not such a request. If no physical device is connected or reachable, **stop and ask**; do not fall back to a simulator, and do not claim the work was tested. Compile-only builds use `generic/platform=iOS` (a device destination that needs no connected device and does not involve any simulator).
+10. **Never remove the top ProgressiveBlur.** `topVariableBlur()` (the BlurUIKit `VariableBlur` in `ChatListModifiers.swift`) is required on every screen whose header or footer floats over scrolling content. Keep it instead of an opaque fill or a native `scrollEdgeEffectStyle`; do not delete or replace it. (Maintainer instruction, 2026-11-16.)
 
 ---
 

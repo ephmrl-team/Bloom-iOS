@@ -29,6 +29,7 @@ final class ChatListChromeUITests: XCTestCase {
         XCTAssertTrue(app.buttons["newMessageButton"].exists)
         attachScreenshot(of: app, named: "search-open")
 
+        field.tap()
         field.typeText("Nina")
         XCTAssertTrue(element("chatRow_2", in: app).waitForNonExistence(timeout: 5))
         XCTAssertTrue(element("chatRow_1", in: app).exists)

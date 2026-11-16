@@ -10,7 +10,6 @@ import SwiftUI
 struct ChatListView: View {
     @Environment(Router.self) private var router
     @Environment(BloomManager.self) private var bloomManager
-    @Environment(NetworkMonitor.self) private var networkMonitor
     @State private var searchText = ""
     @State private var isSearching = false
 
@@ -25,17 +24,13 @@ struct ChatListView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            ChatListHeader(
-                searchText: $searchText,
-                isSearching: $isSearching,
-                titleState: titleState,
-                onCompose: { router.presentModal(.newMessage) }
-            )
-
-            content
-        }
-        .toolbar(.hidden, for: .navigationBar)
+        content
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ChatListToolbar(searchText: $searchText, isSearching: $isSearching)
+            }
+            .topVariableBlur()
     }
 
     @ViewBuilder
@@ -49,14 +44,6 @@ struct ChatListView: View {
         } else {
             ProgressView()
         }
-    }
-
-    private var titleState: ChatListTitleState {
-        ChatListTitleState(
-            isOnline: networkMonitor.isOnline,
-            hasLoadedChats: bloomManager.hasLoadedChats,
-            hasError: bloomManager.hasChatListError
-        )
     }
 
     private var chats: some View {
