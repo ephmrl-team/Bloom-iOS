@@ -19,13 +19,14 @@ final class ChatListChromeUITests: XCTestCase {
         attachScreenshot(of: app, named: "chat-list")
     }
 
-    func testSearchReplacesTheTitleAndTheComposer() {
+    func testSearchMorphsIntoFieldAndFiltersChats() {
         let app = launchChats()
 
         app.buttons["searchButton"].tap()
-        let field = app.textFields.firstMatch
+        let field = app.textFields["searchField"]
         XCTAssertTrue(field.waitForExistence(timeout: 5))
-        XCTAssertFalse(app.buttons["newMessageButton"].exists)
+        // The field grows to fill the bar; the composer stays on the right.
+        XCTAssertTrue(app.buttons["newMessageButton"].exists)
         attachScreenshot(of: app, named: "search-open")
 
         field.typeText("Nina")

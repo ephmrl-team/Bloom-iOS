@@ -10,6 +10,7 @@ import SwiftUI
 struct ChatListView: View {
     @Environment(Router.self) private var router
     @Environment(BloomManager.self) private var bloomManager
+    @Environment(NetworkMonitor.self) private var networkMonitor
     @State private var searchText = ""
     @State private var isSearching = false
 
@@ -24,26 +25,38 @@ struct ChatListView: View {
     }
 
     var body: some View {
-        Group {
-            if !visibleChats.isEmpty {
-                chats
-            } else if !searchText.trim().isEmpty && bloomManager.hasLoadedChats {
-                ContentUnavailableView.search(text: searchText)
-            } else if bloomManager.hasLoadedChats {
-                emptyState
-            } else {
-                ProgressView()
-            }
+        VStack(spacing: 0) {
+            ChatListHeader(
+                searchText: $searchText,
+                isSearching: $isSearching,
+                titleState: titleState,
+                onCompose: { router.presentModal(.newMessage) }
+            )
+
+            content
         }
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ChatListToolbar(searchText: $searchText, isSearching: $isSearching)
+        .toolbar(.hidden, for: .navigationBar)
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if !visibleChats.isEmpty {
+            chats
+        } else if !searchText.trim().isEmpty && bloomManager.hasLoadedChats {
+            ContentUnavailableView.search(text: searchText)
+        } else if bloomManager.hasLoadedChats {
+            emptyState
+        } else {
+            ProgressView()
         }
-        // The toolbar runs its own transition for the button-to-field swap; an explicit
-        // withAnimation overrides it with a custom curve.
-        .animation(.default, value: isSearching)
-        .topVariableBlur()
+    }
+
+    private var titleState: ChatListTitleState {
+        ChatListTitleState(
+            isOnline: networkMonitor.isOnline,
+            hasLoadedChats: bloomManager.hasLoadedChats,
+            hasError: bloomManager.hasChatListError
+        )
     }
 
     private var chats: some View {

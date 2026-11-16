@@ -4,61 +4,91 @@
 //
 
 import SwiftUI
-import UIKit
 
-/// A search field that lives in the navigation bar.
+/// A round search button that morphs into a full-width field.
 ///
-/// `@FocusState` is dropped for toolbar items, so the field is the system's own
-/// `UISearchTextField` and takes focus itself once it is in the hierarchy.
-struct ChatSearchField: UIViewRepresentable {
+/// The capsule is one persistent view whose width animates, so the button and
+/// the field are the same shape growing and shrinking, not two swapped views.
+struct ChatSearchField: View {
     @Binding var text: String
+    @Binding var isSearching: Bool
 
-    func makeUIView(context: Context) -> UISearchTextField {
-        let field = UISearchTextField()
-        field.delegate = context.coordinator
-        field.placeholder = String(localized: "Search")
-        field.returnKeyType = .search
-        field.autocorrectionType = .no
-        field.autocapitalizationType = .none
-        field.accessibilityIdentifier = "searchField"
-        field.addTarget(
-            context.coordinator,
-            action: #selector(Coordinator.textChanged),
-            for: .editingChanged
-        )
-        return field
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        HStack(spacing: Theme.spacing.sm) {
+            if isSearching {
+                icon("magnifyingglass", size: 18)
+
+                TextField("Search", text: $text)
+                    .font(.system(.body, design: .rounded))
+                    .focused($isFocused)
+                    .submitLabel(.search)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+                    .accessibilityIdentifier("searchField")
+                    .onAppear { isFocused = true }
+
+                Button(action: close) {
+                    icon("x.mark", size: 14)
+                        .frame(width: 24, height: 24)
+                        .contentShape(.circle)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Close search")
+                .accessibilityIdentifier("searchCloseButton")
+            } else {
+                collapsedButton
+            }
+        }
+        .padding(.horizontal, isSearching ? Theme.spacing.md : 0)
+        .frame(maxWidth: isSearching ? .infinity : 44, alignment: .center)
+        .frame(height: 44)
+        .background(Capsule().fill(Theme.colors.foreground))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .animation(reduceMotion ? nil : .snappy(duration: 0.3), value: isSearching)
     }
 
-    func updateUIView(_ field: UISearchTextField, context: Context) {
-        if field.text != text {
-            field.text = text
+    private var collapsedButton: some View {
+        Button {
+            isSearching = true
+        } label: {
+            icon("magnifyingglass", size: 18)
+                .frame(width: 44, height: 44)
+                .contentShape(.circle)
         }
-
-        if !context.coordinator.hasTakenFocus {
-            context.coordinator.hasTakenFocus = true
-            field.becomeFirstResponder()
-        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Search")
+        .accessibilityIdentifier("searchButton")
     }
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text)
+    private func icon(_ name: String, size: CGFloat) -> some View {
+        Image(name)
+            .renderingMode(.template)
+            .resizable()
+            .scaledToFit()
+            .frame(width: size, height: size)
+            .foregroundStyle(Theme.colors.secondaryText)
     }
 
-    final class Coordinator: NSObject, UITextFieldDelegate {
-        private let text: Binding<String>
-        var hasTakenFocus = false
+    private func close() {
+        isFocused = false
+        text = ""
+        isSearching = false
+    }
+}
 
-        init(text: Binding<String>) {
-            self.text = text
-        }
+#Preview {
+    @Previewable @State var text = ""
+    @Previewable @State var isSearching = false
 
-        @objc func textChanged(_ field: UITextField) {
-            text.wrappedValue = field.text ?? ""
-        }
+    VStack(spacing: Theme.spacing.lg) {
+        ChatSearchField(text: $text, isSearching: $isSearching)
 
-        func textFieldShouldReturn(_ field: UITextField) -> Bool {
-            field.resignFirstResponder()
-            return true
+        Button(isSearching ? "Collapse" : "Expand") {
+            isSearching.toggle()
         }
     }
+    .padding()
 }
