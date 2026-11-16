@@ -11,7 +11,6 @@ struct ChatListView: View {
     @Environment(Router.self) private var router
     @Environment(BloomManager.self) private var bloomManager
     @State private var searchText = ""
-    @State private var isSearching = false
 
     private var visibleChats: [ChatResponse] {
         let query = searchText.trim().lowercased()
@@ -24,13 +23,19 @@ struct ChatListView: View {
     }
 
     var body: some View {
-        content
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ChatListToolbar(searchText: $searchText, isSearching: $isSearching)
-            }
-            .topVariableBlur()
+        // The search field host must live outside `content`: swapping its branches would tear the
+        // representable down, and dismantling it removes the search controller mid-typing.
+        ZStack {
+            content
+            ChatSearchField(text: $searchText)
+                .frame(width: 0, height: 0)
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ChatListToolbar()
+        }
+        .topVariableBlur()
     }
 
     @ViewBuilder

@@ -14,6 +14,16 @@ final class ChatListChromeUITests: XCTestCase {
         let app = launchChats()
 
         XCTAssertTrue(element("chatRow_1", in: app).waitForExistence(timeout: 10))
+        let search = app.navigationBars.buttons["Search"]
+        let compose = app.buttons["newMessageButton"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        XCTAssertTrue(search.isHittable)
+        XCTAssertTrue(compose.isHittable)
+        XCTAssertGreaterThan(search.frame.width, 0)
+        XCTAssertGreaterThan(search.frame.height, 0)
+        XCTAssertGreaterThan(compose.frame.width, 0)
+        XCTAssertGreaterThan(compose.frame.height, 0)
+        XCTAssertTrue(element("chatListTitle", in: app).exists)
         // Icons only, but every tab stays reachable and named for VoiceOver.
         XCTAssertEqual(app.tabBars.firstMatch.buttons.count, 3)
         attachScreenshot(of: app, named: "chat-list")
@@ -22,11 +32,12 @@ final class ChatListChromeUITests: XCTestCase {
     func testSearchMorphsIntoFieldAndFiltersChats() {
         let app = launchChats()
 
-        app.buttons["searchButton"].tap()
-        let field = app.textFields["searchField"]
+        app.navigationBars.buttons["Search"].tap()
+        let field = element("searchField", in: app)
         XCTAssertTrue(field.waitForExistence(timeout: 5))
-        // The field grows to fill the bar; the composer becomes the close button.
-        XCTAssertTrue(app.buttons["searchCloseButton"].exists)
+        // iOS 26's integrated search bar ships a bare close button instead of "Cancel".
+        XCTAssertTrue(app.buttons["close"].exists)
+        XCTAssertFalse(app.buttons["newMessageButton"].exists)
         attachScreenshot(of: app, named: "search-open")
 
         field.tap()
@@ -35,10 +46,47 @@ final class ChatListChromeUITests: XCTestCase {
         XCTAssertTrue(element("chatRow_1", in: app).exists)
         attachScreenshot(of: app, named: "search-filtered")
 
-        app.buttons["searchCloseButton"].tap()
+        app.buttons["close"].tap()
         XCTAssertTrue(app.buttons["newMessageButton"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["close"].exists)
         XCTAssertTrue(element("chatRow_2", in: app).waitForExistence(timeout: 5))
         attachScreenshot(of: app, named: "search-closed")
+    }
+
+    /// Regression: the empty-results branch used to tear the search host down mid-typing.
+    func testSearchSurvivesAQueryWithNoMatches() {
+        let app = launchChats()
+        app.navigationBars.buttons["Search"].tap()
+        let field = element("searchField", in: app)
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+
+        field.typeText("zzzzzz")
+        XCTAssertTrue(element("chatRow_1", in: app).waitForNonExistence(timeout: 5))
+        XCTAssertTrue(field.exists)
+        XCTAssertEqual(field.value as? String, "zzzzzz")
+    }
+
+    func testSearchRemainsAfterOpeningChatAndReturning() {
+        let app = launchChats()
+        app.navigationBars.buttons["Search"].tap()
+        let field = element("searchField", in: app)
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        field.typeText("Nina")
+        element("chatRow_1", in: app).tap()
+        XCTAssertTrue(app.textFields["chatMessageField"].waitForExistence(timeout: 10))
+
+        let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.01, dy: 0.5))
+        let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.08, dy: 0.5))
+        start.press(forDuration: 0.1, thenDragTo: end)
+        XCTAssertTrue(app.textFields["chatMessageField"].exists)
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        XCTAssertEqual(field.value as? String, "Nina")
+        XCTAssertTrue(element("chatRow_1", in: app).exists)
+        XCTAssertFalse(element("chatRow_2", in: app).exists)
     }
 
     func testComposerOpensAFullHeightSheet() {
@@ -58,7 +106,7 @@ final class ChatListChromeUITests: XCTestCase {
 
     private func launchChats() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-AppMode=mock"]
+        app.launchArguments = ["-AppMode=mock", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
 
