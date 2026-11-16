@@ -8,84 +8,84 @@
 import SwiftUI
 
 struct ChatFooterSendView: View {
+    static let size: CGFloat = 44
+
     @Binding var text: String
     @Binding var barHeight: CGFloat
     @Binding var isRecordingLocked: Bool
-    
+    let namespace: Namespace.ID
+
     @Environment(MessagesStore.self) private var store
-    
-    @State private var isPressing: Bool = false
+
     @State private var holdTask: Task<Void, Never>? = nil
-    
-    var hasText: Bool {
-        !text.trim().isEmpty
+
+    private var hasText: Bool {
+        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
-    
+
     var body: some View {
         Button {
-            if hasText {
-                sendTextMessage()
-            }
+            send()
         } label: {
-            ZStack {
-                Image(systemName: "microphone.fill")
-                    .font(.headline)
-                    .foregroundStyle(.foreground.opacity(0.4))
-                    .scaleEffect(hasText ? 0.5 : 1)
-                    .opacity(hasText ? 0 : 1)
-                
-                Circle()
-                    .fill(isRecordingLocked ? Color(.red).opacity(0.35) : Theme.colors.primary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .scaleEffect(isRecordingLocked ? 1 : hasText ? 1 : 0)
-                    .opacity(isRecordingLocked ? 1 : hasText ? 1 : 0)
-                    .blur(radius: isRecordingLocked ? 0 : hasText ? 0 : 6)
-                
-                if hasText {
-                    Image(systemName: "arrow.up")
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .transition(
-                            .asymmetric(
-                                insertion: .offset(y: 17).combined(with: .opacity).combined(with: .blur(radius: 3).combined(with: .scale(scale: 0.7))),
-                                removal: .offset(y: -17).combined(with: .opacity).combined(with: .blur(radius: 3).combined(with: .scale(scale: 0.7)))
-                            )
-                        )
-                }
-            }
-            .animation(.smooth(duration: 0.235), value: hasText)
+            Image(systemName: "arrow.up")
+                .font(.headline)
+                .foregroundStyle(Theme.colors.white)
+                .frame(width: Self.size, height: Self.size)
+                .contentShape(Rectangle())
         }
-        .buttonStyle(InstantPressButtonStyle { pressing in
-            guard !hasText else { return }
-            isPressing = pressing
-            if pressing {
-                startHoldSequence()
-            } else {
-                cancelHoldSequence()
-            }
-        })
-        .accessibilityLabel(hasText ? "Send message" : "Record voice message")
+        .buttonStyle(.plain)
+        .glassEffect(.regular.tint(Theme.colors.primary).interactive(), in: .circle)
+        .glassEffectID("sendButton", in: namespace)
+        .glassEffectTransition(.matchedGeometry)
+        .animation(.smooth(duration: 0.3), value: hasText)
+        .accessibilityLabel("Send message")
         .accessibilityIdentifier("chatSendButton")
-        .padding(barHeight == 44 ? Theme.spacing.xs + 2 : barHeight == 52 ? Theme.spacing.md - 2 : Theme.spacing.lg)
-        .frame(width: barHeight + 2, height: barHeight + 2)
-        .animation(.smooth(duration: 0.235), value: text)
     }
-    
+
+    // Voice note button, parked for now. The recording logic below is kept as is;
+    // re-enable this button (and the press style) when voice notes ship again.
+    //
+    // Button {
+    //     guard hasText else { return }
+    //     send()
+    // } label: {
+    //     Image(systemName: hasText ? "arrow.up" : "microphone.fill")
+    //         .font(.headline)
+    //         .foregroundStyle(hasText ? Theme.colors.white : Theme.colors.secondaryText)
+    //         .frame(width: Self.size, height: Self.size)
+    // }
+    // .buttonStyle(InstantPressButtonStyle { pressing in
+    //     handlePress(pressing)
+    // })
+    // .glassEffect(
+    //     hasText ? .regular.tint(Theme.colors.primary).interactive() : .regular.interactive(),
+    //     in: .circle
+    // )
+
+    private func handlePress(_ pressing: Bool) {
+        guard !hasText else { return }
+        if pressing {
+            startHoldSequence()
+        } else {
+            cancelHoldSequence()
+        }
+    }
+
     private func startHoldSequence() {
         holdTask?.cancel()
-        
+
         holdTask = Task { @MainActor in
             try? await Task.sleep(for: .seconds(0.15))
             guard !Task.isCancelled else { return }
-            
+
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
             withAnimation(.smooth(duration: 0.35)) {
                 barHeight = 52
             }
-            
+
             try? await Task.sleep(for: .seconds(0.75))
             guard !Task.isCancelled else { return }
-            
+
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             withAnimation(.smooth(duration: 0.35)) {
                 barHeight = 64
@@ -93,29 +93,29 @@ struct ChatFooterSendView: View {
             }
         }
     }
-    
+
     private func cancelHoldSequence() {
         holdTask?.cancel()
         holdTask = nil
-        
+
         if !isRecordingLocked {
             withAnimation(.smooth(duration: 0.235)) {
                 barHeight = 44
             }
         }
     }
-    
-    private func sendTextMessage() {
-        withAnimation(.smooth(duration: 0.235)) {
+
+    private func send() {
+        withAnimation(.smooth(duration: 0.38)) {
             store.send(text)
         }
-        self.text = ""
+        text = ""
     }
 }
 
 struct InstantPressButtonStyle: ButtonStyle {
     var onPressingChanged: (Bool) -> Void
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .onChange(of: configuration.isPressed) { _, isPressed in

@@ -11,6 +11,7 @@ import UIKit
 struct Theme {
     struct spacing {
         static let xxs: CGFloat = 2
+        static let micro: CGFloat = 6
         static let xs: CGFloat = 4
         static let sm: CGFloat = 8
         static let md: CGFloat = 12
@@ -30,6 +31,7 @@ struct Theme {
         static let xl: CGFloat = 28
         static let xxl: CGFloat = 32
         static let xxxl: CGFloat = 42
+        static let composer: CGFloat = 22
         static let full: CGFloat = 999
     }
     

@@ -9,15 +9,28 @@ import SwiftUI
 
 struct ChatViewToolbar: ToolbarContent {
     let chat: ChatResponse?
+    let idealWidth: CGFloat
 
     @ToolbarContentBuilder
     var body: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
+        ToolbarItem(placement: .principal) {
             ChatViewToolbarUser(chat: chat)
-            .fixedSize(horizontal: true, vertical: false)
-
+                .frame(minWidth: 0, idealWidth: idealWidth, maxWidth: .infinity, alignment: .leading)
         }
         .sharedBackgroundVisibility(.hidden)
+
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                // shortcut: no chat actions yet, wire the options menu here when they exist
+            } label: {
+                Image(systemName: "ellipsis")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+            }
+            .tint(.primary)
+            .accessibilityLabel("Chat options")
+            .accessibilityIdentifier("chatOptionsButton")
+        }
     }
 }
 
@@ -35,6 +48,8 @@ struct ChatViewToolbarUser: View {
     var body: some View {
         NavigationLink(value: Route.profile(id: avatarID)) {
             content
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(.rect)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Chat profile: \(name)")
@@ -49,26 +64,18 @@ struct ChatViewToolbarUser: View {
                 name: name
             )
 
-            VStack(alignment: .center, spacing: Theme.spacing.xs) {
-                HStack(alignment: .firstTextBaseline, spacing: Theme.spacing.xs) {
-                    Text(name)
-                        .font(.system(.headline, design: .rounded, weight: .semibold))
-                        .foregroundStyle(.primary)
-                        .lineLimit(1)
+            VStack(alignment: .leading, spacing: Theme.spacing.micro) {
+                Text(name)
+                    .font(.system(.headline, design: .rounded, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
 
-                    Spacer(minLength: Theme.spacing.xs)
-                }
-
-                HStack(alignment: .firstTextBaseline, spacing: Theme.spacing.xs) {
-                    Text("Last seen recently")
-                        .font(.system(.subheadline, design: .rounded, weight: .medium))
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(1)
-
-                    Spacer(minLength: Theme.spacing.xs)
-                }
+                Text("Last seen recently")
+                    .font(.system(.subheadline, design: .rounded, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

@@ -10,13 +10,7 @@ import SwiftUI
 struct ChatFooterTextView: View {
     @FocusState.Binding var focused: Bool
     @Binding var text: String
-    @Binding var inputBarHeight: CGFloat
-    @Binding var isRecordingLocked: Bool
-    
-    private var isExpanded: Bool {
-        inputBarHeight > 44
-    }
-    
+
     var body: some View {
         TextField(
             "",
@@ -31,18 +25,12 @@ struct ChatFooterTextView: View {
         .focused($focused)
         .font(.system(.headline, design: .rounded, weight: .medium))
         .padding(.leading, Theme.spacing.lg)
+        .padding(.trailing, Theme.spacing.md)
         .padding(.vertical, Theme.spacing.md)
         .foregroundStyle(.primary)
         .textFieldStyle(.plain)
         .tint(Theme.colors.primary)
         .accessibilityLabel("Message")
         .accessibilityIdentifier("chatMessageField")
-        .opacity(isExpanded ? 0 : 1)
-        
-        ChatFooterSendView(
-            text: $text,
-            barHeight: $inputBarHeight,
-            isRecordingLocked: $isRecordingLocked
-        )
     }
 }
