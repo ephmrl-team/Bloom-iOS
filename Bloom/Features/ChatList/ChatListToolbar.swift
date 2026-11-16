@@ -11,19 +11,22 @@ struct ChatListToolbar: ToolbarContent {
     @Environment(Router.self) private var router
     @Environment(BloomManager.self) private var bloomManager
     @Environment(NetworkMonitor.self) private var networkMonitor
+    @Namespace private var searchNamespace
 
     @ToolbarContentBuilder
     var body: some ToolbarContent {
         if isSearching {
             ToolbarItem(placement: .principal) {
-                ChatSearchField(text: $searchText, isSearching: $isSearching)
+                ChatSearchField(text: $searchText)
                     // The toolbar sizes an item to its ideal width, so the field asks for the whole bar.
                     .frame(minWidth: 0, idealWidth: 10_000, maxWidth: .infinity)
                     .frame(height: 44)
+                    .matchedGeometryEffect(id: "search", in: searchNamespace)
             }
         } else {
             ToolbarItem(placement: .topBarLeading) {
                 searchButton
+                    .matchedGeometryEffect(id: "search", in: searchNamespace)
             }
 
             ToolbarItem(placement: .principal) {
@@ -51,23 +54,40 @@ struct ChatListToolbar: ToolbarContent {
             }
         } label: {
             toolbarIcon("magnifyingglass", size: 28)
-                .foregroundStyle(Theme.colors.secondaryText)
         }
-        .buttonStyle(GlassCircleButtonStyle())
+        .buttonStyle(.glass)
+        .buttonBorderShape(.circle)
         .accessibilityLabel("Search")
         .accessibilityIdentifier("searchButton")
     }
 
     private var composerButton: some View {
-        Button {
-            router.presentModal(.newMessage)
-        } label: {
-            toolbarIcon("square.and.pencil", size: 28)
-                .foregroundStyle(.white)
+        Button(action: composerAction) {
+            if isSearching {
+                toolbarIcon("x.mark", size: 24)
+                    .foregroundStyle(.white)
+            } else {
+                toolbarIcon("square.and.pencil", size: 28)
+                    .foregroundStyle(.white)
+            }
         }
-        .buttonStyle(GlassCircleButtonStyle(tint: Theme.colors.primary))
-        .accessibilityLabel("New message")
-        .accessibilityIdentifier("newMessageButton")
+        .buttonStyle(.glassProminent)
+        .buttonBorderShape(.circle)
+        .tint(isSearching ? Theme.colors.secondaryText : Theme.colors.primary)
+        .frame(width: 44, height: 44)
+        .accessibilityLabel(isSearching ? "Close search" : "New message")
+        .accessibilityIdentifier(isSearching ? "searchCloseButton" : "newMessageButton")
+    }
+
+    private func composerAction() {
+        if isSearching {
+            withAnimation(.smooth(duration: 0.3)) {
+                searchText = ""
+                isSearching = false
+            }
+        } else {
+            router.presentModal(.newMessage)
+        }
     }
 
     private func toolbarIcon(_ name: String, size: CGFloat) -> some View {
@@ -76,17 +96,5 @@ struct ChatListToolbar: ToolbarContent {
             .resizable()
             .scaledToFit()
             .frame(width: size, height: size)
-    }
-}
-
-/// Draws the glass inside the button, so the button itself is the only control.
-private struct GlassCircleButtonStyle: ButtonStyle {
-    var tint: Color?
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .frame(width: 44, height: 44)
-            .glassEffect(.regular.tint(tint).interactive(), in: Circle())
-            .opacity(configuration.isPressed ? 0.8 : 1)
     }
 }

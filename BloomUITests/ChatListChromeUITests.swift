@@ -25,8 +25,8 @@ final class ChatListChromeUITests: XCTestCase {
         app.buttons["searchButton"].tap()
         let field = app.textFields["searchField"]
         XCTAssertTrue(field.waitForExistence(timeout: 5))
-        // The field grows to fill the bar; the composer stays on the right.
-        XCTAssertTrue(app.buttons["newMessageButton"].exists)
+        // The field grows to fill the bar; the composer becomes the close button.
+        XCTAssertTrue(app.buttons["searchCloseButton"].exists)
         attachScreenshot(of: app, named: "search-open")
 
         field.tap()

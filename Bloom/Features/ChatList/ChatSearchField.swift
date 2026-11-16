@@ -8,7 +8,6 @@ import SwiftUI
 /// The expanded search field shown in the native toolbar.
 struct ChatSearchField: View {
     @Binding var text: String
-    @Binding var isSearching: Bool
 
     @FocusState private var isFocused: Bool
 
@@ -23,15 +22,6 @@ struct ChatSearchField: View {
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .accessibilityIdentifier("searchField")
-
-            Button(action: close) {
-                icon("x.mark", size: 14)
-                    .frame(width: 24, height: 24)
-                    .contentShape(.circle)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Close search")
-            .accessibilityIdentifier("searchCloseButton")
         }
         .padding(.horizontal, Theme.spacing.md)
         .frame(maxWidth: .infinity)
@@ -48,18 +38,11 @@ struct ChatSearchField: View {
             .frame(width: size, height: size)
             .foregroundStyle(Theme.colors.secondaryText)
     }
-
-    private func close() {
-        isFocused = false
-        text = ""
-        isSearching = false
-    }
 }
 
 #Preview {
     @Previewable @State var text = ""
-    @Previewable @State var isSearching = true
 
-    ChatSearchField(text: $text, isSearching: $isSearching)
+    ChatSearchField(text: $text)
         .padding()
 }
