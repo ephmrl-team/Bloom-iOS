@@ -36,8 +36,6 @@ struct ChatFooterSendView: View {
         .buttonStyle(.plain)
         .glassEffect(.regular.tint(Theme.colors.primary).interactive(), in: .circle)
         .glassEffectID("sendButton", in: namespace)
-        .glassEffectTransition(.matchedGeometry)
-        .animation(.smooth(duration: 0.3), value: hasText)
         .accessibilityLabel("Send message")
         .accessibilityIdentifier("chatSendButton")
     }
@@ -100,13 +98,14 @@ struct ChatFooterSendView: View {
 
         if !isRecordingLocked {
             withAnimation(.smooth(duration: 0.235)) {
-                barHeight = 44
+                barHeight = Self.size
             }
         }
     }
 
     private func send() {
-        withAnimation(.smooth(duration: 0.38)) {
+        // Animated here so the row's insertion transition runs; the list scrolls with the same curve.
+        withAnimation(.smooth(duration: 0.235)) {
             store.send(text)
         }
         text = ""

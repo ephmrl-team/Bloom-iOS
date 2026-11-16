@@ -17,6 +17,8 @@ struct VariableBlurView: View {
         VariableBlur(direction: .down)
             .maximumBlurRadius(3.25)
             .dimmingOvershoot(.relative(fraction: 1.3))
+            // Same dimming in both themes, half stronger than the library default (0.5 / 0.25).
+            .dimmingAlpha(.constant(alpha: 0.75))
             .passesTouchesThrough(true)
             .dimmingTintColor(color)
             .frame(height: height)

@@ -7,12 +7,15 @@ import SwiftUI
 
 struct ChatView: View {
     let chatId: Int
+    let profileZoom: Namespace.ID
 
     @Environment(BloomManager.self) private var bloomManager
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var store: MessagesStore?
     @State private var keyboard = KeyboardTracker()
     @State private var toolbarIdealWidth: CGFloat = 0
+    @State private var isAtBottom = true
+    @State private var bottomSpacerID = UUID()
 
     private var chat: ChatResponse? {
         bloomManager.conversations.first { $0.id == chatId }
@@ -33,11 +36,11 @@ struct ChatView: View {
         } action: { width in
             toolbarIdealWidth = width
         }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: { keyboard.update(safeAreaBottom: $0) }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar(.hidden, for: .tabBar)
         .toolbar {
-            ChatViewToolbar(chat: chat, idealWidth: toolbarIdealWidth)
+            ChatViewToolbar(chat: chat, idealWidth: toolbarIdealWidth, profileZoom: profileZoom)
         }
         .environment(keyboard)
         .background {
@@ -45,6 +48,10 @@ struct ChatView: View {
         }
         .bottomSafeAreaGradient()
         .topVariableBlur()
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 3).onChanged { _ in keyboard.dismiss() }
+        )
+        .onDisappear { keyboard.dismiss() }
         .task {
             guard store == nil else { return }
             let store = bloomManager.makeMessagesStore(chatID: chatId)
@@ -78,30 +85,57 @@ struct ChatView: View {
     }
 
     private func messages(_ store: MessagesStore) -> some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(store.data) { item in
-                    ChatRowView(item: item, isSeen: item.id <= store.lastSeenId)
-                        .equatable()
-                        .padding(.horizontal, Theme.spacing.lg)
-                        .transition(.asymmetric(
-                            insertion: .opacity
-                                .combined(with: .blur(radius: reduceMotion ? 0 : 10))
-                                .combined(with: .offset(y: reduceMotion ? 0 : 30)),
-                            removal: .opacity
-                        ))
+        // Read once so a seen-marker update does not invalidate every row.
+        let seenID = store.lastSeenId
+
+        return ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(store.data, id: \.renderID) { item in
+                        ChatRowView(item: item, isSeen: item.id > 0 && item.id <= seenID)
+                            .equatable()
+                            .padding(.horizontal, Theme.spacing.lg)
+                            .id(item.renderID)
+                            .transition(.asymmetric(
+                                insertion: .opacity
+                                    .combined(with: .blur(radius: reduceMotion ? 0 : 10))
+                                    .combined(with: .offset(y: reduceMotion ? 0 : 150)),
+                                removal: .opacity
+                            ))
+                    }
+
+                    Color.clear
+                        .frame(height: 1)
+                        .id(bottomSpacerID)
+                }
+            }
+            .onChange(of: store.data.count) { oldCount, newCount in
+                guard newCount > oldCount, isAtBottom || store.data.last?.me == true else { return }
+                // The first batch is placed by the bottom anchor; animating it would look like a scroll.
+                guard oldCount > 0 else {
+                    proxy.scrollTo(bottomSpacerID, anchor: .bottom)
+                    return
+                }
+                withAnimation(.smooth(duration: 0.235)) {
+                    proxy.scrollTo(bottomSpacerID, anchor: .bottom)
                 }
             }
         }
+        .opacity(store.data.isEmpty ? 0 : 1)
         .accessibilityIdentifier("chatMessageList")
         .scrollIndicators(.hidden)
         .defaultScrollAnchor(.bottom)
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            geometry.contentOffset.y >= geometry.contentSize.height - geometry.containerSize.height - 120
+        } action: { _, atBottom in
+            isAtBottom = atBottom
+        }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             ChatComposerInset()
                 .disabled(store.data.isEmpty && (store.isLoading || store.loadFailed))
         }
         .ignoresSafeArea(.container, edges: .bottom)
-        .scrollDismissesKeyboard(.interactively)
+        .scrollDismissesKeyboard(.immediately)
         // The system edge effect is replaced by `topVariableBlur()` on the screen.
         .scrollEdgeEffectHidden(true, for: .top)
     }
@@ -114,6 +148,6 @@ private struct ChatComposerInset: View {
         ChatFooterView()
             .padding(.horizontal, KeyboardTracker.padding(for: keyboard.progress))
             .padding(.top, Theme.spacing.md)
-            .padding(.bottom, KeyboardTracker.padding(for: keyboard.progress))
+            .padding(.bottom, KeyboardTracker.bottomInset(for: keyboard.progress))
     }
 }

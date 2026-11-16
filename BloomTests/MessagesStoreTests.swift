@@ -71,9 +71,11 @@ struct MessagesStoreTests {
         store.send("  hi \n")
         #expect(store.data.count == 1)
         #expect(store.data.first?.id == -1)
+        let renderID = store.data.first?.renderID
 
         let replaced = await Self.eventually { store.data.first?.id == 10 }
         #expect(replaced)
+        #expect(store.data.first?.renderID == renderID)
         #expect(api.sentMessages.first?.content == "hi")
     }
 

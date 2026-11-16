@@ -40,6 +40,7 @@ private struct UIKitContextMenuView<Preview: View>: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
         view.backgroundColor = .clear
+        view.tintColor = .label
         view.isUserInteractionEnabled = true
         let interaction = UIContextMenuInteraction(delegate: context.coordinator)
         view.addInteraction(interaction)

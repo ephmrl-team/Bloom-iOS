@@ -13,6 +13,15 @@ struct MessageItem: Identifiable, Hashable, Sendable {
     let content: String
     let date: String
     let me: Bool
+    let renderID: UUID
+
+    init(id: Int, content: String, date: String, me: Bool, renderID: UUID = UUID()) {
+        self.id = id
+        self.content = content
+        self.date = date
+        self.me = me
+        self.renderID = renderID
+    }
 }
 
 @Observable
@@ -26,6 +35,8 @@ final class MessagesStore {
     private let chatID: Int
     private let backend: (any BloomAPI)?
     private let currentUserID: String
+    /// Pending rows count down from -1, so no scan of `data` is needed per send.
+    private var nextPendingID = -1
 
     init(chatID: Int, backend: any BloomAPI, currentUserID: String) {
         self.chatID = chatID
@@ -65,20 +76,20 @@ final class MessagesStore {
         let body = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !body.isEmpty, let backend else { return }
 
-        let pendingID = (data.map(\.id).min() ?? 0) - 1
+        let pendingID = nextPendingID
+        nextPendingID -= 1
         data.append(MessageItem(id: pendingID, content: body, date: Self.formatted(.now), me: true))
 
         Task {
             do {
                 let payload = try await backend.sendMessage(chatID: chatID, content: body)
                 let message = try JSONDecoder.bloomDecoder.decode(DecryptedMessageWithReply.self, from: payload)
-                let item = MessageItem(message, currentUserID: currentUserID)
-
                 if let index = data.firstIndex(where: { $0.id == pendingID }) {
+                    let item = MessageItem(message, currentUserID: currentUserID, renderID: data[index].renderID)
                     data[index] = item
                 }
                 if message.seen != nil {
-                    lastSeenId = item.id
+                    lastSeenId = message.id
                 }
             } catch {
                 data.removeAll { $0.id == pendingID }
@@ -93,7 +104,7 @@ final class MessagesStore {
 }
 
 private extension MessageItem {
-    init(_ message: DecryptedMessageWithReply, currentUserID: String) {
+    init(_ message: DecryptedMessageWithReply, currentUserID: String, renderID: UUID = UUID()) {
         let date = message.timestamp > 0
             ? Date(timeIntervalSince1970: TimeInterval(message.timestamp))
             : message.createdAt
@@ -102,7 +113,8 @@ private extension MessageItem {
             id: message.id,
             content: message.content,
             date: MessagesStore.formatted(date),
-            me: message.authorId == currentUserID
+            me: message.authorId == currentUserID,
+            renderID: renderID
         )
     }
 }

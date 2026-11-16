@@ -6,42 +6,60 @@
 import SwiftUI
 import UIKit
 
-/// Zero-size probe that hands the keyboard's position over to `KeyboardTracker`.
 struct KeyboardTrackerHost: UIViewRepresentable {
     let tracker: KeyboardTracker
 
     func makeUIView(context: Context) -> ProbeView {
-        let view = ProbeView(frame: .zero)
+        let view = ProbeView()
         view.isUserInteractionEnabled = false
-        view.onWindow = { [tracker] probe, window in
-            tracker.attach(guide: probe.guide, in: window)
-        }
+        view.onWindow = { [weak tracker] window in tracker?.attach(in: window) }
+        view.onPopBegan = { [weak tracker] in tracker?.dismiss() }
         return view
     }
 
     func updateUIView(_ uiView: ProbeView, context: Context) {}
 
     final class ProbeView: UIView {
-        /// Spans from the keyboard's top edge to the bottom of the window.
-        let guide = UIView()
-
-        var onWindow: ((ProbeView, UIWindow) -> Void)?
+        var onWindow: ((UIWindow) -> Void)?
+        var onPopBegan: (() -> Void)?
+        private weak var popGesture: UIGestureRecognizer?
 
         override func didMoveToWindow() {
             super.didMoveToWindow()
-            guard let window, guide.superview == nil else { return }
+            if let window { onWindow?(window) }
+            attachPopGesture()
+        }
 
-            guide.isUserInteractionEnabled = false
-            guide.alpha = 0
-            guide.translatesAutoresizingMaskIntoConstraints = false
-            addSubview(guide)
-            NSLayoutConstraint.activate([
-                guide.topAnchor.constraint(equalTo: window.keyboardLayoutGuide.topAnchor),
-                guide.bottomAnchor.constraint(equalTo: window.bottomAnchor),
-                guide.leadingAnchor.constraint(equalTo: leadingAnchor),
-                guide.widthAnchor.constraint(equalToConstant: 1)
-            ])
-            onWindow?(self, window)
+        /// Dismiss the keyboard as soon as the interactive back swipe starts, before the pop completes.
+        private func attachPopGesture() {
+            guard popGesture == nil else { return }
+
+            var responder: UIResponder? = self
+            while let current = responder {
+                if let navigation = current as? UINavigationController,
+                   let gesture = navigation.interactivePopGestureRecognizer {
+                    gesture.addTarget(self, action: #selector(popGestureChanged))
+                    popGesture = gesture
+                    return
+                }
+                responder = current.next
+            }
+        }
+
+        @objc private func popGestureChanged() {
+            guard let popGesture else { return }
+            switch popGesture.state {
+            case .began:
+                onPopBegan?()
+            case .ended, .cancelled:
+                // shortcut: fixed 400 ms guess for UIKit restoring the first responder after a cancelled pop.
+                Task { @MainActor [weak self] in
+                    try? await Task.sleep(for: .milliseconds(400))
+                    self?.onPopBegan?()
+                }
+            default:
+                break
+            }
         }
     }
 }

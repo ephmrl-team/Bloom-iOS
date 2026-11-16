@@ -26,7 +26,7 @@ struct ChatFooterTextView: View {
         .font(.system(.headline, design: .rounded, weight: .medium))
         .padding(.leading, Theme.spacing.lg)
         .padding(.trailing, Theme.spacing.md)
-        .padding(.vertical, Theme.spacing.md)
+        .padding(.vertical, Theme.spacing.sm)
         .foregroundStyle(.primary)
         .textFieldStyle(.plain)
         .tint(Theme.colors.primary)

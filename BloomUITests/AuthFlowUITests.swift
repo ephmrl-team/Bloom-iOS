@@ -18,33 +18,17 @@ final class AuthFlowUITests: XCTestCase {
         return app
     }
 
-    /// A Debug build reopened without launch arguments still uses the mock backend.
+    /// A Debug build reopened without launch arguments still uses the mock backend:
+    /// no arguments, and the iCloud button goes straight to the chat list.
     func testDebugBuildDefaultsToMock() {
         let app = XCUIApplication()
         app.launch()
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
 
-        XCTAssertTrue(app.buttons["continueWithoutAccountButton"].waitForExistence(timeout: 10))
-    }
-
-    /// The mock backend has nothing to authorise, so the iCloud button goes straight in.
-    func testMockContinueSkipsSignIn() {
-        let app = launch()
-
-        XCTAssertTrue(app.buttons["continueButton"].waitForExistence(timeout: 10))
-        app.buttons["continueButton"].tap()
-
-        XCTAssertTrue(app.buttons["newMessageButton"].waitForExistence(timeout: 10))
-    }
-
-    /// MOCK also offers the guest entry, which opens the chat list without a session.
-    func testMockContinueWithoutAccountShowsChats() {
-        let app = launch()
-
-        let guest = app.buttons["continueWithoutAccountButton"]
-        XCTAssertTrue(guest.waitForExistence(timeout: 10))
-        guest.tap()
-
+        let continueButton = app.buttons["continueButton"]
+        XCTAssertTrue(continueButton.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["continueWithoutAccountButton"].exists)
+        continueButton.tap()
         XCTAssertTrue(app.buttons["newMessageButton"].waitForExistence(timeout: 10))
         XCTAssertTrue(element("chatRow_1", in: app).waitForExistence(timeout: 10))
     }
@@ -57,10 +41,7 @@ final class AuthFlowUITests: XCTestCase {
         XCTAssertTrue(firstWord.waitForExistence(timeout: 10))
         firstWord.tap()
 
-        let words = Array(repeating: "abandon", count: 11) + ["about"]
-        for word in words {
-            app.typeText("\(word)\n")
-        }
+        typeMnemonic(Array(repeating: "abandon", count: 11) + ["about"], into: app)
 
         app.buttons["continueButton"].tap()
 
@@ -71,6 +52,19 @@ final class AuthFlowUITests: XCTestCase {
         XCTAssertTrue(app.buttons["newMessageButton"].waitForExistence(timeout: 10))
     }
 
+    /// Focus moves between fields on every return, so each word needs its own round trip.
+    private func typeMnemonic(_ words: [String], into app: XCUIApplication) {
+        for word in words {
+            app.typeText("\(word)\n")
+        }
+    }
+
+    /// The mock backend has nothing to authorise: one tap lands on the chat list.
+    private func enterChats(_ app: XCUIApplication) {
+        XCTAssertTrue(app.buttons["continueButton"].waitForExistence(timeout: 10))
+        app.buttons["continueButton"].tap()
+        XCTAssertTrue(app.buttons["newMessageButton"].waitForExistence(timeout: 10))
+    }
     func testMnemonicLoginShowsChats() {
         let app = launch()
 
@@ -81,7 +75,7 @@ final class AuthFlowUITests: XCTestCase {
 
     func testSendsMessageInChat() {
         let app = launch()
-        signIn(app)
+        enterChats(app)
 
         element("chatRow_1", in: app).tap()
 
@@ -106,9 +100,7 @@ final class AuthFlowUITests: XCTestCase {
         let firstWord = app.textFields["mnemonicWord1"]
         XCTAssertTrue(firstWord.waitForExistence(timeout: 10))
         firstWord.tap()
-        for _ in 0..<12 {
-            app.typeText("abandon\n")
-        }
+        typeMnemonic(Array(repeating: "abandon", count: 12), into: app)
 
         XCTAssertFalse(app.buttons["continueButton"].isEnabled)
     }
@@ -120,9 +112,7 @@ final class AuthFlowUITests: XCTestCase {
         let firstWord = app.textFields["mnemonicWord1"]
         XCTAssertTrue(firstWord.waitForExistence(timeout: 10))
         firstWord.tap()
-        for word in Array(repeating: "abandon", count: 11) + ["about"] {
-            app.typeText("\(word)\n")
-        }
+        typeMnemonic(Array(repeating: "abandon", count: 11) + ["about"], into: app)
 
         app.buttons["continueButton"].tap()
 

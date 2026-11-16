@@ -7,9 +7,14 @@
 
 import SwiftUI
 
-struct BlurTransition: ViewModifier {
-    let radius: CGFloat
-    
+struct BlurTransition: ViewModifier, Animatable {
+    var radius: CGFloat
+
+    var animatableData: CGFloat {
+        get { radius }
+        set { radius = newValue }
+    }
+
     func body(content: Content) -> some View {
         content.blur(radius: radius)
     }

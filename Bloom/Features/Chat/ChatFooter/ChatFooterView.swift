@@ -8,15 +8,19 @@
 import SwiftUI
 
 struct ChatFooterView: View {
+    /// One height for the bar and the send circle: the glass morph needs both to line up.
+    private static let controlSize = ChatFooterSendView.size
+
     @State private var text: String = ""
-    @State private var inputBarHeight: CGFloat = 44
+    @State private var inputBarHeight: CGFloat = Self.controlSize
     @State private var isRecordingLocked: Bool = false
 
     @FocusState private var focused: Bool
     @Namespace private var inputNS
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var isExpanded: Bool {
-        inputBarHeight > 44
+        inputBarHeight > Self.controlSize
     }
 
     private var hasText: Bool {
@@ -24,7 +28,7 @@ struct ChatFooterView: View {
     }
 
     var body: some View {
-        GlassEffectContainer(spacing: Theme.spacing.md) {
+        GlassEffectContainer(spacing: Theme.spacing.lg) {
             HStack(alignment: .bottom, spacing: Theme.spacing.md) {
                 input
                 if hasText {
@@ -34,11 +38,16 @@ struct ChatFooterView: View {
                         isRecordingLocked: $isRecordingLocked,
                         namespace: inputNS
                     )
+                    // The transition belongs to the view that is inserted, and the
+                    // container spacing (16) is wider than the 12 pt gap so the glass
+                    // grows out of the input instead of popping in.
+                    .glassEffectTransition(reduceMotion ? .identity : .matchedGeometry)
                 }
             }
             .frame(maxWidth: .infinity)
         }
-        .animation(.smooth(duration: 0.3), value: hasText)
+        .animation(.smooth(duration: 0.235), value: hasText)
+        .onDisappear { focused = false }
     }
 
     private var input: some View {
@@ -51,7 +60,12 @@ struct ChatFooterView: View {
                 ChatFooterTextView(focused: $focused, text: $text)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 44, maxHeight: isExpanded ? inputBarHeight : nil, alignment: .leading)
+        .frame(
+            maxWidth: .infinity,
+            minHeight: Self.controlSize,
+            maxHeight: isExpanded ? inputBarHeight : nil,
+            alignment: .leading
+        )
         .clipShape(RoundedRectangle(cornerRadius: Theme.radius.composer))
         .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: Theme.radius.composer))
         .glassEffectID("messageInput", in: inputNS)

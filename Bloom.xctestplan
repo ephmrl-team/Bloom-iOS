@@ -4,7 +4,9 @@
       "id" : "6C0F1E54-1B4A-4F87-9A11-5B2E7C3D8A01",
       "name" : "Default",
       "options" : {
-
+        "defaultTestExecutionTimeAllowance" : 30,
+        "maximumTestExecutionTimeAllowance" : 30,
+        "testTimeoutsEnabled" : true
       }
     },
     {

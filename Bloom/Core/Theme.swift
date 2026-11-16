@@ -39,6 +39,13 @@ struct Theme {
         static let md: CGFloat = 0.85
     }
 
+    /// Toolbar titles: one shape for every screen (see AGENTS.md, "Toolbar titles").
+    struct toolbarTitle {
+        static let fontSize: CGFloat = 18
+        static let iconSize: CGFloat = 23
+        static let spacing: CGFloat = 6
+    }
+
     
     struct colors {
         static let background = Color.dynamic(lightHex: "ffffff", darkHex: "000000")
@@ -56,7 +63,7 @@ struct Theme {
         
         static let white = Color(uiColor: UIColor(hex: "ffffff"))
         static let black = Color(uiColor: UIColor(hex: "000000"))
-        static let primary = Color(uiColor: UIColor(hex: "1A8CFF"))
+        static let primary = Color(uiColor: UIColor(hex: "42A1FF"))
         static let orange = Color(uiColor: UIColor(hex: "FF531B"))
         static let green = Color(uiColor: UIColor(hex: "1AFF7A"))
         static let pink = Color(uiColor: UIColor(hex: "FF1A45"))

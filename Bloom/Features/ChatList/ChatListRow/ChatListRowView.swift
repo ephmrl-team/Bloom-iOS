@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ChatsListRowView: View {
     let chat: ChatResponse
+    @Environment(BloomManager.self) private var bloomManager
+    @State private var previewWidth: CGFloat = 320
 
     private func formatTime(from timestamp: Int64?) -> String {
         guard let ts = timestamp else { return "" }
@@ -58,6 +60,7 @@ struct ChatsListRowView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, Theme.spacing.lg)
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { previewWidth = $0 }
         .contentShape(.rect)
         .background {
             NavigationLink(value: Route.chat(id: chat.id)) {
@@ -84,7 +87,8 @@ struct ChatsListRowView: View {
                 Label("Delete chat", systemImage: "trash.fill")
             }
         } preview: {
-            ChatPreviewView(chat: chat)
+            ChatPreviewView(chat: chat, store: bloomManager.makeMessagesStore(chatID: chat.id), width: previewWidth)
         }
+        .tint(.primary)
     }
 }

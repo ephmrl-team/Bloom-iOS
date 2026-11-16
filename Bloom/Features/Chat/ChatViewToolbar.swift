@@ -10,11 +10,12 @@ import SwiftUI
 struct ChatViewToolbar: ToolbarContent {
     let chat: ChatResponse?
     let idealWidth: CGFloat
+    let profileZoom: Namespace.ID
 
     @ToolbarContentBuilder
     var body: some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            ChatViewToolbarUser(chat: chat)
+            ChatViewToolbarUser(chat: chat, profileZoom: profileZoom)
                 .frame(minWidth: 0, idealWidth: idealWidth, maxWidth: .infinity, alignment: .leading)
         }
         .sharedBackgroundVisibility(.hidden)
@@ -36,6 +37,10 @@ struct ChatViewToolbar: ToolbarContent {
 
 struct ChatViewToolbarUser: View {
     let chat: ChatResponse?
+    let profileZoom: Namespace.ID
+
+    @Environment(KeyboardTracker.self) private var keyboard
+    @Environment(Router.self) private var router
 
     private var name: String {
         chat?.title ?? chat?.recipient?.displayName ?? chat?.recipient?.username ?? "Chat"
@@ -46,7 +51,10 @@ struct ChatViewToolbarUser: View {
     }
 
     var body: some View {
-        NavigationLink(value: Route.profile(id: avatarID)) {
+        Button {
+            keyboard.dismiss()
+            router.push(.profile(id: avatarID))
+        } label: {
             content
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(.rect)
@@ -63,8 +71,9 @@ struct ChatViewToolbarUser: View {
                 id: avatarID,
                 name: name
             )
+            .matchedTransitionSource(id: avatarID, in: profileZoom)
 
-            VStack(alignment: .leading, spacing: Theme.spacing.micro) {
+            VStack(alignment: .leading, spacing: Theme.spacing.xs) {
                 Text(name)
                     .font(.system(.headline, design: .rounded, weight: .semibold))
                     .foregroundStyle(.primary)

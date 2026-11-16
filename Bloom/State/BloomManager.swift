@@ -146,14 +146,6 @@ final class BloomManager {
         hasChatListError = false
     }
 
-    #if DEBUG
-    /// Mock only: opens the app without an account, with the mock backend's chats.
-    func continueAsGuest() {
-        currentUser = MockData.me
-        startSyncingChats()
-    }
-    #endif
-
     private func setupSession(user: User) {
         currentUser = user
         backend.startUserUpdates()

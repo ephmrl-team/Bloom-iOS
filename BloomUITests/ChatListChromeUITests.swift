@@ -46,25 +46,18 @@ final class ChatListChromeUITests: XCTestCase {
         XCTAssertTrue(element("chatRow_1", in: app).exists)
         attachScreenshot(of: app, named: "search-filtered")
 
+        // Regression: the empty-results branch used to tear the search host down mid-typing.
+        field.typeText("zzzzzz")
+        XCTAssertTrue(element("chatRow_1", in: app).waitForNonExistence(timeout: 5))
+        XCTAssertTrue(field.exists)
+        XCTAssertEqual(field.value as? String, "Ninazzzzzz")
+        for _ in 0..<6 { field.typeText(XCUIKeyboardKey.delete.rawValue) }
+
         app.buttons["close"].tap()
         XCTAssertTrue(app.buttons["newMessageButton"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["close"].exists)
         XCTAssertTrue(element("chatRow_2", in: app).waitForExistence(timeout: 5))
         attachScreenshot(of: app, named: "search-closed")
-    }
-
-    /// Regression: the empty-results branch used to tear the search host down mid-typing.
-    func testSearchSurvivesAQueryWithNoMatches() {
-        let app = launchChats()
-        app.navigationBars.buttons["Search"].tap()
-        let field = element("searchField", in: app)
-        XCTAssertTrue(field.waitForExistence(timeout: 5))
-        field.tap()
-
-        field.typeText("zzzzzz")
-        XCTAssertTrue(element("chatRow_1", in: app).waitForNonExistence(timeout: 5))
-        XCTAssertTrue(field.exists)
-        XCTAssertEqual(field.value as? String, "zzzzzz")
     }
 
     func testSearchRemainsAfterOpeningChatAndReturning() {

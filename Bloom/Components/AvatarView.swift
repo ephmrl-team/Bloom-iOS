@@ -9,10 +9,11 @@
 import SwiftUI
 
 enum AvatarSize {
-    case sm, md, lg, xl, xxl, xxxl, xxxxl
+    case xs, sm, md, lg, xl, xxl, xxxl, xxxxl
     
     var dimension: CGFloat {
         switch self {
+        case .xs: return 34
         case .sm: return 40
         case .md: return 44
         case .lg: return 56

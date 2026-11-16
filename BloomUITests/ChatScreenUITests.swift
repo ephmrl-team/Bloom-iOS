@@ -11,12 +11,12 @@ final class ChatScreenUITests: XCTestCase {
         app.launchArguments = ["-AppMode=mock", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
 
-        XCTAssertTrue(app.buttons["continueButton"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.buttons["continueButton"].waitForExistence(timeout: 15))
         app.buttons["continueButton"].tap()
-        XCTAssertTrue(element("chatRow_1", in: app).waitForExistence(timeout: 20))
+        XCTAssertTrue(element("chatRow_1", in: app).waitForExistence(timeout: 15))
         element("chatRow_1", in: app).tap()
 
-        XCTAssertTrue(element("chatMessageField", in: app).waitForExistence(timeout: 30))
+        XCTAssertTrue(element("chatMessageField", in: app).waitForExistence(timeout: 15))
         XCTAssertTrue(element("chatProfileButton", in: app).isHittable)
         XCTAssertTrue(element("chatOptionsButton", in: app).isHittable)
         XCTAssertTrue(app.navigationBars.buttons.element(boundBy: 0).isHittable)
@@ -41,16 +41,20 @@ final class ChatScreenUITests: XCTestCase {
         app.launchArguments = ["-AppMode=mock", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
 
-        XCTAssertTrue(app.buttons["continueButton"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.buttons["continueButton"].waitForExistence(timeout: 15))
         app.buttons["continueButton"].tap()
-        XCTAssertTrue(element("chatRow_1", in: app).waitForExistence(timeout: 20))
+        XCTAssertTrue(element("chatRow_1", in: app).waitForExistence(timeout: 15))
         element("chatRow_1", in: app).tap()
 
         let field = element("chatMessageField", in: app)
-        XCTAssertTrue(field.waitForExistence(timeout: 30))
+        XCTAssertTrue(field.waitForExistence(timeout: 15))
+        // The text field has 16 pt leading and 11 pt bottom inset inside the glass.
+        XCTAssertEqual(field.frame.minX, app.frame.minX + 44, accuracy: 1)
+        XCTAssertEqual(app.frame.maxY - field.frame.maxY, 39, accuracy: 1)
         field.tap()
         let keyboard = app.keyboards.firstMatch
         XCTAssertTrue(keyboard.waitForExistence(timeout: 10))
+        XCTAssertEqual(field.frame.minX, app.frame.minX + 32, accuracy: 1)
         XCTAssertLessThanOrEqual(field.frame.maxY, keyboard.frame.minY + 1)
         field.typeText("Smooth message")
         let send = element("chatSendButton", in: app)
@@ -63,26 +67,29 @@ final class ChatScreenUITests: XCTestCase {
         XCTAssertEqual(field.value as? String, "")
         XCTAssertTrue(field.isHittable)
         XCTAssertLessThanOrEqual(field.frame.maxY, keyboard.frame.minY + 1)
+        element("chatMessageList", in: app).swipeDown()
+        let hidden = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: keyboard)
+        XCTAssertEqual(XCTWaiter.wait(for: [hidden], timeout: 10), .completed)
+        XCTAssertEqual(field.frame.minX, app.frame.minX + 44, accuracy: 1)
     }
 
-    func testFocusingMessageFieldKeepsChatResponsive() {
+    func testOpensProfileAndReturnsToChat() {
         let app = XCUIApplication()
         app.launchArguments = ["-AppMode=mock", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
 
-        XCTAssertTrue(app.buttons["continueButton"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.buttons["continueButton"].waitForExistence(timeout: 15))
         app.buttons["continueButton"].tap()
-        XCTAssertTrue(element("chatRow_1", in: app).waitForExistence(timeout: 20))
-        element("chatRow_1", in: app).tap()
+        let chat = element("chatRow_1", in: app)
+        XCTAssertTrue(chat.waitForExistence(timeout: 15))
+        chat.tap()
 
-        let field = element("chatMessageField", in: app)
-        XCTAssertTrue(field.waitForExistence(timeout: 30))
-        field.tap()
-        let keyboard = app.keyboards.firstMatch
-        XCTAssertTrue(keyboard.waitForExistence(timeout: 10))
-        XCTAssertLessThanOrEqual(field.frame.maxY, keyboard.frame.minY + 1)
-        field.typeText("Hello")
-        XCTAssertTrue(field.isHittable)
+        let profile = element("chatProfileButton", in: app)
+        XCTAssertTrue(profile.waitForExistence(timeout: 15))
+        profile.tap()
+        XCTAssertTrue(element("profileAvatar", in: app).waitForExistence(timeout: 15))
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(element("chatMessageField", in: app).waitForExistence(timeout: 15))
     }
 
     private func element(_ identifier: String, in app: XCUIApplication) -> XCUIElement {

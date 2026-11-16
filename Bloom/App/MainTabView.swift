@@ -16,6 +16,7 @@ struct MainTabView: View {
     @Environment(Router.self) private var router
 
     @State private var selection: Tab = .chats
+    @Namespace private var profileZoom
 
     var body: some View {
         @Bindable var router = router
@@ -36,12 +37,14 @@ struct MainTabView: View {
                         case .chatList:
                             ChatListView()
                         case .chat(let id):
-                            ChatView(chatId: id)
+                            ChatView(chatId: id, profileZoom: profileZoom)
                         case .profile(let id):
                             ProfileView(userID: id)
+                                .navigationTransition(.zoom(sourceID: id, in: profileZoom))
                         }
                     }
             }
+            .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
             .tabItem {
                 tabIcon("chat.bubbles", label: "Chats")
             }
@@ -55,7 +58,7 @@ struct MainTabView: View {
             }
             .tag(Tab.settings)
         }
-        .tint(.primary)
+        .tint(Theme.colors.primary)
     }
 
     /// Icons only, 32 pt: the tab bar carries no labels.

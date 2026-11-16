@@ -33,7 +33,6 @@ struct ProfileView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationTitle("Profile")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar(.hidden, for: .tabBar)
         .task { await load() }
     }
 
@@ -44,6 +43,7 @@ struct ProfileView: View {
                 id: userID,
                 name: user.displayName ?? user.username
             )
+            .accessibilityIdentifier("profileAvatar")
 
             VStack(spacing: Theme.spacing.xs) {
                 Text(user.displayName ?? user.username)

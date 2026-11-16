@@ -15,7 +15,7 @@ final class Router {
     
     func push(_ route: Route) { path.append(route) }
     func pop() { if !path.isEmpty { path.removeLast() } }
-    
+
     func presentModal(_ route: ModalRoute) { presentedSheet = route }
     func dismissModal() { presentedSheet = nil }
     

@@ -102,28 +102,6 @@ struct AuthWelcomeFooterView: View {
             .animation(.smooth(duration: 0.65).delay(0.32), value: appeared)
             .contentShape(Capsule())
 
-            #if DEBUG
-            if AppMode.current == .mock {
-                Button {
-                    bloomManager.continueAsGuest()
-                    appState.authenticate()
-                } label: {
-                    Text("Continue without account")
-                        .font(.system(.headline, design: .rounded, weight: .semibold))
-                        .foregroundStyle(.foreground)
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("continueWithoutAccountButton")
-                .frame(maxWidth: .infinity)
-                .frame(height: 28)
-                .disabled(isLoading)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 16)
-                .blur(radius: appeared ? 0 : 8)
-                .animation(.smooth(duration: 0.65).delay(0.4), value: appeared)
-                .contentShape(Capsule())
-            }
-            #endif
         }
         .padding(.horizontal, 36)
         .padding(.top, 16)
