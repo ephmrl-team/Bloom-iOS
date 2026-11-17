@@ -104,10 +104,7 @@ struct ChatFooterSendView: View {
     }
 
     private func send() {
-        // Animated here so the row's insertion transition runs; the list scrolls with the same curve.
-        withAnimation(.smooth(duration: 0.235)) {
-            store.send(text)
-        }
+        store.send(text)
         text = ""
     }
 }

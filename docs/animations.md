@@ -10,7 +10,7 @@ Read this before touching motion, transitions, the composer or anything that rea
 - Use one explicit animation per state change (`withAnimation(.smooth(duration: 0.235))`), not several
   competing implicit ones on the same view.
 - Respect Reduce Motion: read `@Environment(\.accessibilityReduceMotion)` and drop travel/blur, keep opacity.
-  `ChatView.messageRow` and `WelcomePageView` are the reference implementations.
+  `ChatMessageAppearance` and `WelcomePageView` are the reference implementations.
 - Keep the animated value small and local: put a per-frame value (keyboard progress, audio level) in a tiny
   `@Observable` model that only the animating view reads, so the rest of the screen is not invalidated.
 - Do not start an animation inside `body`. Compute the target in the model, animate from the event handler.

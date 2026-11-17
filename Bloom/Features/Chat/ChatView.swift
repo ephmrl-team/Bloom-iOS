@@ -10,11 +10,11 @@ struct ChatView: View {
     let profileZoom: Namespace.ID
 
     @Environment(BloomManager.self) private var bloomManager
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var store: MessagesStore?
     @State private var keyboard = KeyboardTracker()
     @State private var toolbarIdealWidth: CGFloat = 0
     @State private var isAtBottom = true
+    @State private var listReady = false
     @State private var bottomSpacerID = UUID()
 
     private var chat: ChatResponse? {
@@ -86,16 +86,11 @@ struct ChatView: View {
         // Read once so a seen-marker update does not invalidate every row.
         let seenID = store.lastSeenId
 
-        return messageScroll(store, seenID: seenID)
-            .opacity(store.data.isEmpty ? 0 : 1)
+        return bottomTracking(messageScroll(store, seenID: seenID), store)
+            .opacity(listReady ? 1 : 0)
             .accessibilityIdentifier("chatMessageList")
             .scrollIndicators(.hidden)
             .defaultScrollAnchor(.bottom)
-            .onScrollGeometryChange(for: Bool.self) { geometry in
-                geometry.contentOffset.y >= geometry.contentSize.height - geometry.containerSize.height - 120
-            } action: { _, atBottom in
-                isAtBottom = atBottom
-            }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 ChatComposerInset()
                     .disabled(store.data.isEmpty && (store.isLoading || store.loadFailed))
@@ -112,12 +107,25 @@ struct ChatView: View {
             .scrollEdgeEffectHidden(true, for: .top)
     }
 
+    private func bottomTracking(_ view: some View, _ store: MessagesStore) -> some View {
+        view.onScrollGeometryChange(for: Bool.self) { geometry in
+            // The keyboard sits in the content inset, so the offset alone never reports the bottom.
+            geometry.contentOffset.y + geometry.contentInsets.bottom
+                >= geometry.contentSize.height - geometry.containerSize.height - 120
+        } action: { _, atBottom in
+            isAtBottom = atBottom
+            if atBottom, !store.data.isEmpty {
+                listReady = true
+            }
+        }
+    }
+
     private func messageScroll(_ store: MessagesStore, seenID: Int) -> some View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(store.data, id: \.renderID) { item in
-                        messageRow(item, seenID: seenID)
+                        messageRow(item, seenID: seenID, store: store)
                     }
 
                     Color.clear
@@ -141,6 +149,7 @@ struct ChatView: View {
         // The first batch is placed by the bottom anchor; animating it would look like a scroll.
         guard oldCount > 0 else {
             proxy.scrollTo(bottomSpacerID, anchor: .bottom)
+            listReady = true
             return
         }
         withAnimation(.smooth(duration: 0.235)) {
@@ -148,17 +157,15 @@ struct ChatView: View {
         }
     }
 
-    private func messageRow(_ item: MessageItem, seenID: Int) -> some View {
-        ChatRowView(item: item, isSeen: item.id > 0 && item.id <= seenID)
-            .equatable()
-            .padding(.horizontal, Theme.spacing.lg)
-            .id(item.renderID)
-            .transition(.asymmetric(
-                insertion: .opacity
-                    .combined(with: .blur(radius: reduceMotion ? 0 : 10))
-                    .combined(with: .offset(y: reduceMotion ? 0 : 150)),
-                removal: .opacity
-            ))
+    private func messageRow(_ item: MessageItem, seenID: Int, store: MessagesStore) -> some View {
+        ChatMessageAppearance(
+            item: item,
+            isSeen: item.id > 0 && item.id <= seenID,
+            animate: store.appearingMessageIDs.contains(item.renderID)
+        ) {
+            store.didShowMessage(item.renderID)
+        }
+        .id(item.renderID)
     }
 }
 

@@ -28,6 +28,7 @@ struct MessageItem: Identifiable, Hashable, Sendable {
 @MainActor
 final class MessagesStore {
     private(set) var data: Deque<MessageItem> = []
+    private(set) var appearingMessageIDs: Set<UUID> = []
     private(set) var isLoading = false
     private(set) var loadFailed = false
     var lastSeenId: Int = 0
@@ -78,7 +79,9 @@ final class MessagesStore {
 
         let pendingID = nextPendingID
         nextPendingID -= 1
-        data.append(MessageItem(id: pendingID, content: body, date: Self.formatted(.now), me: true))
+        let item = MessageItem(id: pendingID, content: body, date: Self.formatted(.now), me: true)
+        appearingMessageIDs.insert(item.renderID)
+        data.append(item)
 
         Task {
             do {
@@ -92,10 +95,15 @@ final class MessagesStore {
                     lastSeenId = message.id
                 }
             } catch {
+                appearingMessageIDs.remove(item.renderID)
                 data.removeAll { $0.id == pendingID }
                 Logger.bloom.error("message send failed: \(error, privacy: .public)")
             }
         }
+    }
+
+    func didShowMessage(_ id: UUID) {
+        appearingMessageIDs.remove(id)
     }
 
     fileprivate static func formatted(_ date: Date) -> String {
