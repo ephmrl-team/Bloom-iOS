@@ -38,4 +38,6 @@ Read this before adding a screen, a route, a toolbar or a header/footer that flo
   screens, settings. Do not replace it with an opaque fill and do not add a native `scrollEdgeEffectStyle` on
   top of it.
 - Bottom chrome (composer) belongs in `safeAreaInset(edge: .bottom)`; the scroll view keeps
-  `.defaultScrollAnchor(.bottom)` and `.scrollDismissesKeyboard(.immediately)`.
+  `.defaultScrollAnchor(.bottom)` and hides the keyboard on `.onScrollPhaseChange` through
+  `KeyboardTracker.dismiss()`. `.scrollDismissesKeyboard` is not used on the chat: its modes drop the
+  keyboard without the composer animation.

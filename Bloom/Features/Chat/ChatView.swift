@@ -50,9 +50,6 @@ struct ChatView: View {
         }
         .bottomSafeAreaGradient()
         .topVariableBlur()
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 3).onChanged { _ in keyboard.dismiss() }
-        )
         .onDisappear { keyboard.dismiss() }
         .task {
             guard store == nil else { return }
@@ -104,7 +101,13 @@ struct ChatView: View {
                     .disabled(store.data.isEmpty && (store.isLoading || store.loadFailed))
             }
             .ignoresSafeArea(.container, edges: .bottom)
-            .scrollDismissesKeyboard(.immediately)
+            // Dismissed through the tracker so the keyboard hides with the composer animation; the
+            // `.scrollDismissesKeyboard` modes drop it without that animation.
+            .onScrollPhaseChange { _, phase in
+                if phase == .interacting {
+                    keyboard.dismiss()
+                }
+            }
             // The system edge effect is replaced by `topVariableBlur()` on the screen.
             .scrollEdgeEffectHidden(true, for: .top)
     }

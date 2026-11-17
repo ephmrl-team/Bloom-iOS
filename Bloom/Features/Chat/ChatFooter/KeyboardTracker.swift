@@ -14,6 +14,8 @@ final class KeyboardTracker: NSObject {
     static let visiblePadding: CGFloat = 16
 
     private(set) var progress: CGFloat = 0
+    /// Bumped when the back swipe takes the keyboard away, so the composer drops its focus state too.
+    private(set) var focusResets = 0
 
     @ObservationIgnored private weak var window: UIWindow?
     @ObservationIgnored private var safeAreaBottom: CGFloat = 0
@@ -69,6 +71,12 @@ final class KeyboardTracker: NSObject {
                 #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil
             )
         }
+    }
+
+    /// Resigns the keyboard and clears the composer's focus, so a cancelled back swipe cannot restore it.
+    func resetFocus() {
+        focusResets &+= 1
+        dismiss()
     }
 
     @objc private func keyboardChanged(_ notification: Notification) {

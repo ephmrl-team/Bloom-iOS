@@ -18,6 +18,7 @@ struct ChatFooterView: View {
     @FocusState private var focused: Bool
     @Namespace private var inputNS
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(KeyboardTracker.self) private var keyboard
 
     private var isExpanded: Bool {
         inputBarHeight > Self.controlSize
@@ -47,6 +48,7 @@ struct ChatFooterView: View {
             .frame(maxWidth: .infinity)
         }
         .animation(.smooth(duration: 0.235), value: hasText)
+        .onChange(of: keyboard.focusResets) { focused = false }
         .onDisappear { focused = false }
     }
 
