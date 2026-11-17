@@ -14,6 +14,7 @@ struct MainTabView: View {
     }
 
     @Environment(Router.self) private var router
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var selection: Tab = .chats
     @Namespace private var profileZoom
@@ -45,6 +46,7 @@ struct MainTabView: View {
                     }
             }
             .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
+            .animation(reduceMotion ? nil : .smooth(duration: 0.235), value: router.path.isEmpty)
             .tabItem {
                 tabIcon("chat.bubbles", label: "Chats")
             }
