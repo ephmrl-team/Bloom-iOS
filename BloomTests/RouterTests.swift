@@ -3,9 +3,9 @@
 //  Bloom
 //
 
+@testable import Bloom
 import Foundation
 import Testing
-@testable import Bloom
 
 @Suite("Router")
 struct RouterTests {

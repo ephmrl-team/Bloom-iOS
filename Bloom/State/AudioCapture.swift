@@ -48,32 +48,28 @@ actor AudioCapture {
                 options: [.defaultToSpeaker, .allowBluetoothHFP]
             )
             try session.setActive(true)
-
-            if fileManager.fileExists(atPath: url.path) {
-                try fileManager.removeItem(at: url)
-            }
-            _ = fileManager.createFile(atPath: url.path, contents: nil)
-            try fileManager.setAttributes(
-                [.protectionKey: FileProtectionType.complete],
-                ofItemAtPath: url.path
-            )
+            try prepareFile(at: url, in: fileManager)
 
             let recorder = try AVAudioRecorder(url: url, settings: Self.settings)
             recorder.isMeteringEnabled = true
             guard recorder.record() else { throw AudioCaptureError.failedToStart }
 
-            self.recorder = recorder
-            self.fileURL = url
-            lastLevel = 0
-
-            let (stream, continuation) = AsyncStream.makeStream(of: CGFloat.self)
-            levels = continuation
-            startMetering()
-            return stream
+            return begin(recorder: recorder, url: url)
         } catch {
             try? session.setActive(false, options: .notifyOthersOnDeactivation)
             throw error
         }
+    }
+
+    private func begin(recorder: AVAudioRecorder, url: URL) -> AsyncStream<CGFloat> {
+        self.recorder = recorder
+        self.fileURL = url
+        lastLevel = 0
+
+        let (stream, continuation) = AsyncStream.makeStream(of: CGFloat.self)
+        levels = continuation
+        startMetering()
+        return stream
     }
 
     func stop() {
@@ -97,6 +93,18 @@ actor AudioCapture {
         if recorder != nil {
             stop()
         }
+    }
+
+    /// Fresh protected file for the recording; the previous one is never reused.
+    private func prepareFile(at url: URL, in fileManager: FileManager) throws {
+        if fileManager.fileExists(atPath: url.path) {
+            try fileManager.removeItem(at: url)
+        }
+        _ = fileManager.createFile(atPath: url.path, contents: nil)
+        try fileManager.setAttributes(
+            [.protectionKey: FileProtectionType.complete],
+            ofItemAtPath: url.path
+        )
     }
 
     private func startMetering() {
@@ -125,7 +133,7 @@ actor AudioCapture {
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey: 44100.0,
             AVNumberOfChannelsKey: 1,
-            AVEncoderAudioQualityKey: AVAudioQuality.medium.rawValue
+            AVEncoderAudioQualityKey: AVAudioQuality.medium.rawValue,
         ]
     }
 }

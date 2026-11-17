@@ -3,8 +3,8 @@
 //  Bloom
 //
 
-import Foundation
 @testable import Bloom
+import Foundation
 
 /// JSON builders shared by the decoding and store tests.
 enum Fixtures {
@@ -21,8 +21,8 @@ enum Fixtures {
         )
     }
 
-    static func userJSON(_ user: User) -> Data {
-        try! JSONEncoder.bloomEncoder.encode(user)
+    static func userJSON(_ user: User) throws -> Data {
+        try JSONEncoder.bloomEncoder.encode(user)
     }
 
     static func message(
@@ -42,13 +42,13 @@ enum Fixtures {
         )
     }
 
-    static func messagesJSON(_ messages: [DecryptedMessageWithReply]) -> Data {
-        try! JSONEncoder.bloomEncoder.encode(messages)
+    static func messagesJSON(_ messages: [DecryptedMessageWithReply]) throws -> Data {
+        try JSONEncoder.bloomEncoder.encode(messages)
     }
 
     /// `sendMessage` answers with a single message object, not a list.
-    static func messageJSON(_ message: DecryptedMessageWithReply) -> Data {
-        try! JSONEncoder.bloomEncoder.encode(message)
+    static func messageJSON(_ message: DecryptedMessageWithReply) throws -> Data {
+        try JSONEncoder.bloomEncoder.encode(message)
     }
 
     /// Chat JSON in the shape the backend sends: `me` and `recipient` are
@@ -58,25 +58,25 @@ enum Fixtures {
         me: User = Fixtures.user(),
         recipient: User? = Fixtures.user("user_1", name: "Ann"),
         lastMessage: DecryptedMessageWithReply? = nil
-    ) -> Data {
+    ) throws -> Data {
         var object: [String: Any] = ["id": id, "type": "direct"]
-        object["me"] = userJSON(me).base64EncodedString()
+        object["me"] = try userJSON(me).base64EncodedString()
         if let recipient {
-            object["recipient"] = userJSON(recipient).base64EncodedString()
+            object["recipient"] = try userJSON(recipient).base64EncodedString()
         }
         if let lastMessage {
-            object["last_message"] = try! JSONSerialization.jsonObject(
+            object["last_message"] = try JSONSerialization.jsonObject(
                 with: JSONEncoder.bloomEncoder.encode(lastMessage)
             )
         }
-        return try! JSONSerialization.data(withJSONObject: object)
+        return try JSONSerialization.data(withJSONObject: object)
     }
 
-    static func chatsJSON(_ chats: [Int]) -> Data {
-        let objects = chats.map { id in
-            try! JSONSerialization.jsonObject(with: chatJSON(id: id)) as! [String: Any]
+    static func chatsJSON(_ chats: [Int]) throws -> Data {
+        let objects = try chats.map { id in
+            try JSONSerialization.jsonObject(with: chatJSON(id: id))
         }
-        return try! JSONSerialization.data(withJSONObject: objects)
+        return try JSONSerialization.data(withJSONObject: objects)
     }
 }
 

@@ -12,7 +12,7 @@ struct AuthMnemonicFooterView: View {
     let isLoading: Bool
     var title: LocalizedStringKey = "Continue"
     let action: () -> Void
-    
+
     @State private var isKeyboardVisible = false
 
     var body: some View {
@@ -50,7 +50,7 @@ struct AuthMnemonicFooterView: View {
                 colors: [
                     Color(.systemBackground).opacity(0.8),
                     Color(.systemBackground).opacity(0.45),
-                    Color(.systemBackground).opacity(0)
+                    Color(.systemBackground).opacity(0),
                 ],
                 startPoint: .bottom,
                 endPoint: .top

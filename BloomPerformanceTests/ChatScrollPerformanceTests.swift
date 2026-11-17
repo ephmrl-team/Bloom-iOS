@@ -21,8 +21,14 @@ final class ChatScrollPerformanceTests: XCTestCase {
 
         let options = XCTMeasureOptions()
         options.iterationCount = 3
-        measure(metrics: [XCTHitchMetric(application: app), XCTCPUMetric(application: app), XCTMemoryMetric(application: app)],
-                options: options) {
+        measure(
+            metrics: [
+                XCTHitchMetric(application: app),
+                XCTCPUMetric(application: app),
+                XCTMemoryMetric(application: app)
+            ],
+            options: options
+        ) {
             messages.swipeDown(velocity: .fast)
             messages.swipeUp(velocity: .fast)
         }

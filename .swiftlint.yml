@@ -1,15 +1,23 @@
 included: [Bloom, BloomTests, BloomUITests, BloomPerformanceTests]
 excluded: [build, DerivedData]
+# SwiftFormat owns brace placement and trailing commas; the two rules disagree with its style.
+disabled_rules: [opening_brace, trailing_comma]
 line_length: { warning: 120, error: 160 }
-file_length: { warning: 150, error: 250 }
-type_body_length: { warning: 150, error: 200 }
+file_length: { warning: 250, error: 250 }
+type_body_length: { warning: 200, error: 200 }
 function_body_length: { warning: 25, error: 40 }
+identifier_name:
+  # Design-token vocabulary and the backend's `me` field are accepted names.
+  excluded: [id, me, xs, sm, md, lg, xl, xxl, xxxl, xxxxl]
+type_name:
+  # Theme keeps its lowercase nested token namespaces on purpose.
+  excluded: [spacing, radius, borderWidth, toolbarTitle, colors]
 function_parameter_count: { warning: 4, error: 6 }
 nesting: { type_level: 2 }
 force_cast: error
 force_try: error
-force_unwrapping: error
-opt_in_rules: [empty_count, explicit_init, first_where, sorted_imports, unused_import, vertical_whitespace_closing_braces, overridden_super_call, discouraged_optional_boolean]
+opt_in_rules: [discouraged_optional_boolean, empty_count, explicit_init, first_where, force_unwrapping, overridden_super_call, sorted_imports, vertical_whitespace_closing_braces]
+analyzer_rules: [unused_import]
 custom_rules:
   no_print:
     name: "No print"

@@ -21,7 +21,8 @@ public extension JSONDecoder {
             let dateString = try container.decode(String.self)
 
             if let date = (try? Date.ISO8601FormatStyle.withFractionalSeconds.parse(dateString))
-                ?? (try? Date.ISO8601FormatStyle.withoutFractionalSeconds.parse(dateString)) {
+                ?? (try? Date.ISO8601FormatStyle.withoutFractionalSeconds.parse(dateString))
+            {
                 return date
             }
 

@@ -3,8 +3,8 @@
 //  Bloom
 //
 
-import SwiftUI
 import OSLog
+import SwiftUI
 
 struct NewMessageView: View {
     @Environment(Router.self) private var router
@@ -94,9 +94,9 @@ struct NewMessageView: View {
 }
 
 #if DEBUG
-#Preview {
-    NewMessageView()
-        .environment(Router())
-        .environment(BloomManager(backend: MockAPI()))
-}
+    #Preview {
+        NewMessageView()
+            .environment(Router())
+            .environment(BloomManager(backend: MockAPI()))
+    }
 #endif

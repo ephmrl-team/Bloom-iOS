@@ -3,9 +3,9 @@
 //  BloomTests
 //
 
+@testable import Bloom
 import Foundation
 import Testing
-@testable import Bloom
 
 @Suite("Local storage recovery")
 struct LocalStorageRecoveryTests {
@@ -14,7 +14,10 @@ struct LocalStorageRecoveryTests {
         let error = NSError(
             domain: "BloomKit",
             code: 1,
-            userInfo: [NSLocalizedDescriptionKey: "failed to open encrypted database: sqlite: file is not a database (26)"]
+            userInfo: [
+                NSLocalizedDescriptionKey:
+                    "failed to open encrypted database: sqlite: file is not a database (26)"
+            ]
         )
 
         #expect(BloomKitAPI.isDatabaseFailure(error))

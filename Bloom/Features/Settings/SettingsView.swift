@@ -65,12 +65,12 @@ struct SettingsView: View {
 }
 
 #if DEBUG
-#Preview {
-    NavigationStack {
-        SettingsView()
+    #Preview {
+        NavigationStack {
+            SettingsView()
+        }
+        .environment(Router())
+        .environment(AppState())
+        .environment(BloomManager(backend: MockAPI()))
     }
-    .environment(Router())
-    .environment(AppState())
-    .environment(BloomManager(backend: MockAPI()))
-}
 #endif

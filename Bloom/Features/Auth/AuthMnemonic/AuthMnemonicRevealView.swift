@@ -63,7 +63,7 @@ private struct MnemonicWordsGrid: View {
 
     private let columns = [
         GridItem(.flexible(), spacing: Theme.spacing.md),
-        GridItem(.flexible(), spacing: Theme.spacing.md)
+        GridItem(.flexible(), spacing: Theme.spacing.md),
     ]
 
     var body: some View {

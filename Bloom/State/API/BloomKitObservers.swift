@@ -3,8 +3,8 @@
 //  Bloom
 //
 
-import Foundation
 import BloomKit
+import Foundation
 import OSLog
 
 final class ChatsObserver: NSObject, ClientChatsListenerProtocol {

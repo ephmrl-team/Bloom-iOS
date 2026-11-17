@@ -42,8 +42,11 @@ struct ChatSearchField: UIViewControllerRepresentable {
             search.searchBar.autocorrectionType = .no
             search.searchBar.autocapitalizationType = .none
             search.searchBar.searchTextField.accessibilityIdentifier = "searchField"
-            search.searchBar.setImage(UIImage(named: "magnifyingglass")?.withRenderingMode(.alwaysTemplate),
-                                      for: .search, state: .normal)
+            search.searchBar.setImage(
+                UIImage(named: "magnifyingglass")?.withRenderingMode(.alwaysTemplate),
+                for: .search,
+                state: .normal
+            )
             styleSearchField()
         }
 
@@ -63,7 +66,8 @@ struct ChatSearchField: UIViewControllerRepresentable {
             var ancestor = parent
             while let controller = ancestor {
                 if let navigation = controller.navigationController,
-                   navigation.viewControllers.contains(where: { $0 === controller }) {
+                   navigation.viewControllers.contains(where: { $0 === controller })
+                {
                     let item = controller.navigationItem
                     controller.definesPresentationContext = true
                     item.preferredSearchBarPlacement = .integratedButton
@@ -83,7 +87,9 @@ struct ChatSearchField: UIViewControllerRepresentable {
 
         func updateSearchResults(for searchController: UISearchController) {
             let value = searchController.searchBar.text ?? ""
-            if text.wrappedValue != value { text.wrappedValue = value }
+            if text.wrappedValue != value {
+                text.wrappedValue = value
+            }
         }
 
         func willPresentSearchController(_ searchController: UISearchController) {
@@ -91,8 +97,12 @@ struct ChatSearchField: UIViewControllerRepresentable {
         }
 
         func didDismissSearchController(_ searchController: UISearchController) {
-            if !(searchController.searchBar.text ?? "").isEmpty { searchController.searchBar.text = "" }
-            if !text.wrappedValue.isEmpty { text.wrappedValue = "" }
+            if !(searchController.searchBar.text ?? "").isEmpty {
+                searchController.searchBar.text = ""
+            }
+            if !text.wrappedValue.isEmpty {
+                text.wrappedValue = ""
+            }
         }
 
         func removeSearchController() {

@@ -8,8 +8,8 @@
 import SwiftUI
 import UIKit
 
-struct Theme {
-    struct spacing {
+enum Theme {
+    enum spacing {
         static let xxs: CGFloat = 2
         static let micro: CGFloat = 6
         static let xs: CGFloat = 4
@@ -21,8 +21,8 @@ struct Theme {
         static let xxxl: CGFloat = 28
         static let modal: CGFloat = 40
     }
-    
-    struct radius {
+
+    enum radius {
         static let xxs: CGFloat = 8
         static let xs: CGFloat = 12
         static let sm: CGFloat = 16
@@ -34,20 +34,19 @@ struct Theme {
         static let composer: CGFloat = 22
         static let full: CGFloat = 999
     }
-    
-    struct borderWidth {
+
+    enum borderWidth {
         static let md: CGFloat = 0.85
     }
 
     /// Toolbar titles: one shape for every screen (see AGENTS.md, "Toolbar titles").
-    struct toolbarTitle {
+    enum toolbarTitle {
         static let fontSize: CGFloat = 18
         static let iconSize: CGFloat = 23
         static let spacing: CGFloat = 6
     }
 
-    
-    struct colors {
+    enum colors {
         static let background = Color.dynamic(lightHex: "ffffff", darkHex: "000000")
         static let text = Color.dynamic(lightHex: "000000", darkHex: "ffffff")
         static let grayBackground = Color.dynamic(lightHex: "f1f1f4", darkHex: "000000ff")
@@ -60,7 +59,7 @@ struct Theme {
         static let indicator = Color.dynamic(lightHex: "0000001a", darkHex: "ffffff26")
         static let border = Color.dynamic(lightHex: "0000000d", darkHex: "ffffff17")
         static let shadow = Color.dynamic(light: Color.black.opacity(0.08), dark: Color.clear)
-        
+
         static let white = Color(uiColor: UIColor(hex: "ffffff"))
         static let black = Color(uiColor: UIColor(hex: "000000"))
         static let primary = Color(uiColor: UIColor(hex: "42A1FF"))
@@ -72,7 +71,7 @@ struct Theme {
         static let purple = Color(uiColor: UIColor(hex: "A41AFF"))
         static let red = Color(uiColor: UIColor(hex: "EE362B"))
         static let gray = Color(uiColor: UIColor(hex: "8C8C8C"))
-        
+
         static let whiteBackdrop = white.opacity(0.5)
         static let blackBackdrop = black.opacity(0.5)
         static let primaryBackdrop = primary.opacity(0.5)
@@ -94,7 +93,7 @@ private extension Color {
             traitCollection.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)
         })
     }
-    
+
     static func dynamic(lightHex: String, darkHex: String) -> Color {
         Color(uiColor: .dynamic(lightHex: lightHex, darkHex: darkHex))
     }

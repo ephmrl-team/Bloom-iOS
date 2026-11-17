@@ -12,10 +12,10 @@ struct AppEnvironment {
 
     static func make() throws -> AppEnvironment {
         #if DEBUG
-        if AppMode.current == .mock {
-            return AppEnvironment(bloomManager: BloomManager(backend: MockAPI()))
-        }
+            if AppMode.current == .mock {
+                return AppEnvironment(bloomManager: BloomManager(backend: MockAPI()))
+            }
         #endif
-        return AppEnvironment(bloomManager: BloomManager(backend: try BloomKitAPI()))
+        return try AppEnvironment(bloomManager: BloomManager(backend: BloomKitAPI()))
     }
 }

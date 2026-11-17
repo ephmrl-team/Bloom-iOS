@@ -3,9 +3,9 @@
 //  Bloom
 //
 
+@testable import Bloom
 import CoreGraphics
 import Testing
-@testable import Bloom
 
 struct KeyboardTrackerTests {
     private let bounds = CGRect(x: 0, y: 0, width: 390, height: 844)

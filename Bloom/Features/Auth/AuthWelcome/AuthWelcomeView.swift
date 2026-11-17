@@ -46,16 +46,16 @@ struct AuthWelcomeView: View {
                             width: width,
                             blurIn: index == carousel.currentSlot
                         )
-                            .frame(width: itemWidth)
-                            .accessibilityElement(children: .contain)
-                            // The centred page is the one a test can address; the peek
-                            // cards repeat pages, so they get their slot instead.
-                            .accessibilityIdentifier(
-                                index == carousel.currentSlot ? "welcomePage\(page)" : "welcomeSlot\(index)"
-                            )
-                            // Only the centred page is readable; a reader should not
-                            // hear the peek cards as well.
-                            .accessibilityHidden(page != carousel.currentPage)
+                        .frame(width: itemWidth)
+                        .accessibilityElement(children: .contain)
+                        // The centred page is the one a test can address; the peek
+                        // cards repeat pages, so they get their slot instead.
+                        .accessibilityIdentifier(
+                            index == carousel.currentSlot ? "welcomePage\(page)" : "welcomeSlot\(index)"
+                        )
+                        // Only the centred page is readable; a reader should not
+                        // hear the peek cards as well.
+                        .accessibilityHidden(page != carousel.currentPage)
                     }
                 }
                 .scrollTargetLayout()
@@ -117,27 +117,36 @@ struct AuthWelcomeView: View {
                 appeared: appeared,
                 blurIn: blurIn
             ) {
-                Image("GiantLogo")
-                    .resizable()
-                    .scaledToFit()
-                    .clipShape(RoundedRectangle(cornerRadius: 34))
-                    .compositingGroup()
-                    .shadow(color: .black.opacity(0.2), radius: 20, x: 4, y: 4)
+                logoTile
             }
         } else {
-            let feature = WelcomeFeature.all[index - 1]
-            WelcomePageView(
-                title: Text(feature.title).font(Self.titleFont),
-                subtitle: feature.subtitle,
-                textWidth: textWidth,
-                pageWidth: pageWidth,
-                tileDelay: 0.08,
-                appeared: appeared,
-                blurIn: blurIn
-            ) {
-                WelcomeFeatureTile(feature: feature)
-            }
+            featurePage(index: index, textWidth: textWidth, pageWidth: pageWidth, blurIn: blurIn)
         }
+    }
+
+    @ViewBuilder
+    private func featurePage(index: Int, textWidth: CGFloat, pageWidth: CGFloat, blurIn: Bool) -> some View {
+        let feature = WelcomeFeature.all[index - 1]
+        WelcomePageView(
+            title: Text(feature.title).font(Self.titleFont),
+            subtitle: feature.subtitle,
+            textWidth: textWidth,
+            pageWidth: pageWidth,
+            tileDelay: 0.08,
+            appeared: appeared,
+            blurIn: blurIn
+        ) {
+            WelcomeFeatureTile(feature: feature)
+        }
+    }
+
+    private var logoTile: some View {
+        Image("GiantLogo")
+            .resizable()
+            .scaledToFit()
+            .clipShape(RoundedRectangle(cornerRadius: 34))
+            .compositingGroup()
+            .shadow(color: .black.opacity(0.2), radius: 20, x: 4, y: 4)
     }
 
     /// Shifts the window when the swipe stopped near an end, without animation and in

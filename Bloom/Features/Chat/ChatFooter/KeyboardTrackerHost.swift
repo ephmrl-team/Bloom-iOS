@@ -26,7 +26,9 @@ struct KeyboardTrackerHost: UIViewRepresentable {
 
         override func didMoveToWindow() {
             super.didMoveToWindow()
-            if let window { onWindow?(window) }
+            if let window {
+                onWindow?(window)
+            }
             attachPopGesture()
         }
 
@@ -37,7 +39,8 @@ struct KeyboardTrackerHost: UIViewRepresentable {
             var responder: UIResponder? = self
             while let current = responder {
                 if let navigation = current as? UINavigationController,
-                   let gesture = navigation.interactivePopGestureRecognizer {
+                   let gesture = navigation.interactivePopGestureRecognizer
+                {
                     gesture.addTarget(self, action: #selector(popGestureChanged))
                     popGesture = gesture
                     return

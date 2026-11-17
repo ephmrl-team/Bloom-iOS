@@ -3,9 +3,9 @@
 //  Bloom
 //
 
+@testable import Bloom
 import Foundation
 import Testing
-@testable import Bloom
 
 @Suite("Messages store")
 struct MessagesStoreTests {
@@ -19,9 +19,9 @@ struct MessagesStoreTests {
     }
 
     @Test("Loads messages sorted by id")
-    func loadsMessagesSorted() async {
+    func loadsMessagesSorted() async throws {
         let api = FakeAPI()
-        api.messagesData = Fixtures.messagesJSON([
+        api.messagesData = try Fixtures.messagesJSON([
             Fixtures.message(id: 3),
             Fixtures.message(id: 1),
             Fixtures.message(id: 2)
@@ -36,9 +36,9 @@ struct MessagesStoreTests {
     }
 
     @Test("Marks own messages")
-    func marksOwnMessages() async {
+    func marksOwnMessages() async throws {
         let api = FakeAPI()
-        api.messagesData = Fixtures.messagesJSON([
+        api.messagesData = try Fixtures.messagesJSON([
             Fixtures.message(id: 1, authorId: "user_me"),
             Fixtures.message(id: 2, authorId: "user_1")
         ])
@@ -65,7 +65,7 @@ struct MessagesStoreTests {
     @Test("Shows the message immediately and replaces it with the server copy")
     func sendsOptimistically() async throws {
         let api = FakeAPI()
-        api.sendResult = .success(Fixtures.messageJSON(Fixtures.message(id: 10, content: "hi")))
+        api.sendResult = .success(try Fixtures.messageJSON(Fixtures.message(id: 10, content: "hi")))
         let store = MessagesStore(chatID: 1, backend: api, currentUserID: "user_me")
 
         store.send("  hi \n")
@@ -106,7 +106,7 @@ struct MessagesStoreTests {
     @Test("Records the seen id when the server confirms it")
     func recordsSeenID() async throws {
         let api = FakeAPI()
-        api.sendResult = .success(Fixtures.messageJSON(Fixtures.message(id: 11, seen: true)))
+        api.sendResult = .success(try Fixtures.messageJSON(Fixtures.message(id: 11, seen: true)))
         let store = MessagesStore(chatID: 1, backend: api, currentUserID: "user_me")
 
         store.send("hi")

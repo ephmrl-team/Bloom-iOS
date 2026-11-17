@@ -95,28 +95,39 @@ private struct UIKitContextMenuView<Preview: View>: UIViewRepresentable {
             return UIContextMenuConfiguration(
                 identifier: nil,
                 previewProvider: { [preview, previewSize] in
-                    let hosting = UIHostingController(rootView: preview)
-                    hosting.view.backgroundColor = .clear
-                    hosting.preferredContentSize = previewSize
-                    return hosting
+                    Self.previewController(preview: preview, size: previewSize)
                 },
                 actionProvider: { [actions] _ in
-                    let menuActions = actions.map { action in
-                        var attributes: UIMenuElement.Attributes = []
-                        if action.isDestructive { attributes.insert(.destructive) }
-                        if action.isDisabled { attributes.insert(.disabled) }
-
-                        return UIAction(
-                            title: action.title,
-                            image: action.systemImage.flatMap { UIImage(systemName: $0) },
-                            attributes: attributes
-                        ) { _ in
-                            action.handler()
-                        }
-                    }
-                    return UIMenu(title: "", children: menuActions)
+                    UIMenu(title: "", children: Self.menuActions(actions))
                 }
             )
+        }
+
+        private static func previewController(preview: AnyView, size: CGSize) -> UIViewController {
+            let hosting = UIHostingController(rootView: preview)
+            hosting.view.backgroundColor = .clear
+            hosting.preferredContentSize = size
+            return hosting
+        }
+
+        private static func menuActions(_ actions: [ContextMenuAction]) -> [UIAction] {
+            actions.map { action in
+                var attributes: UIMenuElement.Attributes = []
+                if action.isDestructive {
+                    attributes.insert(.destructive)
+                }
+                if action.isDisabled {
+                    attributes.insert(.disabled)
+                }
+
+                return UIAction(
+                    title: action.title,
+                    image: action.systemImage.flatMap { UIImage(systemName: $0) },
+                    attributes: attributes
+                ) { _ in
+                    action.handler()
+                }
+            }
         }
 
         func contextMenuInteraction(
@@ -156,7 +167,8 @@ private struct UIKitContextMenuView<Preview: View>: UIViewRepresentable {
         private func makeTargetedPreview(for interaction: UIContextMenuInteraction) -> UITargetedPreview? {
             guard let interactionView = interaction.view,
                   let window = interactionView.window,
-                  previewSize.width > 0, previewSize.height > 0 else {
+                  previewSize.width > 0, previewSize.height > 0
+            else {
                 return nil
             }
 
@@ -184,7 +196,6 @@ private struct UIKitContextMenuView<Preview: View>: UIViewRepresentable {
         }
     }
 }
-
 
 private struct UIKitContextMenuModifier<Preview: View>: ViewModifier {
     let actions: [ContextMenuAction]

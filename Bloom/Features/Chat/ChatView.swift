@@ -36,7 +36,9 @@ struct ChatView: View {
         } action: { width in
             toolbarIdealWidth = width
         }
-        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: { keyboard.update(safeAreaBottom: $0) }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: {
+            keyboard.update(safeAreaBottom: $0)
+        }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -60,7 +62,6 @@ struct ChatView: View {
         }
     }
 
-    @ViewBuilder
     private func content(_ store: MessagesStore) -> some View {
         messages(store)
             .overlay {
@@ -88,20 +89,32 @@ struct ChatView: View {
         // Read once so a seen-marker update does not invalidate every row.
         let seenID = store.lastSeenId
 
-        return ScrollViewReader { proxy in
+        return messageScroll(store, seenID: seenID)
+            .opacity(store.data.isEmpty ? 0 : 1)
+            .accessibilityIdentifier("chatMessageList")
+            .scrollIndicators(.hidden)
+            .defaultScrollAnchor(.bottom)
+            .onScrollGeometryChange(for: Bool.self) { geometry in
+                geometry.contentOffset.y >= geometry.contentSize.height - geometry.containerSize.height - 120
+            } action: { _, atBottom in
+                isAtBottom = atBottom
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                ChatComposerInset()
+                    .disabled(store.data.isEmpty && (store.isLoading || store.loadFailed))
+            }
+            .ignoresSafeArea(.container, edges: .bottom)
+            .scrollDismissesKeyboard(.immediately)
+            // The system edge effect is replaced by `topVariableBlur()` on the screen.
+            .scrollEdgeEffectHidden(true, for: .top)
+    }
+
+    private func messageScroll(_ store: MessagesStore, seenID: Int) -> some View {
+        ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(store.data, id: \.renderID) { item in
-                        ChatRowView(item: item, isSeen: item.id > 0 && item.id <= seenID)
-                            .equatable()
-                            .padding(.horizontal, Theme.spacing.lg)
-                            .id(item.renderID)
-                            .transition(.asymmetric(
-                                insertion: .opacity
-                                    .combined(with: .blur(radius: reduceMotion ? 0 : 10))
-                                    .combined(with: .offset(y: reduceMotion ? 0 : 150)),
-                                removal: .opacity
-                            ))
+                        messageRow(item, seenID: seenID)
                     }
 
                     Color.clear
@@ -110,34 +123,39 @@ struct ChatView: View {
                 }
             }
             .onChange(of: store.data.count) { oldCount, newCount in
-                guard newCount > oldCount, isAtBottom || store.data.last?.me == true else { return }
-                // The first batch is placed by the bottom anchor; animating it would look like a scroll.
-                guard oldCount > 0 else {
-                    proxy.scrollTo(bottomSpacerID, anchor: .bottom)
-                    return
-                }
-                withAnimation(.smooth(duration: 0.235)) {
-                    proxy.scrollTo(bottomSpacerID, anchor: .bottom)
-                }
+                scrollOnNewMessages(proxy: proxy, store: store, oldCount: oldCount, newCount: newCount)
             }
         }
-        .opacity(store.data.isEmpty ? 0 : 1)
-        .accessibilityIdentifier("chatMessageList")
-        .scrollIndicators(.hidden)
-        .defaultScrollAnchor(.bottom)
-        .onScrollGeometryChange(for: Bool.self) { geometry in
-            geometry.contentOffset.y >= geometry.contentSize.height - geometry.containerSize.height - 120
-        } action: { _, atBottom in
-            isAtBottom = atBottom
+    }
+
+    private func scrollOnNewMessages(
+        proxy: ScrollViewProxy,
+        store: MessagesStore,
+        oldCount: Int,
+        newCount: Int
+    ) {
+        guard newCount > oldCount, isAtBottom || store.data.last?.me == true else { return }
+        // The first batch is placed by the bottom anchor; animating it would look like a scroll.
+        guard oldCount > 0 else {
+            proxy.scrollTo(bottomSpacerID, anchor: .bottom)
+            return
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            ChatComposerInset()
-                .disabled(store.data.isEmpty && (store.isLoading || store.loadFailed))
+        withAnimation(.smooth(duration: 0.235)) {
+            proxy.scrollTo(bottomSpacerID, anchor: .bottom)
         }
-        .ignoresSafeArea(.container, edges: .bottom)
-        .scrollDismissesKeyboard(.immediately)
-        // The system edge effect is replaced by `topVariableBlur()` on the screen.
-        .scrollEdgeEffectHidden(true, for: .top)
+    }
+
+    private func messageRow(_ item: MessageItem, seenID: Int) -> some View {
+        ChatRowView(item: item, isSeen: item.id > 0 && item.id <= seenID)
+            .equatable()
+            .padding(.horizontal, Theme.spacing.lg)
+            .id(item.renderID)
+            .transition(.asymmetric(
+                insertion: .opacity
+                    .combined(with: .blur(radius: reduceMotion ? 0 : 10))
+                    .combined(with: .offset(y: reduceMotion ? 0 : 150)),
+                removal: .opacity
+            ))
     }
 }
 

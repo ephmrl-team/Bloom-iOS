@@ -3,8 +3,8 @@
 //  Bloom
 //
 
-import Testing
 @testable import Bloom
+import Testing
 
 @Suite("Mnemonic phrase")
 struct MnemonicPhraseTests {

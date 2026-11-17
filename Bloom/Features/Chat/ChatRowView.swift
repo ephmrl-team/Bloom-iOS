@@ -102,7 +102,7 @@ struct ChatRowView: View, Equatable {
             },
             ContextMenuAction(title: String(localized: "Forward"), systemImage: "arrowshape.turn.up.right") {
                 onForward(item.id)
-            }
+            },
         ]
 
         if item.me {

@@ -3,9 +3,9 @@
 //  Bloom
 //
 
-import Foundation
-import BloomKit
 import Bip39
+@preconcurrency import BloomKit
+import Foundation
 import OSLog
 
 /// The only place in the app that talks to `BloomKit`.
@@ -36,11 +36,11 @@ final class BloomKitAPI: BloomAPI {
             throw BloomAPIError.missingStorage
         }
 
-        guard let client = ClientNewClient(
+        guard let client = try ClientNewClient(
             "https://api.bloomapp.pw",
             "wss://api.bloomapp.pw/ws",
             storagePath,
-            try Self.databaseKey()
+            Self.databaseKey()
         ) else {
             throw BloomAPIError.clientUnavailable
         }
@@ -69,7 +69,7 @@ final class BloomKitAPI: BloomAPI {
 
     func register() async throws -> (recoveryPhrase: String?, userJSON: Data) {
         let client = self.client
-        let result = try await Task.detached(priority: .userInitiated) {
+        let result = try await Task.detached(priority: .userInitiated) { @Sendable in
             let result = try client.register()
             return RegisterBackgroundResult(
                 rawRecoveryKey: result.rawRecoveryKey,
@@ -93,7 +93,7 @@ final class BloomKitAPI: BloomAPI {
 
     func login(recoveryKey: String) async throws -> Data {
         let client = self.client
-        let payload = try await Task.detached(priority: .userInitiated) { () -> Data? in
+        let payload = try await Task.detached(priority: .userInitiated) { @Sendable () -> Data? in
             if let restored = try? client.restoreSession(), let userJSON = restored.userJSON {
                 return userJSON
             }
@@ -110,35 +110,35 @@ final class BloomKitAPI: BloomAPI {
 
     func messages(chatID: Int) async throws -> Data {
         let client = self.client
-        return try await Task.detached(priority: .userInitiated) {
+        return try await Task.detached(priority: .userInitiated) { @Sendable in
             try client.loadMessages(chatID, beforeID: 0)
         }.value
     }
 
     func sendMessage(chatID: Int, content: String) async throws -> Data {
         let client = self.client
-        return try await Task.detached(priority: .userInitiated) {
+        return try await Task.detached(priority: .userInitiated) { @Sendable in
             try client.sendMessage(chatID, replyToID: 0, content: content)
         }.value
     }
 
     func searchUsers(query: String) async throws -> Data {
         let client = self.client
-        return try await Task.detached(priority: .userInitiated) {
+        return try await Task.detached(priority: .userInitiated) { @Sendable in
             try client.searchUsers(query)
         }.value
     }
 
     func user(id: String) async throws -> Data {
         let client = self.client
-        return try await Task.detached(priority: .userInitiated) {
+        return try await Task.detached(priority: .userInitiated) { @Sendable in
             try client.getUser(id)
         }.value
     }
 
     func createChat(with user: User) async throws -> Data {
         let client = self.client
-        return try await Task.detached(priority: .userInitiated) {
+        return try await Task.detached(priority: .userInitiated) { @Sendable in
             let request = ClientCreateChatRequest()
             request.userID = user.id
             request.mlKem768PublicKey = user.mlKemPublicKey
@@ -193,7 +193,8 @@ final class BloomKitAPI: BloomAPI {
 
     private static func databaseKey() throws -> Data {
         if let base64String = KeychainHelper.shared.read(service: service, account: databaseKeyAccount),
-           let existingKey = Data(base64Encoded: base64String) {
+           let existingKey = Data(base64Encoded: base64String)
+        {
             return existingKey
         }
 

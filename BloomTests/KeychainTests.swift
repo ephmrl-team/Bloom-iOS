@@ -3,10 +3,10 @@
 //  Bloom
 //
 
+@testable import Bloom
 import Foundation
 import Security
 import Testing
-@testable import Bloom
 
 /// Uses its own service name so a test run never touches real credentials.
 @Suite("Keychain", .serialized)
@@ -53,7 +53,8 @@ struct KeychainTests {
         let attributes = result as? [String: Any]
 
         #expect(status == errSecSuccess)
-        #expect(attributes?[kSecAttrAccessible as String] as? String == kSecAttrAccessibleWhenUnlockedThisDeviceOnly as String)
+        let accessible = attributes?[kSecAttrAccessible as String] as? String
+        #expect(accessible == kSecAttrAccessibleWhenUnlockedThisDeviceOnly as String)
         #expect(attributes?[kSecAttrSynchronizable as String] as? Bool != true)
     }
 

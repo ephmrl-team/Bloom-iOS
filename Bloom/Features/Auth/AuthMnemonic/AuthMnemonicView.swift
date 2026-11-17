@@ -10,32 +10,32 @@ import SwiftUI
 struct AuthMnemonicView: View {
     @Binding var path: NavigationPath
     @Environment(BloomManager.self) private var bloomManager
-    
+
     @State private var words: [String] = Array(repeating: "", count: 12)
     @FocusState private var focusedIndex: Int?
-    
+
     @State private var isLoading = false
     @State private var showErrorAlert = false
-    
+
     private var isComplete: Bool {
         MnemonicPhrase.isValid(words)
     }
-    
+
     var body: some View {
-        ScrollViewReader { proxy in
+        ScrollViewReader { _ in
             ScrollView {
                 VStack(spacing: 24) {
                     VStack(spacing: Theme.spacing.md - 2) {
                         Text("Enter mnemonic")
                             .font(.system(size: 32, weight: .bold, design: .rounded))
-                        
+
                         Text("You need to enter 12 words of mnemonic phrase to log in")
                             .font(.system(.headline, design: .rounded, weight: .medium))
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
                     .padding(.top, 24)
-                    
+
                     AuthMnemonicInputView(words: $words, focusedIndex: $focusedIndex)
                         .disabled(isLoading)
                 }
@@ -63,7 +63,7 @@ struct AuthMnemonicView: View {
             Text("Invalid mnemonic phrase. Please make sure all words are correct.")
         }
     }
-    
+
     private func performLogin() {
         isLoading = true
 

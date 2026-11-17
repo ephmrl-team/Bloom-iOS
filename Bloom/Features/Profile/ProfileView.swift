@@ -75,10 +75,10 @@ struct ProfileView: View {
 }
 
 #if DEBUG
-#Preview {
-    NavigationStack {
-        ProfileView(userID: "user_1")
+    #Preview {
+        NavigationStack {
+            ProfileView(userID: "user_1")
+        }
+        .environment(BloomManager(backend: MockAPI()))
     }
-    .environment(BloomManager(backend: MockAPI()))
-}
 #endif

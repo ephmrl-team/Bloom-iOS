@@ -17,7 +17,7 @@ struct AuthFlow: View {
                     switch route {
                     case .mnemonic:
                         AuthMnemonicView(path: $path)
-                    case .mnemonicReveal(let phrase):
+                    case let .mnemonicReveal(phrase):
                         AuthMnemonicRevealView(phrase: phrase, path: $path)
                     case .success:
                         AuthSuccessView()

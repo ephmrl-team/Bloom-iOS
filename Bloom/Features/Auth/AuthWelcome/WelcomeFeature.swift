@@ -18,7 +18,7 @@ struct WelcomeFeature: Identifiable {
         LinearGradient(
             colors: [
                 Color(hue: hue, saturation: saturation * 0.5, brightness: brightness),
-                Color(hue: hue, saturation: saturation, brightness: brightness * 0.85)
+                Color(hue: hue, saturation: saturation, brightness: brightness * 0.85),
             ],
             startPoint: .top,
             endPoint: .bottom
@@ -57,6 +57,6 @@ struct WelcomeFeature: Identifiable {
             hue: 0.09,
             saturation: 0.65,
             brightness: 1.0
-        )
+        ),
     ]
 }

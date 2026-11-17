@@ -3,10 +3,10 @@
 //  Bloom
 //
 
+import DequeModule
 import Foundation
 import Observation
 import OSLog
-import DequeModule
 
 struct MessageItem: Identifiable, Hashable, Sendable {
     let id: Int

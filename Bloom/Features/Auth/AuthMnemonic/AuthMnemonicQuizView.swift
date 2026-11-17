@@ -89,7 +89,7 @@ private struct MnemonicChallenge: Identifiable {
         let words = phrase.split(separator: " ").map(String.init)
         guard words.count > count else { return [] }
 
-        let indices = (0..<words.count).shuffled().prefix(count).sorted()
+        let indices = (0 ..< words.count).shuffled().prefix(count).sorted()
 
         return indices.map { index in
             let answer = words[index]

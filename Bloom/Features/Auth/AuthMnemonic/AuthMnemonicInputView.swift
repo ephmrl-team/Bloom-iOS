@@ -13,12 +13,12 @@ struct AuthMnemonicInputView: View {
 
     private let columns = [
         GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
+        GridItem(.flexible(), spacing: 12),
     ]
 
     var body: some View {
         LazyVGrid(columns: columns, spacing: 12) {
-            ForEach(0..<words.count, id: \.self) { index in
+            ForEach(0 ..< words.count, id: \.self) { index in
                 MnemonicField(
                     index: index,
                     text: $words[index],

@@ -31,7 +31,7 @@ struct WelcomeCarousel {
 
     /// Slots of the window, left to right.
     var slots: Range<Int> {
-        0..<Self.windowSize
+        0 ..< Self.windowSize
     }
 
     /// Which page a slot shows.

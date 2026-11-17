@@ -5,12 +5,11 @@
 //  Created by Аскольд on 11.08.2026.
 //
 
-
 import SwiftUI
 
 enum AvatarSize {
     case xs, sm, md, lg, xl, xxl, xxxl, xxxxl
-    
+
     var dimension: CGFloat {
         switch self {
         case .xs: return 34
@@ -31,17 +30,17 @@ struct AvatarView: View {
     var image: String?
     var id: String = ""
     var name: String = ""
-    
+
     private var dimension: CGFloat {
         size.dimension
     }
-    
+
     var body: some View {
         Group {
             if let imageUrlString = image, let url = URL(string: imageUrlString) {
                 AsyncImage(url: url) { phase in
                     switch phase {
-                    case .success(let loadedImage):
+                    case let .success(loadedImage):
                         loadedImage
                             .resizable()
                             .scaledToFill()
@@ -58,11 +57,11 @@ struct AvatarView: View {
         .frame(width: dimension, height: dimension)
         .clipShape(square ? AnyShape(Rectangle()) : AnyShape(Circle()))
     }
-    
+
     private var defaultAvatarView: some View {
         let colors = avatarGradient(for: id)
         let initials = initials(from: name)
-        
+
         return Circle()
             .fill(
                 LinearGradient(

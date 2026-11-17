@@ -5,9 +5,9 @@
 //  Created by Аскольд on 16.08.2026.
 //
 
-import SwiftUI
 import BlurSwiftUI
 import BlurUIKit
+import SwiftUI
 
 private struct WaveBarItem: View {
     let targetHeight: CGFloat
@@ -59,7 +59,7 @@ struct ChatFooterWaveformView: View {
                     stops: [
                         .init(color: .clear, location: 0.0),
                         .init(color: .black, location: 0.235),
-                        .init(color: .black, location: 1.0)
+                        .init(color: .black, location: 1.0),
                     ],
                     startPoint: .leading,
                     endPoint: .trailing
@@ -77,10 +77,13 @@ struct ChatFooterWaveformView: View {
         }
     }
 
-    @ViewBuilder
-    private func waveformContent(visibleSamples: ArraySlice<AudioSample>, placeholderCount: Int, blurred: Bool) -> some View {
+    private func waveformContent(
+        visibleSamples: ArraySlice<AudioSample>,
+        placeholderCount: Int,
+        blurred: Bool
+    ) -> some View {
         HStack(alignment: .center, spacing: barSpacing) {
-            ForEach(0..<placeholderCount, id: \.self) { _ in
+            ForEach(0 ..< placeholderCount, id: \.self) { _ in
                 Capsule()
                     .fill(waveColor)
                     .frame(width: barWidth, height: minBarHeight)
@@ -93,7 +96,7 @@ struct ChatFooterWaveformView: View {
                     targetHeight: max(minBarHeight, sample.value * maxBarHeight),
                     minHeight: minBarHeight,
                     barWidth: barWidth,
-                    color: blurred ? Color(red: 1.0, green: 0.0, blue: 0.0) : waveColor
+                    color: blurred ? Theme.colors.red : waveColor
                 )
             }
         }

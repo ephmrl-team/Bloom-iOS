@@ -36,9 +36,9 @@ struct MainTabView: View {
                         switch route {
                         case .chatList:
                             ChatListView()
-                        case .chat(let id):
+                        case let .chat(id):
                             ChatView(chatId: id, profileZoom: profileZoom)
-                        case .profile(let id):
+                        case let .profile(id):
                             ProfileView(userID: id)
                                 .navigationTransition(.zoom(sourceID: id, in: profileZoom))
                         }
@@ -78,10 +78,10 @@ struct MainTabView: View {
 }
 
 #if DEBUG
-#Preview {
-    MainTabView()
-        .environment(Router())
-        .environment(AppState())
-        .environment(BloomManager(backend: MockAPI()))
-}
+    #Preview {
+        MainTabView()
+            .environment(Router())
+            .environment(AppState())
+            .environment(BloomManager(backend: MockAPI()))
+    }
 #endif

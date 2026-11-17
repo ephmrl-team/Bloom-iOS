@@ -12,7 +12,7 @@ struct AuthWelcomeFooterView: View {
     @Binding var path: NavigationPath
     @Environment(BloomManager.self) private var bloomManager
     @Environment(AppState.self) private var appState
-    
+
     @State private var isLoading = false
     @State private var task: Task<Void, Never>?
     @State private var failure: Failure?
@@ -23,25 +23,25 @@ struct AuthWelcomeFooterView: View {
         case registration
         case login
     }
-    
+
     var body: some View {
         VStack(spacing: 16) {
             Button {
                 #if DEBUG
-                if AppMode.current == .mock {
-                    if MockScenario.current == .error {
-                        failure = .registration
-                        isFailurePresented = true
-                    } else {
-                        task?.cancel()
-                        task = Task {
-                            // Mock starts without a session, so sign in before entering the app.
-                            _ = await bloomManager.loginUser(recoveryKey: MockData.mnemonic)
-                            appState.authenticate()
+                    if AppMode.current == .mock {
+                        if MockScenario.current == .error {
+                            failure = .registration
+                            isFailurePresented = true
+                        } else {
+                            task?.cancel()
+                            task = Task {
+                                // Mock starts without a session, so sign in before entering the app.
+                                _ = await bloomManager.loginUser(recoveryKey: MockData.mnemonic)
+                                appState.authenticate()
+                            }
                         }
+                        return
                     }
-                    return
-                }
                 #endif
 
                 task?.cancel()
@@ -89,8 +89,8 @@ struct AuthWelcomeFooterView: View {
                         .scaledToFit()
                         .frame(width: 24, height: 24)
                 }
-                    .font(.system(.headline, design: .rounded, weight: .semibold))
-                    .foregroundStyle(.foreground)
+                .font(.system(.headline, design: .rounded, weight: .semibold))
+                .foregroundStyle(.foreground)
             }
             .accessibilityIdentifier("mnemonicLoginButton")
             .frame(maxWidth: .infinity)
@@ -101,7 +101,6 @@ struct AuthWelcomeFooterView: View {
             .blur(radius: appeared ? 0 : 8)
             .animation(.smooth(duration: 0.65).delay(0.32), value: appeared)
             .contentShape(Capsule())
-
         }
         .padding(.horizontal, 36)
         .padding(.top, 16)
@@ -134,7 +133,7 @@ struct AuthWelcomeFooterView: View {
         isLoading = true
         defer { isLoading = false }
 
-        var user: User? = nil
+        var user: User?
         var route: AuthRoute = .success
         let isLogin = bloomManager.checkSession()
 

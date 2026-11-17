@@ -3,9 +3,9 @@
 //  Bloom
 //
 
+@testable import Bloom
 import Foundation
 import Testing
-@testable import Bloom
 
 @Suite("Backend payload decoding")
 struct DecodingTests {
@@ -80,7 +80,7 @@ struct DecodingTests {
 
     @Test("Decodes the chat message list")
     func decodesMessages() throws {
-        let data = Fixtures.messagesJSON([
+        let data = try Fixtures.messagesJSON([
             Fixtures.message(id: 2, content: "second", authorId: "user_1"),
             Fixtures.message(id: 1, content: "first")
         ])
@@ -93,7 +93,7 @@ struct DecodingTests {
 
     @Test("Decodes base64 me and recipient into users")
     func decodesChatParticipants() throws {
-        let chat = try decoder.decode(ChatResponse.self, from: Fixtures.chatJSON(id: 3))
+        let chat = try decoder.decode(ChatResponse.self, from: try Fixtures.chatJSON(id: 3))
 
         #expect(chat.id == 3)
         #expect(chat.me?.id == "user_me")
@@ -131,7 +131,7 @@ struct DecodingTests {
     @Test("An oversized message body is decoded as data, not executed")
     func decodesLargePayload() throws {
         let content = String(repeating: "a", count: 200_000)
-        let data = Fixtures.messagesJSON([Fixtures.message(id: 1, content: content)])
+        let data = try Fixtures.messagesJSON([Fixtures.message(id: 1, content: content)])
         let messages = try decoder.decode([DecryptedMessageWithReply].self, from: data)
 
         #expect(messages.first?.content.count == 200_000)

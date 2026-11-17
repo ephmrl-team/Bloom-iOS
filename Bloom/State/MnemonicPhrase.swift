@@ -3,8 +3,8 @@
 //  Bloom
 //
 
-import Foundation
 import Bip39
+import Foundation
 
 /// Validation for the 12-word login phrase.
 enum MnemonicPhrase {

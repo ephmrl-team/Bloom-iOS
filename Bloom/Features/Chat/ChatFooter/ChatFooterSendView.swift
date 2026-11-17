@@ -17,7 +17,7 @@ struct ChatFooterSendView: View {
 
     @Environment(MessagesStore.self) private var store
 
-    @State private var holdTask: Task<Void, Never>? = nil
+    @State private var holdTask: Task<Void, Never>?
 
     private var hasText: Bool {
         !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty

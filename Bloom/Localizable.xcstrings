@@ -1,25 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
-    "@%@" : {
-
-    },
-    "%@%@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@%2$@"
-          }
-        }
-      }
-    },
-    "%lld" : {
-
-    },
     "%lld phrase word" : {
       "localizations" : {
         "en" : {
@@ -35,9 +16,6 @@
           }
         }
       }
-    },
-    "🥲" : {
-
     },
     "Always with you" : {
       "localizations" : {
@@ -124,7 +102,20 @@
       }
     },
     "Chat options" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chat options"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Опции чата"
+          }
+        }
+      }
     },
     "Chat profile: %@" : {
       "localizations" : {
@@ -1238,9 +1229,6 @@
           }
         }
       }
-    },
-    "View profile" : {
-
     },
     "Voice notes, quick replies and a clean interface" : {
       "localizations" : {

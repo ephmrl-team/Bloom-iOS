@@ -77,7 +77,9 @@ final class KeyboardTracker: NSObject {
         else { return }
         let frameInWindow = window.convert(frame, from: window.screen.coordinateSpace)
         let height = Self.dockedHeight(for: frameInWindow, in: window.bounds)
-        if height > 0 { keyboardHeight = height }
+        if height > 0 {
+            keyboardHeight = height
+        }
         updateProgress()
     }
 

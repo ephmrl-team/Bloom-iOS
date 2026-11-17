@@ -1,5 +1,5 @@
 //
-//  ChatsListRowView.swift
+//  ChatListRowView.swift
 //  Bloom
 //
 //  Created by Аскольд on 11.08.2026.
@@ -13,8 +13,8 @@ struct ChatsListRowView: View {
     @State private var previewWidth: CGFloat = 320
 
     private func formatTime(from timestamp: Int64?) -> String {
-        guard let ts = timestamp else { return "" }
-        return Date(timeIntervalSince1970: TimeInterval(ts))
+        guard let timestamp else { return "" }
+        return Date(timeIntervalSince1970: TimeInterval(timestamp))
             .formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
     }
 
@@ -52,7 +52,7 @@ struct ChatsListRowView: View {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.leading)
                         .lineLimit(1)
-                    
+
                     Spacer(minLength: Theme.spacing.xs)
                 }
             }
@@ -70,20 +70,17 @@ struct ChatsListRowView: View {
         }
         .buttonStyle(.plain)
         .contextMenu {
-            Button {
-            } label: {
+            Button {} label: {
                 Label("Pin", systemImage: "pin.fill")
             }
 
-            Button {
-            } label: {
+            Button {} label: {
                 Label("Mute", systemImage: "bell.slash.fill")
             }
 
             Divider()
 
-            Button(role: .destructive) {
-            } label: {
+            Button(role: .destructive) {} label: {
                 Label("Delete chat", systemImage: "trash.fill")
             }
         } preview: {

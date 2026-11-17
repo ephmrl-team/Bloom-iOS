@@ -21,7 +21,7 @@ struct ChatFooterTextView: View {
             axis: .vertical
         )
         .frame(maxWidth: .infinity, alignment: .leading)
-        .lineLimit(1...5)
+        .lineLimit(1 ... 5)
         .focused($focused)
         .font(.system(.headline, design: .rounded, weight: .medium))
         .padding(.leading, Theme.spacing.lg)

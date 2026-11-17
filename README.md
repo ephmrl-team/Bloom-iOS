@@ -79,11 +79,37 @@ Command line:
 
 ```bash
 xcodebuild -project Bloom.xcodeproj -scheme Bloom \
-  -destination 'generic/platform=iOS' -configuration Debug build
+  -destination 'generic/platform=iOS' -configuration Debug CODE_SIGNING_ALLOWED=NO build
 
-xcodebuild test -project Bloom.xcodeproj -scheme Bloom \
-  -destination 'platform=iOS,id=<DEVICE ID>'
+xcodebuild -project Bloom.xcodeproj -scheme Bloom \
+  -destination 'generic/platform=iOS' -configuration Release CODE_SIGNING_ALLOWED=NO build
 ```
+
+### Checks
+
+```bash
+./Scripts/verify.sh              # everything below in one gate: docs, sizes, security, format, lint, builds
+./Scripts/check-file-size.sh     # every source file ≤ 250 lines
+./Scripts/security-audit.sh      # no print/NSLog, no ATS exceptions, no force try/cast, no secrets
+swiftlint lint --strict          # style rules from .swiftlint.yml, warnings are failures
+swiftformat --lint Bloom         # formatting from .swiftformat
+```
+
+CI (`.github/workflows/ci.yml`) runs the checks on every push and pull request, then builds Debug and
+a strict-concurrency variant and runs the unit tests. The build job is skipped while
+`BloomKit.xcframework` is absent, because the app cannot link without it.
+
+### Device workflow (USB iPhone)
+
+```bash
+./Scripts/run_on_iphone.sh              # build, install and launch on the connected iPhone
+./Scripts/run_on_iphone.sh --launch-arg -AppMode=mock   # same, opening a mock screen
+./Scripts/visual_check.sh screen --run  # screenshot -> build/screen.png -> vision review
+./Scripts/visual_check.sh anim 4        # 4 s recording -> build/sheet.png -> animation review
+```
+
+The capture tools need Camera and Screen Recording permission for the terminal. Full instructions and the
+tool list are in [`docs/device-workflow.md`](docs/device-workflow.md).
 
 ### App modes
 
@@ -98,7 +124,8 @@ The app picks its backend at launch (`Bloom/App/AppMode.swift`):
 ## Tests
 
 `Bloom.xctestplan` holds two configurations: **Default** (unit and UI tests)
-and **Performance** (launch time and scroll hitches, disabled by default).
+and **Performance** (launch time and scroll hitches, disabled by default). Tests
+run on a physical device; the project never uses a simulator outside CI.
 
 ```bash
 # unit tests
@@ -125,6 +152,7 @@ BloomTests/             unit tests (Swift Testing)
 BloomUITests/           UI tests (XCTest, run against the mock backend)
 BloomPerformanceTests/  launch and scroll metrics (device only)
 Scripts/                file size and security checks
+docs/                   reference notes behind AGENTS.md
 ```
 
 ## Security status — read before trusting claims
@@ -143,8 +171,10 @@ Scripts/                file size and security checks
 
 ## Contributing
 
-Read [`AGENTS.md`](AGENTS.md) before changing code: it holds the build, style,
-security, performance and commit rules for this repository.
+Read [`AGENTS.md`](AGENTS.md) before changing code: it holds the invariants for
+builds, style, security, scope and git. Deeper notes — performance budgets,
+UIKit/Objective-C policy, commit format — are in
+[`docs/reference.md`](docs/reference.md).
 
 ## License
 

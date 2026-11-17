@@ -11,15 +11,19 @@ enum Route: Hashable, Identifiable {
     case chatList
     case chat(id: Int)
     case profile(id: String)
-    
-    var id: Self { self }
+
+    var id: Self {
+        self
+    }
 }
 
 enum ModalRoute: Identifiable {
     case newMessage
     case settings
-    
-    var id: Self { self }
+
+    var id: Self {
+        self
+    }
 }
 
 enum AuthRoute: Hashable {

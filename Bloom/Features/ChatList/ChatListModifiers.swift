@@ -5,18 +5,18 @@
 //  Created by Аскольд on 12.08.2026.
 //
 
-import SwiftUI
 import BlurSwiftUI
 import BlurUIKit
+import SwiftUI
 
 struct VariableBlurView: View {
     let height: CGFloat
     let color: Color?
-    
+
     var body: some View {
         VariableBlur(direction: .down)
             .maximumBlurRadius(3.25)
-            .dimmingOvershoot(.relative(fraction: 1.3))
+            .dimmingClearExtension(.relative(fraction: 0.3))
             // Same dimming in both themes, half stronger than the library default (0.5 / 0.25).
             .dimmingAlpha(.constant(alpha: 0.75))
             .passesTouchesThrough(true)
@@ -39,7 +39,7 @@ struct TopVariableBlurModifier: ViewModifier {
 
 struct BottomSafeAreaGradientModifier: ViewModifier {
     let height: CGFloat?
-    
+
     func body(content: Content) -> some View {
         content
             .overlay(alignment: .bottom) {
@@ -49,14 +49,18 @@ struct BottomSafeAreaGradientModifier: ViewModifier {
                             colors: [
                                 Color(.systemBackground).opacity(0.8),
                                 Color(.systemBackground).opacity(0.45),
-                                Color(.systemBackground).opacity(0)
+                                Color(.systemBackground).opacity(0),
                             ],
                             startPoint: .bottom,
                             endPoint: .top
                         )
                         .frame(height: (height != nil) ? height : geometry.safeAreaInsets.bottom)
                     }
-                    .frame(width: geometry.size.width, height: (height != nil) ? height : geometry.size.height, alignment: .bottom)
+                    .frame(
+                        width: geometry.size.width,
+                        height: height ?? geometry.size.height,
+                        alignment: .bottom
+                    )
                     .ignoresSafeArea(edges: .bottom)
                     .allowsHitTesting(false)
                     .offset(y: (height != nil) ? 0 : geometry.safeAreaInsets.bottom)

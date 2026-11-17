@@ -3,8 +3,8 @@
 //  Bloom
 //
 
-import SwiftUI
 import OSLog
+import SwiftUI
 
 @main
 struct BloomApp: App {
@@ -38,7 +38,7 @@ struct BloomApp: App {
 
     private static func createEnvironment() -> Result<AppEnvironment, Error> {
         do {
-            return .success(try AppEnvironment.make())
+            return try .success(AppEnvironment.make())
         } catch {
             Logger.bloom.error("app failed to start: \(error, privacy: .public)")
             return .failure(error)
@@ -48,7 +48,7 @@ struct BloomApp: App {
 
 private extension Result {
     var failureMessage: String? {
-        guard case .failure(let error) = self else { return nil }
+        guard case let .failure(error) = self else { return nil }
         return error.localizedDescription
     }
 }

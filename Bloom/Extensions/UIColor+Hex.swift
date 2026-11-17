@@ -12,29 +12,29 @@ extension UIColor {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
         Scanner(string: hex).scanHexInt64(&int)
-        let r, g, b, a: CGFloat
+        let red, green, blue, alpha: CGFloat
         switch hex.count {
         case 3:
-            r = CGFloat((int >> 8) * 17) / 255
-            g = CGFloat((int >> 4 & 0xF) * 17) / 255
-            b = CGFloat((int & 0xF) * 17) / 255
-            a = 1.0
+            red = CGFloat((int >> 8) * 17) / 255
+            green = CGFloat((int >> 4 & 0xF) * 17) / 255
+            blue = CGFloat((int & 0xF) * 17) / 255
+            alpha = 1.0
         case 6:
-            r = CGFloat(int >> 16) / 255
-            g = CGFloat(int >> 8 & 0xFF) / 255
-            b = CGFloat(int & 0xFF) / 255
-            a = 1.0
+            red = CGFloat(int >> 16) / 255
+            green = CGFloat(int >> 8 & 0xFF) / 255
+            blue = CGFloat(int & 0xFF) / 255
+            alpha = 1.0
         case 8:
-            r = CGFloat(int >> 24) / 255
-            g = CGFloat(int >> 16 & 0xFF) / 255
-            b = CGFloat(int >> 8 & 0xFF) / 255
-            a = CGFloat(int & 0xFF) / 255
+            red = CGFloat(int >> 24) / 255
+            green = CGFloat(int >> 16 & 0xFF) / 255
+            blue = CGFloat(int >> 8 & 0xFF) / 255
+            alpha = CGFloat(int & 0xFF) / 255
         default:
-            (r, g, b, a) = (1, 1, 1, 1)
+            (red, green, blue, alpha) = (1, 1, 1, 1)
         }
-        self.init(red: r, green: g, blue: b, alpha: a)
+        self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
-    
+
     static func dynamic(lightHex: String, darkHex: String) -> UIColor {
         UIColor { trait in
             trait.userInterfaceStyle == .dark ? UIColor(hex: darkHex) : UIColor(hex: lightHex)

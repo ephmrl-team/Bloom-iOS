@@ -3,8 +3,8 @@
 //  Bloom
 //
 
-import Foundation
 @testable import Bloom
+import Foundation
 
 struct StubError: Error {}
 

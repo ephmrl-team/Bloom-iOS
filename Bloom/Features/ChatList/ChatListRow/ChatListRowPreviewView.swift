@@ -3,9 +3,9 @@
 //  Bloom
 //
 
-import SwiftUI
 import BlurSwiftUI
 import BlurUIKit
+import SwiftUI
 
 /// Uses an isolated store because the preview is hosted outside the app's environment.
 struct ChatPreviewView: View {

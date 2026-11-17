@@ -24,11 +24,8 @@ jobs:
 
       - name: SwiftLint
         run: |
-          if command -v swiftlint > /dev/null; then
-            swiftlint lint --strict
-          else
-            echo "swiftlint is not installed on this runner, skipping."
-          fi
+          brew install swiftlint
+          swiftlint lint --strict
 
   build-and-test:
     name: Build and unit tests
