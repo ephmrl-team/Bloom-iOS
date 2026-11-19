@@ -63,6 +63,11 @@ final class KeyboardTracker: NSObject {
         updateProgress()
     }
 
+    /// Keyboard height while it is on screen, `nil` when it is hidden.
+    var visibleHeight: CGFloat? {
+        progress > 0.01 && keyboardHeight > 0 ? keyboardHeight : nil
+    }
+
     func dismiss() {
         if let window {
             window.endEditing(true)

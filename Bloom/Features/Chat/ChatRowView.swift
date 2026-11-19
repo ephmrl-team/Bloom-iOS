@@ -1,6 +1,6 @@
 //
-// ChatRowView.swift
-// Bloom
+//  ChatRowView.swift
+//  Bloom
 //
 // Created by Аскольд on 13.08.2026.
 //
@@ -10,6 +10,7 @@ import SwiftUI
 struct ChatRowView: View, Equatable {
     let item: MessageItem
     let isSeen: Bool
+    var isLifted = false
 
     var onCopy: (Int) -> Void = { _ in }
     var onReply: (Int) -> Void = { _ in }
@@ -17,113 +18,22 @@ struct ChatRowView: View, Equatable {
     var onDelete: (Int) -> Void = { _ in }
 
     static func == (lhs: ChatRowView, rhs: ChatRowView) -> Bool {
-        lhs.item == rhs.item && lhs.isSeen == rhs.isSeen
+        lhs.item == rhs.item && lhs.isSeen == rhs.isSeen && lhs.isLifted == rhs.isLifted
     }
 
     private enum Layout {
-        static let bubbleCornerRadius: CGFloat = 22
-        static let emojiOverlayCornerRadius: CGFloat = 20
-        static let minBubbleWidth: CGFloat = 60
-        static let minBubbleHeight: CGFloat = 40
         static let sideSpacer: CGFloat = 55
-        static let minEmojiSize: CGFloat = 32
     }
 
-    private var textColor: Color {
-        item.me ? Theme.colors.white : Theme.colors.text
-    }
-
-    private var backgroundColor: Color {
-        item.me ? Theme.colors.primary : Color(.secondarySystemBackground)
-    }
-
-    private var emojiSize: CGFloat {
-        let count = CGFloat(item.content.count)
-        guard count > 0 else { return 0 }
-
-        let size: CGFloat
-        switch count {
-        case 1:
-            size = 120.0
-        case 2:
-            size = 80.0
-        default:
-            size = 120.0 / (count * 0.75)
-        }
-
-        return max(Layout.minEmojiSize, size)
-    }
-
-    @ViewBuilder
-    private var messageBubble: some View {
-        let invisibleSpaceForTime = Text("\u{00A0}\u{00A0}" + item.date)
-            .font(.system(.footnote, design: .rounded, weight: .regular))
-            .foregroundColor(.clear)
-
-        if item.content.isOnlyEmojis {
-            Text(item.content)
-                .font(.system(size: emojiSize, weight: .regular, design: .rounded))
-                .padding(.bottom, item.content.isSingleEmoji ? 0 : Theme.spacing.xxl)
-                .overlay(
-                    Text(item.date)
-                        .font(.system(.footnote, design: .rounded, weight: .regular))
-                        .foregroundColor(Theme.colors.text)
-                        .padding(.vertical, 5)
-                        .padding(.horizontal, 10)
-                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: Layout.emojiOverlayCornerRadius)),
-                    alignment: item.me ? .bottomTrailing : .bottomLeading
-                )
-        } else {
-            Text("\(item.content)\(invisibleSpaceForTime)")
-                .font(.system(.headline, design: .rounded, weight: .regular))
-                .foregroundColor(textColor)
-                .padding(.horizontal, 15)
-                .padding(.vertical, 11)
-                .frame(minWidth: Layout.minBubbleWidth, minHeight: Layout.minBubbleHeight, alignment: .leading)
-                .background(backgroundColor, in: RoundedRectangle(cornerRadius: Layout.bubbleCornerRadius))
-                .overlay(
-                    Text(item.date)
-                        .font(.system(.footnote, design: .rounded, weight: .regular))
-                        .foregroundColor(textColor.opacity(0.5))
-                        .padding(.trailing, 13)
-                        .padding(.bottom, 9),
-                    alignment: .bottomTrailing
-                )
-        }
-    }
-
-    @ViewBuilder
-    private var menuItems: some View {
-        Button { onCopy(item.id) } label: { Label("Copy", systemImage: "doc.on.doc") }
-        Button { onReply(item.id) } label: { Label("Reply", systemImage: "arrowshape.turn.up.left") }
-        Button { onForward(item.id) } label: { Label("Forward", systemImage: "arrowshape.turn.up.right") }
-
+    private var actions: ChatMenuActions {
+        var menu = ChatMenuActions()
+        menu.copy = { onCopy(item.id) }
+        menu.reply = { onReply(item.id) }
+        menu.forward = { onForward(item.id) }
         if item.me {
-            Button(role: .destructive) { onDelete(item.id) } label: {
-                Label("Delete", systemImage: "trash")
-            }
-            .tint(Theme.colors.red)
+            menu.delete = { onDelete(item.id) }
         }
-    }
-
-    /// Emoji-only bubbles have no background, so they keep the alpha-derived preview mask: no plate
-    /// and no corner clip. Text bubbles hand the system their own 22 pt shape instead of its default.
-    @ViewBuilder
-    private var menuPreviewContent: some View {
-        if item.content.isOnlyEmojis {
-            messageBubble
-        } else {
-            messageBubble.contentShape(
-                .contextMenuPreview,
-                RoundedRectangle(cornerRadius: Layout.bubbleCornerRadius)
-            )
-        }
-    }
-
-    private var bubbleWithMenu: some View {
-        menuPreviewContent
-            .contextMenu { menuItems }
-            .tint(.primary)
+        return menu
     }
 
     var body: some View {
@@ -133,15 +43,11 @@ struct ChatRowView: View, Equatable {
             }
 
             VStack(alignment: item.me ? .trailing : .leading, spacing: 0) {
-                bubbleWithMenu
+                ChatBubbleContent(item: item)
+                    .chatBubbleLift(item: item, isLifted: isLifted, actions: actions)
 
                 if item.me {
-                    Text("Read")
-                        .font(.system(.subheadline, design: .rounded, weight: .regular))
-                        .foregroundColor(.secondary)
-                        .padding(.top, isSeen ? Theme.spacing.sm : 0)
-                        .frame(height: isSeen ? nil : 0, alignment: .top)
-                        .opacity(isSeen ? 1 : 0)
+                    readReceipt
                 }
             }
             .padding(.top, Theme.spacing.lg)
@@ -151,5 +57,14 @@ struct ChatRowView: View, Equatable {
             }
         }
         .contentShape(.rect)
+    }
+
+    private var readReceipt: some View {
+        Text("Read")
+            .font(.system(.subheadline, design: .rounded, weight: .regular))
+            .foregroundColor(.secondary)
+            .padding(.top, isSeen ? Theme.spacing.sm : 0)
+            .frame(height: isSeen ? nil : 0, alignment: .top)
+            .opacity(isSeen ? 1 : 0)
     }
 }

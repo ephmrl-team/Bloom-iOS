@@ -13,6 +13,7 @@ struct ChatView: View {
     @Environment(BloomManager.self) private var bloomManager
     @State private var store: MessagesStore?
     @State private var keyboard = KeyboardTracker()
+    @State private var contextMenu = ChatContextMenuModel()
     @State private var toolbarIdealWidth: CGFloat = 0
     @State private var topInset: CGFloat = 0
     @State private var isAtBottom = true
@@ -33,6 +34,7 @@ struct ChatView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .environment(contextMenu)
         .onGeometryChange(for: CGFloat.self) { proxy in
             proxy.size.width
         } action: { width in
@@ -55,7 +57,10 @@ struct ChatView: View {
         }
         .bottomSafeAreaGradient()
         .topVariableBlur()
-        .onDisappear { keyboard.dismiss() }
+        .onDisappear {
+            keyboard.dismiss()
+            contextMenu.dismissImmediately()
+        }
         .task {
             guard store == nil else { return }
             let store = bloomManager.makeMessagesStore(chatID: chatId)

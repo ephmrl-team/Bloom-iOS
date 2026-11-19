@@ -59,6 +59,8 @@ enum Theme {
         static let indicator = Color.dynamic(lightHex: "0000001a", darkHex: "ffffff26")
         static let border = Color.dynamic(lightHex: "0000000d", darkHex: "ffffff17")
         static let shadow = Color.dynamic(light: Color.black.opacity(0.08), dark: Color.clear)
+        static let menuBackdrop = black
+        static let liftedShadow = Color.dynamic(light: Color.black.opacity(0.22), dark: Color.black.opacity(0.55))
 
         static let white = Color(uiColor: UIColor(hex: "ffffff"))
         static let black = Color(uiColor: UIColor(hex: "000000"))
@@ -84,6 +86,7 @@ enum Theme {
         static let redBackdrop = red.opacity(0.5)
         static let grayBackdrop = gray.opacity(0.5)
         static let glassBackdrop = pressable.opacity(0.55)
+        static let glassTint = pressable.opacity(0.3)
     }
 }
 
