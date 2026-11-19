@@ -83,6 +83,7 @@ struct ChatsListRowView: View {
             Button(role: .destructive) {} label: {
                 Label("Delete chat", systemImage: "trash.fill")
             }
+            .tint(Theme.colors.red)
         } preview: {
             ChatPreviewView(chat: chat, store: bloomManager.makeMessagesStore(chatID: chat.id), width: previewWidth)
         }

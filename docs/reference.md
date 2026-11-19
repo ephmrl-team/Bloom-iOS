@@ -83,7 +83,7 @@ heavy drawing; decode and downsample images off the main thread.
 ## UIKit and Objective-C policy
 
 Default to Swift and SwiftUI. Use UIKit (in Swift, via `UIViewRepresentable`) when SwiftUI cannot meet the
-budget or lacks the API — precedent: `Components/UIKitContextMenu.swift`. Use Objective-C only for a measured
+budget or lacks the API — precedent: `Features/Chat/ChatFooter/KeyboardTrackerHost.swift`. Use Objective-C only for a measured
 CPU-bound hot loop, in `Bloom/Native/`, with class prefix `BLM`, ARC, `NS_ASSUME_NONNULL_BEGIN`, lightweight
 generics, no per-call allocation and `os_log` with `%{private}`.
 

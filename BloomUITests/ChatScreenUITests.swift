@@ -67,6 +67,51 @@ final class ChatScreenUITests: XCTestCase {
         XCTAssertTrue(element("chatMessageField", in: app).waitForExistence(timeout: 15))
     }
 
+    /// Long-pressing a bubble must keep its 22 pt shape and put it back exactly where it was; an
+    /// emoji-only bubble has no background, so it must lift without a plate or a corner clip.
+    func testMessageContextMenuKeepsBubbleShape() {
+        let app = launchChat()
+
+        let bubble = element("chatMessageList", in: app).staticTexts
+            .matching(NSPredicate(format: "label BEGINSWITH %@", "Message #36 from Nina"))
+            .firstMatch
+        XCTAssertTrue(bubble.waitForExistence(timeout: 15))
+        let restingFrame = bubble.frame
+        capture("menu-baseline")
+
+        bubble.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Copy"].waitForExistence(timeout: 10))
+        capture("menu-open-text")
+        dismissMenu(in: app)
+        XCTAssertEqual(bubble.frame.minY, restingFrame.minY, accuracy: 1)
+        XCTAssertEqual(bubble.frame.minX, restingFrame.minX, accuracy: 1)
+
+        element("chatMessageField", in: app).tap()
+        send("😀", in: app)
+        let emoji = element("chatMessageList", in: app).staticTexts
+            .matching(NSPredicate(format: "label BEGINSWITH %@", "😀"))
+            .firstMatch
+        XCTAssertTrue(emoji.waitForExistence(timeout: 10))
+
+        emoji.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Copy"].waitForExistence(timeout: 10))
+        capture("menu-open-emoji")
+        dismissMenu(in: app)
+        XCTAssertTrue(app.buttons["Copy"].waitForNonExistence(timeout: 10))
+    }
+
+    private func dismissMenu(in app: XCUIApplication) {
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.03, dy: 0.3)).tap()
+        XCTAssertTrue(app.buttons["Copy"].waitForNonExistence(timeout: 10))
+    }
+
+    private func capture(_ name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
     private func launchChat() -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-AppMode=mock", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]

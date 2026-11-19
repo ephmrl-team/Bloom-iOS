@@ -92,28 +92,38 @@ struct ChatRowView: View, Equatable {
         }
     }
 
-    private var contextMenuActions: [ContextMenuAction] {
-        var actions: [ContextMenuAction] = [
-            ContextMenuAction(title: String(localized: "Copy"), systemImage: "doc.on.doc") {
-                onCopy(item.id)
-            },
-            ContextMenuAction(title: String(localized: "Reply"), systemImage: "arrowshape.turn.up.left") {
-                onReply(item.id)
-            },
-            ContextMenuAction(title: String(localized: "Forward"), systemImage: "arrowshape.turn.up.right") {
-                onForward(item.id)
-            },
-        ]
+    @ViewBuilder
+    private var menuItems: some View {
+        Button { onCopy(item.id) } label: { Label("Copy", systemImage: "doc.on.doc") }
+        Button { onReply(item.id) } label: { Label("Reply", systemImage: "arrowshape.turn.up.left") }
+        Button { onForward(item.id) } label: { Label("Forward", systemImage: "arrowshape.turn.up.right") }
 
         if item.me {
-            actions.append(
-                ContextMenuAction(title: String(localized: "Delete"), systemImage: "trash", isDestructive: true) {
-                    onDelete(item.id)
-                }
+            Button(role: .destructive) { onDelete(item.id) } label: {
+                Label("Delete", systemImage: "trash")
+            }
+            .tint(Theme.colors.red)
+        }
+    }
+
+    /// Emoji-only bubbles have no background, so they keep the alpha-derived preview mask: no plate
+    /// and no corner clip. Text bubbles hand the system their own 22 pt shape instead of its default.
+    @ViewBuilder
+    private var menuPreviewContent: some View {
+        if item.content.isOnlyEmojis {
+            messageBubble
+        } else {
+            messageBubble.contentShape(
+                .contextMenuPreview,
+                RoundedRectangle(cornerRadius: Layout.bubbleCornerRadius)
             )
         }
+    }
 
-        return actions
+    private var bubbleWithMenu: some View {
+        menuPreviewContent
+            .contextMenu { menuItems }
+            .tint(.primary)
     }
 
     var body: some View {
@@ -123,13 +133,7 @@ struct ChatRowView: View, Equatable {
             }
 
             VStack(alignment: item.me ? .trailing : .leading, spacing: 0) {
-                messageBubble
-                    .uiKitContextMenu(
-                        cornerRadius: Layout.bubbleCornerRadius,
-                        actions: contextMenuActions
-                    ) {
-                        messageBubble
-                    }
+                bubbleWithMenu
 
                 if item.me {
                     Text("Read")

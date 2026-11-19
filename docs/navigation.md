@@ -31,6 +31,20 @@ Read this before adding a screen, a route, a toolbar or a header/footer that flo
 - Do not add a background to the toolbar yourself. When content must scroll under it, use `topVariableBlur()`
   and, for glass content inside the bar, `.sharedBackgroundVisibility(.hidden)`.
 
+## Context menus
+
+- Chat bubbles use the native `.contextMenu`. Give the content its own preview shape with
+  `.contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: 22))`: without it the system masks the
+  lifted bubble with the menu's corner radius and cuts a two-line bubble.
+- Never hand `UIContextMenuInteraction` a custom preview for a bubble. Hiding the source view and showing it
+  again outside the system's dismissal animation reads as a teleport, and the preview platter adds a plate
+  behind emoji-only content.
+- Emoji-only bubbles have no background: skip the content shape so the mask follows the glyphs — no plate,
+  no corner clip.
+- Menu icons follow one rule: primary (black in light, white in dark) for normal actions, red for
+  destructive ones — `.tint(.primary)` on the content plus `.tint(Theme.colors.red)` on the destructive
+  button.
+
 ## Floating chrome
 
 - `topVariableBlur()` (`Features/ChatList/ChatListModifiers.swift`, BlurUIKit `VariableBlur`) is required on
