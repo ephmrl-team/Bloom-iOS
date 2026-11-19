@@ -15,12 +15,15 @@ struct ChatContextMenuOverlay: View {
     @State private var reactionsDot = true
     @State private var menuFull = false
     @State private var menuDot = true
+    /// The pending unfold/squeeze step; cancelled whenever the menu opens or closes again.
+    @State private var phaseTask: Task<Void, Never>?
+    /// Computed once when the menu opens: it is pure geometry, not a per-frame value.
+    @State private var layout: ChatMenuLayout?
 
     var body: some View {
         ZStack(alignment: .topLeading) {
             backdrop
-            if let item = model.item {
-                let layout = ChatMenuLayoutEngine.make(layoutRequest(item))
+            if let item = model.item, let layout {
                 ChatMenuControls(state: controlsState(item, layout: layout), model: model)
                 liftedContent(item, layout: layout)
             }
@@ -28,8 +31,12 @@ struct ChatContextMenuOverlay: View {
         .ignoresSafeArea()
         .onChange(of: model.item?.renderID, initial: true) { _, id in
             if id == nil {
+                phaseTask?.cancel()
                 lifted = false
-            } else {
+                layout = nil
+            } else if let item = model.item {
+                // Placed once per message, not once per animation frame.
+                layout = ChatMenuLayoutEngine.make(layoutRequest(item))
                 animateIn()
             }
         }
@@ -112,6 +119,7 @@ struct ChatContextMenuOverlay: View {
 
     /// Dots morph into pills, then the pills unfold into the full blocks.
     private func animateIn() {
+        phaseTask?.cancel()
         lifted = false
         reactionsFull = false
         reactionsDot = true
@@ -124,9 +132,9 @@ struct ChatContextMenuOverlay: View {
             reactionsDot = false
             menuDot = false
         }
-        Task { @MainActor in
+        phaseTask = Task { @MainActor in
             try? await Task.sleep(for: phaseDelay)
-            guard model.item != nil else { return }
+            guard isLive else { return }
             withAnimation(collapseAnimation) {
                 reactionsFull = true
                 menuFull = true
@@ -134,8 +142,14 @@ struct ChatContextMenuOverlay: View {
         }
     }
 
+    /// The menu may have closed or been replaced while a phase was waiting.
+    private var isLive: Bool {
+        !Task.isCancelled && model.item != nil && !model.isDismissing
+    }
+
     /// The blocks squeeze into pills first, then mid-way pick up speed and morph into the plate.
     private func animateOut() {
+        phaseTask?.cancel()
         withAnimation(animation) {
             lifted = false
         }
@@ -143,9 +157,9 @@ struct ChatContextMenuOverlay: View {
             reactionsFull = false
             menuFull = false
         }
-        Task { @MainActor in
+        phaseTask = Task { @MainActor in
             try? await Task.sleep(for: phaseDelay)
-            guard model.isDismissing else { return }
+            guard !Task.isCancelled, model.isDismissing else { return }
             withAnimation(morphAnimation) {
                 reactionsDot = true
                 menuDot = true

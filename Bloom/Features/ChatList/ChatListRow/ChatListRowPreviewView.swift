@@ -5,6 +5,7 @@
 
 import BlurSwiftUI
 import BlurUIKit
+import SkulletX
 import SwiftUI
 
 /// Uses an isolated store because the preview is hosted outside the app's environment.
@@ -36,12 +37,16 @@ struct ChatPreviewView: View {
             .defaultScrollAnchor(.bottom)
             .scrollIndicators(.hidden)
             .allowsHitTesting(false)
+            // Same reveal as the chat screen, and only until the first messages land, so a store
+            // that was already loaded never gets a skeleton on top of its rows.
+            .skulletReveal(isLoading: store.data.isEmpty && store.isLoading) {
+                ChatMessagesSkeleton()
+                    .padding(.bottom, Theme.spacing.lg)
+            }
             .overlay {
-                if store.isLoading {
-                    ProgressView()
-                } else if store.loadFailed {
+                if store.loadFailed {
                     Text("Couldn't load messages")
-                } else if store.data.isEmpty {
+                } else if store.data.isEmpty, !store.isLoading {
                     Text("No messages yet")
                 }
             }

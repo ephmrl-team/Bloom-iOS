@@ -10,7 +10,6 @@ struct ChatMenuLayoutRequest {
     let anchor: CGRect
     let bounds: CGRect
     let safeArea: UIEdgeInsets
-    let keyboardTop: CGFloat?
     let configuration: ChatMenuConfiguration
     let isMine: Bool
     let actionRows: Int
@@ -24,7 +23,6 @@ extension ChatMenuLayoutRequest {
             anchor: model.anchor,
             bounds: model.bounds,
             safeArea: model.safeArea,
-            keyboardTop: model.keyboardTop,
             configuration: model.configuration,
             isMine: item.me,
             actionRows: item.me ? 4 : 3,
@@ -113,11 +111,8 @@ enum ChatMenuLayoutEngine {
         init(_ request: ChatMenuLayoutRequest) {
             let configuration = request.configuration
             top = request.safeArea.top + configuration.edgeInset
-            let visibleBottom = min(
-                request.bounds.maxY - request.safeArea.bottom,
-                request.keyboardTop ?? request.bounds.maxY
-            )
-            bottom = visibleBottom - configuration.edgeInset
+            // The keyboard is already on its way out when the menu opens, so the screen is free.
+            bottom = request.bounds.maxY - request.safeArea.bottom - configuration.edgeInset
             gap = configuration.gap
             minX = request.bounds.minX + configuration.edgeInset
             maxX = request.bounds.maxX - configuration.edgeInset

@@ -35,7 +35,9 @@ Glass, and a thin `NavigationPath` router on top.
 - **Recovery phrase** — shown once after registration with a "test yourself"
   quiz, hidden from the app switcher and from screenshots.
 - **Chats** — list with search, empty and error states, and real message
-  history with optimistic sending.
+  history with optimistic sending. A long press lifts a bubble into a custom
+  glass menu — quick reactions plus copy, reply, forward and delete — with the
+  keyboard put away and the messages held in place under it.
 - **Saved** — reserved for kept messages; currently an empty state.
 - **Settings** — profile summary and log out.
 - **Localization** — English and Russian in `Bloom/Localizable.xcstrings`.

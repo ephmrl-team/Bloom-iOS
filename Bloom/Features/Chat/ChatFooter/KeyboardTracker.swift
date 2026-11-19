@@ -14,12 +14,22 @@ final class KeyboardTracker: NSObject {
     static let visiblePadding: CGFloat = 16
 
     private(set) var progress: CGFloat = 0
+    /// Where the scroll view's bottom edge sits and how much of it is inset: together they say where
+    /// the last message is on screen, whatever moves it.
+    private(set) var contentBottomInset: CGFloat = 0
+    private(set) var scrollFrame: CGRect = .zero
     /// Bumped when the back swipe takes the keyboard away, so the composer drops its focus state too.
     private(set) var focusResets = 0
+    /// Bumped when the chat menu closes, so the composer takes the keyboard back.
+    private(set) var focusRestores = 0
 
     @ObservationIgnored private weak var window: UIWindow?
     @ObservationIgnored private var safeAreaBottom: CGFloat = 0
     @ObservationIgnored private var keyboardHeight: CGFloat = 0
+    @ObservationIgnored private var keyboardDocked = false
+    /// Screen position of the content's bottom edge when the menu opened; `nil` when nothing is held.
+    @ObservationIgnored private var lockedViewportBottom: CGFloat?
+    @ObservationIgnored private var shouldRestoreAfterMenu = false
     override init() {
         super.init()
         NotificationCenter.default.addObserver(
@@ -65,7 +75,49 @@ final class KeyboardTracker: NSObject {
 
     /// Keyboard height while it is on screen, `nil` when it is hidden.
     var visibleHeight: CGFloat? {
-        progress > 0.01 && keyboardHeight > 0 ? keyboardHeight : nil
+        keyboardDocked && keyboardHeight > 0 ? keyboardHeight : nil
+    }
+
+    /// Empty room under the last message while the menu holds the keyboard's place: it opens up as
+    /// the content's bottom edge drops back down and closes again as the keyboard returns, so the
+    /// messages never move.
+    var frozenMessageBottomPadding: CGFloat {
+        guard let lockedViewportBottom else { return 0 }
+        return max(0, viewportBottom - lockedViewportBottom)
+    }
+
+    /// Drops the keyboard without moving the messages: the room it frees is handed to the scroll
+    /// content, so the menu backdrop can cover the whole screen.
+    func suspendForContextMenu() {
+        shouldRestoreAfterMenu = visibleHeight != nil
+        lockedViewportBottom = viewportBottom
+        resetFocus()
+    }
+
+    /// Called once the bubble is back in the list: the composer takes the keyboard back.
+    func resumeAfterContextMenu() {
+        guard shouldRestoreAfterMenu else { return }
+        shouldRestoreAfterMenu = false
+        focusRestores &+= 1
+    }
+
+    /// The screen is going away: drop the hold without bringing the keyboard back.
+    func resetContextMenuLock() {
+        lockedViewportBottom = nil
+        shouldRestoreAfterMenu = false
+    }
+
+    /// Fed from the chat's scroll view: its bottom edge on screen and how much of it is inset.
+    func update(contentBottomInset: CGFloat) {
+        self.contentBottomInset = contentBottomInset
+    }
+
+    func update(scrollFrame: CGRect) {
+        self.scrollFrame = scrollFrame
+    }
+
+    private var viewportBottom: CGFloat {
+        scrollFrame.maxY - contentBottomInset
     }
 
     func dismiss() {
@@ -90,6 +142,7 @@ final class KeyboardTracker: NSObject {
         else { return }
         let frameInWindow = window.convert(frame, from: window.screen.coordinateSpace)
         let height = Self.dockedHeight(for: frameInWindow, in: window.bounds)
+        keyboardDocked = height > 0
         if height > 0 {
             keyboardHeight = height
         }

@@ -61,13 +61,14 @@ struct ChatMenuControls: View {
             selected: model.reactions[state.item.id],
             shown: !state.reactionsDot,
             blur: state.contentBlur,
+            isMine: state.item.me,
             configuration: config
         ) { reaction in
             model.react(reaction)
         }
         .frame(width: rect.width, height: rect.height)
         .clipShape(Capsule())
-        .glassEffect(.regular.tint(Theme.colors.glassTint).interactive(), in: Capsule())
+        .glassEffect(.regular.interactive(), in: Capsule())
         .glassEffectID("reactions", in: glass)
         .offset(x: rect.minX, y: rect.minY)
         .animation(state.collapseAnimation, value: state.reactionsFull)
@@ -86,7 +87,7 @@ struct ChatMenuControls: View {
         .frame(width: rect.width, height: rect.height, alignment: .top)
         .clipShape(RoundedRectangle(cornerRadius: config.cornerRadius, style: .continuous))
         .glassEffect(
-            .regular.tint(Theme.colors.glassTint).interactive(),
+            .regular.interactive(),
             in: RoundedRectangle(cornerRadius: config.cornerRadius, style: .continuous)
         )
         .glassEffectID("actions", in: glass)

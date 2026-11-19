@@ -49,6 +49,7 @@ struct ChatFooterView: View {
         }
         .animation(.smooth(duration: 0.235), value: hasText)
         .onChange(of: keyboard.focusResets) { focused = false }
+        .onChange(of: keyboard.focusRestores) { focused = true }
         .onDisappear { focused = false }
     }
 

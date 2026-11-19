@@ -10,6 +10,8 @@ struct ChatReactionBar: View {
     let selected: String?
     let shown: Bool
     let blur: CGFloat
+    /// Own messages open their bar from the right, incoming ones from the left.
+    let isMine: Bool
     let configuration: ChatMenuConfiguration
     let onSelect: (String) -> Void
 
@@ -17,8 +19,8 @@ struct ChatReactionBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(Array(configuration.reactions.enumerated()), id: \.offset) { index, reaction in
-                reactionButton(reaction, index: index)
+            ForEach(configuration.reactions.indices, id: \.self) { index in
+                reactionButton(configuration.reactions[index], index: index)
             }
         }
         .padding(configuration.reactionPadding)
@@ -39,13 +41,15 @@ struct ChatReactionBar: View {
         .animation(animation(index), value: shown)
     }
 
-    /// The stagger only plays on the way in: dismissal stays one quick beat.
+    /// The stagger runs from the side the message sits on and only plays on the way in.
     private func animation(_ index: Int) -> Animation {
         guard !reduceMotion else {
             return .easeOut(duration: 0.1)
         }
-        let middle = Double(configuration.reactions.count - 1) / 2
-        let delay = shown ? abs(Double(index) - middle) * 0.03 : 0
-        return configuration.controlAnimation.delay(delay)
+        guard shown else {
+            return configuration.controlAnimation
+        }
+        let order = isMine ? configuration.reactions.count - 1 - index : index
+        return configuration.controlAnimation.delay(Double(order + 1) * 0.05)
     }
 }

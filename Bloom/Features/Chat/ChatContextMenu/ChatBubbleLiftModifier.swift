@@ -11,16 +11,26 @@ struct ChatBubbleLiftModifier: ViewModifier {
     let isLifted: Bool
     let actions: ChatMenuActions
 
+    /// Short enough to feel instant, long enough not to fire while the list scrolls.
+    private static let pressDuration: TimeInterval = 0.32
+
     @Environment(ChatContextMenuModel.self) private var contextMenu: ChatContextMenuModel?
     @Environment(KeyboardTracker.self) private var keyboard: KeyboardTracker?
     /// A reference box: geometry updates while scrolling must not re-render the row.
     @State private var anchor = LiftAnchor()
+    /// Held down, before the menu opens: the message dims so the press is answered at once.
+    @State private var pressing = false
 
     func body(content: Content) -> some View {
         let liftable = content
+            .opacity(pressing ? 0.55 : 1)
+            .animation(.easeOut(duration: 0.12), value: pressing)
             .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { anchor.frame = $0 }
-            .simultaneousGesture(
-                LongPressGesture(minimumDuration: 0.4).onEnded { _ in lift() }
+            .onLongPressGesture(
+                minimumDuration: Self.pressDuration,
+                maximumDistance: 14,
+                perform: lift,
+                onPressingChanged: { pressing = $0 }
             )
 
         if isLifted {
@@ -32,12 +42,9 @@ struct ChatBubbleLiftModifier: ViewModifier {
 
     private func lift() {
         guard let contextMenu, !isLifted, anchor.frame.width > 0, anchor.frame.height > 0 else { return }
-        contextMenu.present(
-            item: item,
-            anchor: anchor.frame,
-            actions: actions,
-            keyboardHeight: keyboard?.visibleHeight
-        )
+        // The keyboard leaves first so the backdrop covers the whole screen; the messages hold still.
+        keyboard?.suspendForContextMenu()
+        contextMenu.present(item: item, anchor: anchor.frame, actions: actions)
     }
 }
 

@@ -15,7 +15,6 @@ final class ChatContextMenuModel {
     private(set) var anchor: CGRect = .zero
     private(set) var bounds: CGRect = .zero
     private(set) var safeArea: UIEdgeInsets = .zero
-    private(set) var keyboardTop: CGFloat?
     private(set) var actions = ChatMenuActions()
     private(set) var isDismissing = false
     private(set) var reactions: [Int: String] = [:]
@@ -29,7 +28,7 @@ final class ChatContextMenuModel {
         item?.renderID
     }
 
-    func present(item: MessageItem, anchor: CGRect, actions: ChatMenuActions, keyboardHeight: CGFloat?) {
+    func present(item: MessageItem, anchor: CGRect, actions: ChatMenuActions) {
         guard anchor.width > 0, anchor.height > 0 else { return }
         guard let scene = activeScene else {
             Logger.bloom.error("chat menu: no active window scene")
@@ -41,7 +40,6 @@ final class ChatContextMenuModel {
         self.actions = actions
         bounds = scene.effectiveGeometry.coordinateSpace.bounds
         safeArea = scene.keyWindowInsets
-        keyboardTop = keyboardHeight.map { bounds.maxY - $0 }
         pendingAction = nil
         isDismissing = false
 

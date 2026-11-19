@@ -55,10 +55,16 @@ struct ChatView: View {
         .background {
             KeyboardTrackerHost(tracker: keyboard)
         }
+        .onChange(of: contextMenu.liftedRenderID) { _, id in
+            if id == nil {
+                keyboard.resumeAfterContextMenu()
+            }
+        }
         .bottomSafeAreaGradient()
         .topVariableBlur()
         .onDisappear {
             keyboard.dismiss()
+            keyboard.resetContextMenuLock()
             contextMenu.dismissImmediately()
         }
         .task {
@@ -142,6 +148,8 @@ struct ChatView: View {
                         messageRow(item, seenID: seenID, store: store)
                     }
 
+                    ChatMessageKeyboardHold()
+
                     Color.clear
                         .frame(height: 1)
                         .id(bottomSpacerID)
@@ -150,6 +158,12 @@ struct ChatView: View {
             }
             // Anchored here too: after a push the outer anchor can land before the inset settles.
             .defaultScrollAnchor(.bottom)
+            .onScrollGeometryChange(for: CGFloat.self) { $0.contentInsets.bottom } action: { _, inset in
+                keyboard.update(contentBottomInset: inset)
+            }
+            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { frame in
+                keyboard.update(scrollFrame: frame)
+            }
             .onChange(of: store.data.count) { oldCount, newCount in
                 scrollOnNewMessages(proxy: proxy, store: store, oldCount: oldCount, newCount: newCount)
             }
@@ -182,6 +196,16 @@ struct ChatView: View {
             store.didShowMessage(item.renderID)
         }
         .id(item.renderID)
+    }
+}
+
+/// Keeps the messages in place while the chat menu holds the keyboard's room in the content.
+private struct ChatMessageKeyboardHold: View {
+    @Environment(KeyboardTracker.self) private var keyboard
+
+    var body: some View {
+        Color.clear
+            .frame(height: keyboard.frozenMessageBottomPadding)
     }
 }
 
