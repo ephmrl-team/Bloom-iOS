@@ -59,6 +59,9 @@ final class MessagesStore {
         loadFailed = false
         defer { isLoading = false }
 
+        // Demo hold: keeps the skeleton on screen long enough to read.
+        try? await Task.sleep(for: .milliseconds(1000))
+
         do {
             let payload = try await backend.messages(chatID: chatID)
             let messages = try JSONDecoder.bloomDecoder.decode([DecryptedMessageWithReply].self, from: payload)

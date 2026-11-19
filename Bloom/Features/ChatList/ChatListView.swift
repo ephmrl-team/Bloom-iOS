@@ -5,12 +5,14 @@
 //  Created by Аскольд on 10.08.2026.
 //
 
+import SkulletX
 import SwiftUI
 
 struct ChatListView: View {
     @Environment(Router.self) private var router
     @Environment(BloomManager.self) private var bloomManager
     @State private var searchText = ""
+    @State private var bottomInset: CGFloat = 0
 
     private var visibleChats: [ChatResponse] {
         let query = searchText.trim().lowercased()
@@ -27,6 +29,12 @@ struct ChatListView: View {
         // representable down, and dismantling it removes the search controller mid-typing.
         ZStack {
             content
+                .skulletReveal(isLoading: !bloomManager.hasLoadedChats) {
+                    ChatListSkeleton()
+                }
+                // The sweep mask must reach under the tab bar, so the pane ignores that inset and
+                // the list puts it back as a content margin.
+                .ignoresSafeArea(.container, edges: .bottom)
             ChatSearchField(text: $searchText)
                 .frame(width: 0, height: 0)
         }
@@ -36,6 +44,9 @@ struct ChatListView: View {
             ChatListToolbar()
         }
         .topVariableBlur()
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: {
+            bottomInset = $0
+        }
     }
 
     @ViewBuilder
@@ -47,7 +58,7 @@ struct ChatListView: View {
         } else if bloomManager.hasLoadedChats {
             emptyState
         } else {
-            ProgressView()
+            Color.clear
         }
     }
 
@@ -61,6 +72,7 @@ struct ChatListView: View {
             }
         }
         .listStyle(.plain)
+        .contentMargins(.bottom, bottomInset, for: .scrollContent)
         .scrollContentBackground(.hidden)
         .scrollDismissesKeyboard(.immediately)
         .scrollEdgeEffectHidden(true, for: .all)

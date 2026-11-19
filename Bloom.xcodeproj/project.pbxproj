@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5E9B9A90302F91DA00C4CD91 /* Bip39 in Frameworks */ = {isa = PBXBuildFile; productRef = 5E9B9A8F302F91DA00C4CD91 /* Bip39 */; };
+		5E9B9AA3302F91DA00C4CD91 /* SkulletX in Frameworks */ = {isa = PBXBuildFile; productRef = 5E9B9AA2302F91DA00C4CD91 /* SkulletX */; };
 		B1000001302CED1C009523BE /* BloomKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1000002302CED1C009523BE /* BloomKit.xcframework */; };
 		DBBEC4D1302CED1C009523BE /* BlurSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = DBBEC4D0302CED1C009523BE /* BlurSwiftUI */; };
 		DBBEC4D3302CED1C009523BE /* BlurUIKit in Frameworks */ = {isa = PBXBuildFile; productRef = DBBEC4D2302CED1C009523BE /* BlurUIKit */; };
@@ -125,6 +126,7 @@
 				DBBEC4D1302CED1C009523BE /* BlurSwiftUI in Frameworks */,
 				DBBEC4E5302CF133009523BE /* DequeModule in Frameworks */,
 				5E9B9A90302F91DA00C4CD91 /* Bip39 in Frameworks */,
+				5E9B9AA3302F91DA00C4CD91 /* SkulletX in Frameworks */,
 				B1000001302CED1C009523BE /* BloomKit.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -243,6 +245,7 @@
 				DBBEC4D2302CED1C009523BE /* BlurUIKit */,
 				DBBEC4E4302CF133009523BE /* DequeModule */,
 				5E9B9A8F302F91DA00C4CD91 /* Bip39 */,
+				5E9B9AA2302F91DA00C4CD91 /* SkulletX */,
 			);
 			productName = Bloom;
 			productReference = DBBEC4723029C65A009523BE /* Bloom.app */;
@@ -277,6 +280,7 @@
 				DBBEC4CF302CED1C009523BE /* XCRemoteSwiftPackageReference "BlurUIKit" */,
 				DBBEC4E3302CF133009523BE /* XCRemoteSwiftPackageReference "swift-collections" */,
 				5E9B9A8E302F91DA00C4CD91 /* XCRemoteSwiftPackageReference "Bip39.swift" */,
+				5E9B9AA1302F91DA00C4CD91 /* XCRemoteSwiftPackageReference "Skullet-X" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DBBEC4733029C65A009523BE /* Products */;
@@ -740,6 +744,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		5E9B9AA1302F91DA00C4CD91 /* XCRemoteSwiftPackageReference "Skullet-X" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ephmrl-team/Skullet-X.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.3.0;
+			};
+		};
 		5E9B9A8E302F91DA00C4CD91 /* XCRemoteSwiftPackageReference "Bip39.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tesseract-one/Bip39.swift.git";
@@ -771,6 +783,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5E9B9A8E302F91DA00C4CD91 /* XCRemoteSwiftPackageReference "Bip39.swift" */;
 			productName = Bip39;
+		};
+		5E9B9AA2302F91DA00C4CD91 /* SkulletX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5E9B9AA1302F91DA00C4CD91 /* XCRemoteSwiftPackageReference "Skullet-X" */;
+			productName = SkulletX;
 		};
 		DBBEC4D0302CED1C009523BE /* BlurSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;

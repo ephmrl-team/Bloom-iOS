@@ -1,5 +1,5 @@
 {
-  "originHash" : "19370dbce46ffe2cf1e3b960f5b1842f8449b43c59473e5ed2eb9b31ba6c6ecb",
+  "originHash" : "4a03dcb53b9504192ec93d06f691483a7e4070d86584f6e66b3ac543d77d1726",
   "pins" : [
     {
       "identity" : "bip39.swift",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "3447117b12629439fe6c5832907db2b5b0778f00",
         "version" : "1.7.0"
+      }
+    },
+    {
+      "identity" : "skullet-x",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ephmrl-team/Skullet-X.git",
+      "state" : {
+        "revision" : "50602c7bd70228b15469cad5bb68f09de094ecf0",
+        "version" : "0.3.2"
       }
     },
     {

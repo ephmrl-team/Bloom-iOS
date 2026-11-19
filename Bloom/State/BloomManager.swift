@@ -165,6 +165,14 @@ final class BloomManager {
     }
 
     private func parseAndSetChats(_ data: Data) {
+        Task { @MainActor in
+            // Demo hold: keeps the skeleton on screen long enough to read.
+            try? await Task.sleep(for: .milliseconds(1000))
+            applyChats(data)
+        }
+    }
+
+    private func applyChats(_ data: Data) {
         defer { hasLoadedChats = true }
 
         do {

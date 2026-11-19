@@ -3,6 +3,7 @@
 //  Bloom
 //
 
+import SkulletX
 import SwiftUI
 
 struct ChatView: View {
@@ -13,6 +14,7 @@ struct ChatView: View {
     @State private var store: MessagesStore?
     @State private var keyboard = KeyboardTracker()
     @State private var toolbarIdealWidth: CGFloat = 0
+    @State private var topInset: CGFloat = 0
     @State private var isAtBottom = true
     @State private var listReady = false
     @State private var bottomSpacerID = UUID()
@@ -39,6 +41,9 @@ struct ChatView: View {
         .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: {
             keyboard.update(safeAreaBottom: $0)
         }
+        .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: {
+            topInset = $0
+        }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -62,10 +67,8 @@ struct ChatView: View {
     private func content(_ store: MessagesStore) -> some View {
         messages(store)
             .overlay {
-                if store.data.isEmpty {
-                    if store.isLoading {
-                        ProgressView()
-                    } else if store.loadFailed {
+                if store.data.isEmpty, !store.isLoading {
+                    if store.loadFailed {
                         ContentUnavailableView {
                             Label("Couldn't load messages", systemImage: "exclamationmark.bubble")
                         } description: {
@@ -88,6 +91,12 @@ struct ChatView: View {
 
         return bottomTracking(messageScroll(store, seenID: seenID), store)
             .opacity(listReady ? 1 : 0)
+            .skulletReveal(isLoading: store.data.isEmpty && store.isLoading) {
+                ChatMessagesSkeleton()
+            }
+            // The sweep mask has to cover the header, so the pane ignores the top inset and the
+            // scroll view puts it back as content margin.
+            .ignoresSafeArea(.container, edges: .top)
             .accessibilityIdentifier("chatMessageList")
             .scrollIndicators(.hidden)
             .defaultScrollAnchor(.bottom)
@@ -132,7 +141,10 @@ struct ChatView: View {
                         .frame(height: 1)
                         .id(bottomSpacerID)
                 }
+                .padding(.top, topInset)
             }
+            // Anchored here too: after a push the outer anchor can land before the inset settles.
+            .defaultScrollAnchor(.bottom)
             .onChange(of: store.data.count) { oldCount, newCount in
                 scrollOnNewMessages(proxy: proxy, store: store, oldCount: oldCount, newCount: newCount)
             }
@@ -146,9 +158,8 @@ struct ChatView: View {
         newCount: Int
     ) {
         guard newCount > oldCount, isAtBottom || store.data.last?.me == true else { return }
-        // The first batch is placed by the bottom anchor; animating it would look like a scroll.
+        // The first batch is placed by the bottom anchor; scrolling to it would read as a jump.
         guard oldCount > 0 else {
-            proxy.scrollTo(bottomSpacerID, anchor: .bottom)
             listReady = true
             return
         }
