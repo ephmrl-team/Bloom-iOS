@@ -24,9 +24,10 @@ Read this before adding a screen, a route, a toolbar or a header/footer that flo
 
 ## Toolbars
 
-- Keep the system toolbar (`.toolbar`, `.principal`, `.navigationTitle`) and its own configuration. Custom
-  `.principal` titles have exactly one shape: 18 pt bold rounded text with a leading catalog icon at 23 pt and
-  a 6 pt gap (`Theme.toolbarTitle`, reference `ChatListTitle`).
+- Keep the system toolbar (`.toolbar`, `.principal`, `.navigationTitle`) and its own configuration. Only the
+  chat list title is 18 pt bold rounded with a leading catalog icon at 23 pt and a 6 pt gap
+  (`Theme.chatListTitle`, reference `ChatListTitle`). Every other `.principal` title is 17 pt semibold rounded
+  (`Theme.toolbarTitle`, reference `ToolbarTitle`).
 - Toolbar buttons carry an `accessibilityLabel`; icons are catalog images with `.renderingMode(.template)`.
 - Do not add a background to the toolbar yourself. When content must scroll under it, use `topVariableBlur()`
   and, for glass content inside the bar, `.sharedBackgroundVisibility(.hidden)`.

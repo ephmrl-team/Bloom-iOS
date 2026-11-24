@@ -11,7 +11,7 @@ identifier_name:
   excluded: [id, me, xs, sm, md, lg, xl, xxl, xxxl, xxxxl]
 type_name:
   # Theme keeps its lowercase nested token namespaces on purpose.
-  excluded: [spacing, radius, borderWidth, toolbarTitle, colors]
+  excluded: [spacing, radius, borderWidth, toolbarTitle, chatListTitle, colors]
 function_parameter_count: { warning: 4, error: 6 }
 nesting: { type_level: 2 }
 force_cast: error

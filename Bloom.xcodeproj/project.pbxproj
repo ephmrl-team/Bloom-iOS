@@ -744,20 +744,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		5E9B9AA1302F91DA00C4CD91 /* XCRemoteSwiftPackageReference "Skullet-X" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ephmrl-team/Skullet-X.git";
-			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 0.3.0;
-			};
-		};
 		5E9B9A8E302F91DA00C4CD91 /* XCRemoteSwiftPackageReference "Bip39.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tesseract-one/Bip39.swift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.2.0;
+			};
+		};
+		5E9B9AA1302F91DA00C4CD91 /* XCRemoteSwiftPackageReference "Skullet-X" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ephmrl-team/Skullet-X.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 0.3.0;
 			};
 		};
 		DBBEC4CF302CED1C009523BE /* XCRemoteSwiftPackageReference "BlurUIKit" */ = {

@@ -34,8 +34,8 @@ Rules for agents working here — hard rules unless marked "prefer". Deeper note
   SF Symbol names; add an SVG imageset when the catalog has no suitable icon.
 - Colors, spacing, radii, borders and toolbar title metrics come from `Theme` (`Bloom/Core/Theme.swift`).
   No literal colors or magic spacing in views — add a token when one is missing.
-- Toolbar titles have one shape: 18 pt bold rounded text with a leading catalog icon at 23 pt and a 6 pt
-  gap (`Theme.toolbarTitle`, reference `ChatListTitle`).
+- Only the chat list title is 18 pt bold rounded with a leading 23 pt catalog icon and a 6 pt gap
+  (`Theme.chatListTitle`). Every other toolbar title is 17 pt semibold rounded (`Theme.toolbarTitle`).
 - User-facing strings go into `Bloom/Localizable.xcstrings` (en + ru). No hardcoded literals in new code.
 - Keep `topVariableBlur()` on screens whose header or footer floats over scrolling content.
 
