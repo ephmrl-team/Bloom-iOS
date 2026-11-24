@@ -53,7 +53,7 @@ struct MainTabView: View {
             .tag(Tab.chats)
 
             NavigationStack {
-                SettingsView(allowsDismiss: false)
+                SettingsView()
             }
             .tabItem {
                 tabIcon("gear", label: "Settings")

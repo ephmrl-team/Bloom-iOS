@@ -17,9 +17,9 @@ enum Route: Hashable, Identifiable {
     }
 }
 
-enum ModalRoute: Identifiable {
+enum ModalRoute: Hashable, Identifiable {
     case newMessage
-    case settings
+    case mnemonicQuiz(String)
 
     var id: Self {
         self

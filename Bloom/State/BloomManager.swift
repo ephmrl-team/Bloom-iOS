@@ -104,6 +104,10 @@ final class BloomManager {
         backend.savedRecoveryKey() != nil
     }
 
+    func recoveryPhrase() -> String? {
+        backend.recoveryPhrase()
+    }
+
     func searchUsers(_ query: String) async throws -> [User] {
         let payload = try await backend.searchUsers(query: query)
         return try JSONDecoder.bloomDecoder.decode([User].self, from: payload)

@@ -104,6 +104,10 @@
             recoveryKey = nil
         }
 
+        func recoveryPhrase() -> String? {
+            MockData.mnemonic
+        }
+
         func startSync() {
             syncTask?.cancel()
             syncTask = Task { @MainActor in

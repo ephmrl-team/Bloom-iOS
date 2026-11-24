@@ -30,12 +30,13 @@ struct ContentView: View {
             NewMessageView()
                 .presentationDetents([.large])
                 .presentationDragIndicator(.hidden)
-        case .settings:
-            NavigationStack {
-                SettingsView()
+        case let .mnemonicQuiz(phrase):
+            AuthMnemonicQuizView(phrase: phrase) {
+                router.dismissModal()
             }
-            .presentationDetents([.large])
+            .presentationDetents([.medium])
             .presentationDragIndicator(.hidden)
+            .presentationBackground(Color(.systemBackground))
         }
     }
 }
