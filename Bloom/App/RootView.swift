@@ -12,6 +12,8 @@ struct RootView: View {
     @Environment(BloomManager.self) private var bloomManager
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    @AppStorage(AppearanceMode.storageKey) private var appearanceModeRaw = AppearanceMode.system.rawValue
+
     private var rootTransition: AnyTransition {
         reduceMotion ? .opacity : .opacity.combined(with: .blur(radius: 10))
     }
@@ -29,6 +31,7 @@ struct RootView: View {
                 root
             }
         }
+        .preferredColorScheme(AppearanceMode(rawValue: appearanceModeRaw)?.colorScheme)
         .onChange(of: bloomManager.hasRestoredSession, initial: true) { _, restored in
             if restored {
                 appState.authenticate()

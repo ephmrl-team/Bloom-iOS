@@ -39,8 +39,14 @@ enum Theme {
         static let md: CGFloat = 0.85
     }
 
-    /// Toolbar titles: one shape for every screen (see AGENTS.md, "Toolbar titles").
+    /// Every toolbar title except the chat list (see AGENTS.md, "Toolbar titles").
     enum toolbarTitle {
+        static let fontSize: CGFloat = 17
+        static let fontWeight: Font.Weight = .semibold
+    }
+
+    /// The chat list is the only screen with an 18 pt bold title and a leading icon.
+    enum chatListTitle {
         static let fontSize: CGFloat = 18
         static let iconSize: CGFloat = 23
         static let spacing: CGFloat = 6
@@ -63,6 +69,7 @@ enum Theme {
         static let liftedShadow = Color.dynamic(light: Color.black.opacity(0.22), dark: Color.black.opacity(0.55))
 
         static let white = Color(uiColor: UIColor(hex: "ffffff"))
+        static let whiteSecondary = white.opacity(0.78)
         static let black = Color(uiColor: UIColor(hex: "000000"))
         static let primary = Color(uiColor: UIColor(hex: "42A1FF"))
         static let orange = Color(uiColor: UIColor(hex: "FF531B"))
