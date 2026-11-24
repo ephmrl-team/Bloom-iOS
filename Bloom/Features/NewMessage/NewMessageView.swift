@@ -21,8 +21,7 @@ struct NewMessageView: View {
                 .toolbarBackground(.hidden, for: .navigationBar)
                 .toolbar {
                     ToolbarItem(placement: .principal) {
-                        Text("New message")
-                            .font(.system(.headline, design: .rounded))
+                        ToolbarTitle(title: "New message")
                     }
                     ToolbarItem(placement: .topBarLeading) {
                         Button {

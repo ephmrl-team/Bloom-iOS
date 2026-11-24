@@ -26,6 +26,7 @@ struct ChatsListRowView: View {
         HStack(alignment: .top, spacing: 0) {
             AvatarView(
                 size: .lg,
+                image: chat.recipient?.avatarUrl,
                 id: chat.recipient?.id ?? String(chat.id),
                 name: recipientName
             )

@@ -17,8 +17,8 @@ struct VariableBlurView: View {
         VariableBlur(direction: .down)
             .maximumBlurRadius(3.25)
             .dimmingClearExtension(.relative(fraction: 0.3))
-            // Same dimming in both themes, half stronger than the library default (0.5 / 0.25).
-            .dimmingAlpha(.constant(alpha: 0.75))
+            // Half stronger than the library default (0.5 / 0.25); dark surfaces need a bit more.
+            .dimmingAlpha(.interfaceStyle(lightModeAlpha: 0.75, darkModeAlpha: 0.85))
             .passesTouchesThrough(true)
             .dimmingTintColor(color)
             .frame(height: height)

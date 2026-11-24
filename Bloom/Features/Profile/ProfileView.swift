@@ -31,19 +31,14 @@ struct ProfileView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .navigationTitle("Profile")
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbarTitle("Profile")
         .task { await load() }
     }
 
     private func profile(_ user: User) -> some View {
         VStack(spacing: Theme.spacing.xl) {
-            AvatarView(
-                size: .xxl,
-                id: userID,
-                name: user.displayName ?? user.username
-            )
-            .accessibilityIdentifier("profileAvatar")
+            AvatarView(size: .xxl, image: user.avatarUrl, id: userID, name: user.displayName ?? user.username)
+                .accessibilityIdentifier("profileAvatar")
 
             VStack(spacing: Theme.spacing.xs) {
                 Text(user.displayName ?? user.username)

@@ -14,6 +14,7 @@ struct NewMessageRowView: View {
             HStack(alignment: .top, spacing: 0) {
                 AvatarView(
                     size: .md,
+                    image: user.avatarUrl,
                     id: user.id,
                     name: user.displayName ?? user.username
                 )

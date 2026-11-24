@@ -41,6 +41,8 @@ public struct User: Codable {
     public let username: String
     public let displayName: String?
     public let description: String?
+    /// Optional: the backend does not send it yet, so most users keep the generated gradient avatar.
+    public let avatarUrl: String?
     public let mlKemPublicKey: String
     public let ecdhPublicKey: String
     public let edPublicKey: String

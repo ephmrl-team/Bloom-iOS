@@ -8,13 +8,14 @@
 import SwiftUI
 
 enum AvatarSize {
-    case xs, sm, md, lg, xl, xxl, xxxl, xxxxl
+    case xs, sm, md, mdLarge, lg, xl, xxl, xxxl, xxxxl
 
     var dimension: CGFloat {
         switch self {
         case .xs: return 34
         case .sm: return 40
         case .md: return 44
+        case .mdLarge: return 48
         case .lg: return 56
         case .xl: return 76
         case .xxl: return 100
@@ -30,6 +31,8 @@ struct AvatarView: View {
     var image: String?
     var id: String = ""
     var name: String = ""
+    /// Stretches the avatar to the space it is given instead of its fixed `size`.
+    var fills: Bool = false
 
     private var dimension: CGFloat {
         size.dimension
@@ -54,7 +57,8 @@ struct AvatarView: View {
                 defaultAvatarView
             }
         }
-        .frame(width: dimension, height: dimension)
+        .frame(width: fills ? nil : dimension, height: fills ? nil : dimension)
+        .frame(maxWidth: fills ? .infinity : nil, maxHeight: fills ? .infinity : nil)
         .clipShape(square ? AnyShape(Rectangle()) : AnyShape(Circle()))
     }
 
@@ -62,7 +66,7 @@ struct AvatarView: View {
         let colors = avatarGradient(for: id)
         let initials = initials(from: name)
 
-        return Circle()
+        return (square ? AnyShape(Rectangle()) : AnyShape(Circle()))
             .fill(
                 LinearGradient(
                     colors: colors,

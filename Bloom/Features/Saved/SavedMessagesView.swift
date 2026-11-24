@@ -21,14 +21,8 @@ struct SavedMessagesView: View {
         } description: {
             Text("Messages you keep for later will show up here.")
         }
-        .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("Saved")
-                    .font(.system(.headline, design: .rounded, weight: .bold))
-            }
-        }
+        .toolbarTitle("Saved")
     }
 }
 

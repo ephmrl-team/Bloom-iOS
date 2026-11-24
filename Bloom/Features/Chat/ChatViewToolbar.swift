@@ -68,6 +68,7 @@ struct ChatViewToolbarUser: View {
         HStack(spacing: Theme.spacing.md) {
             AvatarView(
                 size: .md,
+                image: chat?.recipient?.avatarUrl,
                 id: avatarID,
                 name: name
             )

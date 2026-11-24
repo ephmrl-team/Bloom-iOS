@@ -26,17 +26,42 @@
 
     enum MockData {
         static let mnemonic = """
-        abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
+        witch collapse practice feed shame open despair creek road again ice least
         """
 
-        static let me = makeUser(id: "user_me", username: "you", displayName: "You")
+        static let me = makeUser(
+            id: "user_me",
+            username: "mira",
+            displayName: "Mira Volkova",
+            avatarUrl: "https://i.pravatar.cc/512?img=33"
+        )
 
         static let people = [
-            makeUser(id: "user_1", username: "nina", displayName: "Nina Petrova"),
-            makeUser(id: "user_2", username: "oleg", displayName: "Oleg"),
+            makeUser(
+                id: "user_1",
+                username: "nina",
+                displayName: "Nina Petrova",
+                avatarUrl: "https://i.pravatar.cc/512?img=47"
+            ),
+            makeUser(
+                id: "user_2",
+                username: "oleg",
+                displayName: "Oleg",
+                avatarUrl: "https://i.pravatar.cc/512?img=53"
+            ),
             makeUser(id: "user_3", username: "group", displayName: "Design team 🎨"),
-            makeUser(id: "user_4", username: "long_name", displayName: "Alexandra Konstantinopolskaya"),
-            makeUser(id: "user_5", username: "sam", displayName: "Sam"),
+            makeUser(
+                id: "user_4",
+                username: "long_name",
+                displayName: "Alexandra Konstantinopolskaya",
+                avatarUrl: "https://i.pravatar.cc/512?img=44"
+            ),
+            makeUser(
+                id: "user_5",
+                username: "sam",
+                displayName: "Sam",
+                avatarUrl: "https://i.pravatar.cc/512?img=60"
+            ),
         ]
 
         static func encodedChats() throws -> Data {
@@ -119,12 +144,18 @@
             return encoder
         }
 
-        private static func makeUser(id: String, username: String, displayName: String) -> User {
+        private static func makeUser(
+            id: String,
+            username: String,
+            displayName: String,
+            avatarUrl: String? = nil
+        ) -> User {
             User(
                 id: id,
                 username: username,
                 displayName: displayName,
                 description: nil,
+                avatarUrl: avatarUrl,
                 mlKemPublicKey: "",
                 ecdhPublicKey: "",
                 edPublicKey: "",

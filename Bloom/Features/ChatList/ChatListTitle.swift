@@ -48,16 +48,16 @@ struct ChatListTitle: View {
     let state: ChatListTitleState
 
     var body: some View {
-        HStack(spacing: Theme.toolbarTitle.spacing) {
+        HStack(spacing: Theme.chatListTitle.spacing) {
             Image("logo")
                 .renderingMode(.template)
                 .resizable()
                 .scaledToFit()
-                .frame(width: Theme.toolbarTitle.iconSize, height: Theme.toolbarTitle.iconSize)
+                .frame(width: Theme.chatListTitle.iconSize, height: Theme.chatListTitle.iconSize)
                 .foregroundStyle(state.tint)
 
             Text(state.title)
-                .font(.system(size: Theme.toolbarTitle.fontSize, weight: .bold, design: .rounded))
+                .font(.system(size: Theme.chatListTitle.fontSize, weight: .bold, design: .rounded))
         }
         .fixedSize()
         .accessibilityElement(children: .combine)
