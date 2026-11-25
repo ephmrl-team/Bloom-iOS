@@ -13,6 +13,11 @@ struct RootView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @AppStorage(AppearanceMode.storageKey) private var appearanceModeRaw = AppearanceMode.system.rawValue
+    @AppStorage(AppAccent.storageKey) private var accentRaw = AppAccent.blue.rawValue
+
+    private var accent: AppAccent {
+        AppAccent(rawValue: accentRaw) ?? .blue
+    }
 
     private var rootTransition: AnyTransition {
         reduceMotion ? .opacity : .opacity.combined(with: .blur(radius: 10))
@@ -31,7 +36,22 @@ struct RootView: View {
                 root
             }
         }
-        .preferredColorScheme(AppearanceMode(rawValue: appearanceModeRaw)?.colorScheme)
+        .accentColor(accent.color)
+        .tint(accent.color)
+        .onAppear {
+            WindowAppearance.apply(
+                AppearanceMode(rawValue: appearanceModeRaw) ?? .system,
+                animated: false,
+                reduceMotion: reduceMotion
+            )
+        }
+        .onChange(of: appearanceModeRaw) { _, raw in
+            WindowAppearance.apply(
+                AppearanceMode(rawValue: raw) ?? .system,
+                animated: true,
+                reduceMotion: reduceMotion
+            )
+        }
         .onChange(of: bloomManager.hasRestoredSession, initial: true) { _, restored in
             if restored {
                 appState.authenticate()

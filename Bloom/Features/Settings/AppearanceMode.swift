@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 enum AppearanceMode: String, CaseIterable, Identifiable {
     case system
@@ -24,9 +25,9 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
         }
     }
 
-    var colorScheme: ColorScheme? {
+    var userInterfaceStyle: UIUserInterfaceStyle {
         switch self {
-        case .system: nil
+        case .system: .unspecified
         case .light: .light
         case .dark: .dark
         }
