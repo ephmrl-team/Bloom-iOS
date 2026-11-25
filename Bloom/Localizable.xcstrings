@@ -33,6 +33,22 @@
         }
       }
     },
+    "Accent color" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accent color"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Акцентный цвет"
+          }
+        }
+      }
+    },
     "Always with you" : {
       "localizations" : {
         "en" : {
@@ -116,6 +132,22 @@
         }
       }
     },
+    "Black" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Black"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чёрный"
+          }
+        }
+      }
+    },
     "Bloom is free software distributed under the terms of the GNU General Public License, version 3." : {
       "localizations" : {
         "en" : {
@@ -128,6 +160,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bloom — свободное программное обеспечение, распространяемое на условиях GNU General Public License версии 3."
+          }
+        }
+      }
+    },
+    "Bloom looks super!" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloom looks super!"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloom выглядит супер!"
+          }
+        }
+      }
+    },
+    "Blue" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blue"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синий"
           }
         }
       }
@@ -241,6 +305,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Очистить"
+          }
+        }
+      }
+    },
+    "Clear Liquid Glass (Experimental)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear Liquid Glass (Experimental)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Прозрачное стекло (эксперимент)"
           }
         }
       }
@@ -566,6 +646,22 @@
         }
       }
     },
+    "Cyan" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cyan"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Голубой"
+          }
+        }
+      }
+    },
     "Dark" : {
       "localizations" : {
         "en" : {
@@ -678,6 +774,38 @@
         }
       }
     },
+    "Enable Clear Liquid Glass" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Clear Liquid Glass"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включить прозрачное стекло"
+          }
+        }
+      }
+    },
+    "Enabling this feature may cause problems such as app crash, UI blinking and accessibility" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enabling this feature may cause problems such as app crash, UI blinking and accessibility"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включение этой функции может вызвать проблемы: сбои приложения, мерцание интерфейса и доступность."
+          }
+        }
+      }
+    },
     "Encryption keys" : {
       "localizations" : {
         "en" : {
@@ -722,6 +850,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Введите фразу"
+          }
+        }
+      }
+    },
+    "Facts 😎" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facts 😎"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Факты 😎"
           }
         }
       }
@@ -771,6 +915,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Переслать"
+          }
+        }
+      }
+    },
+    "Friends / Chats" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Friends / Chats"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Друзья / Чаты"
+          }
+        }
+      }
+    },
+    "Global search" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Global search"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Глобальный поиск"
+          }
+        }
+      }
+    },
+    "Green" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Green"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зелёный"
           }
         }
       }
@@ -919,6 +1111,22 @@
         }
       }
     },
+    "ML-KEM-768 Fingerprint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ML-KEM-768 Fingerprint"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отпечаток ML-KEM-768"
+          }
+        }
+      }
+    },
     "Message" : {
       "localizations" : {
         "en" : {
@@ -947,22 +1155,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сообщения, которые вы сохраните, появятся здесь."
-          }
-        }
-      }
-    },
-    "ML-KEM-768 Fingerprint" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ML-KEM-768 Fingerprint"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Отпечаток ML-KEM-768"
           }
         }
       }
@@ -1192,6 +1384,22 @@
         }
       }
     },
+    "Orange" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orange"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оранжевый"
+          }
+        }
+      }
+    },
     "Pin" : {
       "localizations" : {
         "en" : {
@@ -1208,6 +1416,22 @@
         }
       }
     },
+    "Pink" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pink"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Розовый"
+          }
+        }
+      }
+    },
     "Profile" : {
       "localizations" : {
         "en" : {
@@ -1220,6 +1444,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Профиль"
+          }
+        }
+      }
+    },
+    "Purple" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purple"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фиолетовый"
           }
         }
       }
@@ -1268,6 +1508,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Фраза восстановления"
+          }
+        }
+      }
+    },
+    "Red" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Red"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Красный"
           }
         }
       }
@@ -1671,6 +1927,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Фраза восстановления недоступна на этом устройстве."
+          }
+        }
+      }
+    },
+    "Theme" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Theme"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тема"
           }
         }
       }

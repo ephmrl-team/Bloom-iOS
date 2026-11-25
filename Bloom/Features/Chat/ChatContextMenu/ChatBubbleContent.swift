@@ -9,6 +9,13 @@ import SwiftUI
 /// transfer is identical for every content type (text, emoji, future media).
 struct ChatBubbleContent: View {
     let item: MessageItem
+    var accentOverride: AppAccent?
+
+    @AppStorage(AppAccent.storageKey) private var accentRaw = AppAccent.blue.rawValue
+
+    private var accent: AppAccent {
+        accentOverride ?? AppAccent(rawValue: accentRaw) ?? .blue
+    }
 
     private enum Layout {
         static let bubbleCornerRadius: CGFloat = 22
@@ -19,11 +26,11 @@ struct ChatBubbleContent: View {
     }
 
     private var textColor: Color {
-        item.me ? Theme.colors.white : Theme.colors.text
+        item.me ? accent.contentColor : Theme.colors.text
     }
 
     private var backgroundColor: Color {
-        item.me ? Theme.colors.primary : Color(.secondarySystemBackground)
+        item.me ? accent.color : Color(.secondarySystemBackground)
     }
 
     private var emojiSize: CGFloat {

@@ -8,6 +8,8 @@ import SwiftUI
 /// The settings backdrop: one catalog icon tiled in a checkerboard at 5% text color.
 struct PhraseBackdropView: View {
     var icon: String = "key"
+    var tint: Color = Theme.colors.text
+    var opacity: Double = 0.05
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -19,8 +21,8 @@ struct PhraseBackdropView: View {
 
     var body: some View {
         // The tint is a normal view color: a Canvas resolves dynamic colors against the wrong traits.
-        Theme.colors.text
-            .opacity(0.05)
+        tint
+            .opacity(opacity)
             .mask { backdrop }
             .onAppear { driftIn() }
     }
