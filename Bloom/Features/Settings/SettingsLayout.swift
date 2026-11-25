@@ -51,6 +51,19 @@ enum SettingsLayout {
     static let selectionMarkInnerSize: CGFloat = 10
     static let selectionMarkLineWidth: CGFloat = 1.5
 
+    static let appearanceSwatchSize: CGFloat = 30
+    static let appearanceSwatchCellSize: CGFloat = 40
+    static let appearanceSwatchSelectedScale: CGFloat = 1.2
+    static let appearanceSwatchSpacing: CGFloat = 8
+    static let appearanceAccentSpacing: CGFloat = 12
+    static let appearanceSwatchShadowRadius: CGFloat = 16
+    static let appearanceSwatchShadowOpacity: Double = 0.16
+    static let appearanceSwatchShadowSpread: CGFloat = 4
+    static let appearanceRowHeight: CGFloat = 52
+    static let appearanceIconSize: CGFloat = 28
+    static let appearanceSeparatorHeight: CGFloat = 1
+    static let appearanceCardBorderWidth: CGFloat = 1
+
     static let mnemonicRowHeight: CGFloat = 48
     static let phraseWordFontSize: CGFloat = 20
     static let phraseFooterHeight: CGFloat = 54
