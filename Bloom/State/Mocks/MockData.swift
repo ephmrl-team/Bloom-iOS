@@ -156,9 +156,9 @@
                 displayName: displayName,
                 description: nil,
                 avatarUrl: avatarUrl,
-                mlKemPublicKey: "",
-                ecdhPublicKey: "",
-                edPublicKey: "",
+                mlKemPublicKey: "7b1f4c9a2e8d6305f1a7c4b9e2d58a0c6f3b7d1e4a9c2f8b5d0e7a3c6b9f2d4e",
+                ecdhPublicKey: "d4f8a2c6e0b3d7f1a5c9e2b6d0f4a8c1e5b9d3f7a0c4e8b2d6f1a5c9e3b7d0f4",
+                edPublicKey: "1a5e9d3c7b2f6a0e4d8c1b5f9a3e7d2c6b0f4a8e1d5c9b3f7a2e6d0c4b8f1a5e",
                 date: Date(timeIntervalSince1970: 1_700_000_000)
             )
         }

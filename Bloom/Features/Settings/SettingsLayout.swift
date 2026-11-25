@@ -58,10 +58,17 @@ enum SettingsLayout {
     static let captionFontSize: CGFloat = 15
     /// Side inset of the caption under the phrase block.
     static let captionInset: CGFloat = 14
+    /// Gap between a block and the caption under it, and between a section label and its field.
+    static let captionSpacing: CGFloat = 10
     /// Single full-width buttons such as the logout row and "Test yourself".
     static let actionButtonHeight: CGFloat = 52
     static let actionButtonFontSize: CGFloat = 18
-    static let keyFontSize: CGFloat = 13
+    static let keyFontSize: CGFloat = 16
+    static let keyRowHeight: CGFloat = 52
+    static let keyRowInset: CGFloat = 18
+    static let copyIconSize: CGFloat = 24
+    static let fingerprintEmojiSpacing: CGFloat = 24
+    static let fingerprintCaptionFontSize: CGFloat = 16
     static let aboutLogoSize: CGFloat = 64
     static let aboutTitleFontSize: CGFloat = 20
     static let storageBarHeight: CGFloat = 10

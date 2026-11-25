@@ -5,8 +5,10 @@
 
 import SwiftUI
 
-/// The phrase grid backdrop: the `key` icon tiled in a checkerboard at 5% text color.
+/// The settings backdrop: one catalog icon tiled in a checkerboard at 5% text color.
 struct PhraseBackdropView: View {
+    var icon: String = "key"
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var drift: CGSize = .zero
@@ -44,11 +46,11 @@ struct PhraseBackdropView: View {
 
     private var tiles: some View {
         Canvas { context, size in
-            let key = context.resolve(Image("key"))
+            let symbol = context.resolve(Image(icon))
 
             let iconSize = CGSize(
                 width: iconWidth,
-                height: iconWidth * key.size.height / max(key.size.width, 1)
+                height: iconWidth * symbol.size.height / max(symbol.size.width, 1)
             )
             let rows = Int((size.height / rowStep).rounded(.up)) + 2
             let columns = Int((size.width / pitch).rounded(.up)) + 2
@@ -60,7 +62,7 @@ struct PhraseBackdropView: View {
                         x: CGFloat(column) * pitch + shift - pitch / 2,
                         y: CGFloat(row - 1) * rowStep
                     )
-                    context.draw(key, in: CGRect(origin: origin, size: iconSize))
+                    context.draw(symbol, in: CGRect(origin: origin, size: iconSize))
                 }
             }
         }

@@ -32,7 +32,7 @@ struct SettingsRecoveryPhraseView: View {
                         caption
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, SettingsLayout.captionInset)
-                            .padding(.top, Theme.spacing.sm)
+                            .padding(.top, SettingsLayout.captionSpacing)
                         testButton
                             .padding(.top, SettingsLayout.sectionSpacing)
                     }

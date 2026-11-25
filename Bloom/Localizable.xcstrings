@@ -310,6 +310,22 @@
         }
       }
     },
+    "Compare this fingerprint with a friend to verify your chats are end-to-end encrypted." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compare this fingerprint with a friend to verify your chats are end-to-end encrypted."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сравните этот отпечаток с другом, чтобы убедиться, что ваши чаты защищены сквозным шифрованием."
+          }
+        }
+      }
+    },
     "Connecting…" : {
       "localizations" : {
         "en" : {
@@ -422,6 +438,22 @@
         }
       }
     },
+    "Copied" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copied"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировано"
+          }
+        }
+      }
+    },
     "Copy" : {
       "localizations" : {
         "en" : {
@@ -434,6 +466,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Копировать"
+          }
+        }
+      }
+    },
+    "Copy fingerprint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy fingerprint"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать отпечаток"
           }
         }
       }
@@ -594,6 +642,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Общение"
+          }
+        }
+      }
+    },
+    "Ed448 Fingerprint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ed448 Fingerprint"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отпечаток Ed448"
+          }
+        }
+      }
+    },
+    "Emoji fingerprint of all your encryption keys" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emoji fingerprint of all your encryption keys"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эмодзи-отпечаток всех ваших ключей шифрования"
           }
         }
       }
@@ -867,6 +947,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сообщения, которые вы сохраните, появятся здесь."
+          }
+        }
+      }
+    },
+    "ML-KEM-768 Fingerprint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ML-KEM-768 Fingerprint"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отпечаток ML-KEM-768"
           }
         }
       }
@@ -1802,6 +1898,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Запишите эти слова и храните их офлайн. Это единственный способ восстановить аккаунт."
+          }
+        }
+      }
+    },
+    "X448 Fingerprint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X448 Fingerprint"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отпечаток X448"
           }
         }
       }
